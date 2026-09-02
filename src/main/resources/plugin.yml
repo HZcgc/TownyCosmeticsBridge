@@ -1,0 +1,18 @@
+name: TownyCosmeticsBridge
+version: 1.2.0
+main: net.townysmp.cosmetics.TownyCosmeticsBridge
+api-version: '1.21'
+author: TownySMP
+description: Connects ExcellentCrates rewards with profile-based UltraCosmetics unlocks.
+depend:
+  - UltraCosmetics
+  - ExcellentCrates
+commands:
+  townycosmeticsreward:
+    description: Gives one personal cosmetic or a Patron Key when the collection is complete.
+    usage: townycosmeticsreward <player>
+    permission: townysmp.cosmeticsbridge.reward
+permissions:
+  townysmp.cosmeticsbridge.reward:
+    description: Allows the internal cosmetics reward bridge command.
+    default: op
