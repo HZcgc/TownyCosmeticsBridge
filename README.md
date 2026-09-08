@@ -1,6 +1,6 @@
 # TownyCosmeticsBridge
 
-TownySMP bridge between ExcellentCrates and UltraCosmetics. The console command
+TownyReborn bridge between ExcellentCrates and UltraCosmetics. The console command
 `townycosmeticsreward <player>` chooses a still-locked cosmetic for that
 player, unlocks it through the UltraCosmetics profile API, and updates the
 ExcellentCrates reward display. A completed collection awards the configured
@@ -8,20 +8,17 @@ Patron key; an internal error refunds the cosmetic key.
 
 ## Runtime
 
-- Paper 1.21.x
+- Paper 26.2 / Java 25
 - UltraCosmetics
 - ExcellentCrates
-- Plugin version represented here: `1.2.0`
+- Plugin version represented here: `1.2.1`
 
 ## Source recovery note
 
 The original source project was no longer present. This Java source was
 recovered from the deployed `TownyCosmeticsBridge.jar` with Vineflower 1.12.0.
-Control flow, constants, reflection calls, messages, and public behavior are
-preserved. Original local variable names, comments, formatting, and the old
-build definition cannot be recovered from bytecode, so this repository should
-be treated as a readable diagnostic baseline rather than a byte-for-byte
-reproducible source release.
+Control flow and integrations were preserved, then a reproducible Maven build
+against Paper 26.2 was added for the TownyReborn 1.2.1 release.
 
 Deployed JAR SHA-256:
 

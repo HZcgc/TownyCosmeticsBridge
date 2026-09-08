@@ -1,8 +1,8 @@
 name: TownyCosmeticsBridge
-version: 1.2.0
+version: ${project.version}
 main: net.townysmp.cosmetics.TownyCosmeticsBridge
-api-version: '1.21'
-author: TownySMP
+api-version: '26.2'
+author: TownyReborn
 description: Connects ExcellentCrates rewards with profile-based UltraCosmetics unlocks.
 depend:
   - UltraCosmetics

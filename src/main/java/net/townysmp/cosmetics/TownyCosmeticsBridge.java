@@ -86,7 +86,7 @@ public final class TownyCosmeticsBridge extends JavaPlugin {
          this.grantProfileCosmetic(var5, var6);
          String var7 = this.readCosmeticName(var6);
          this.showRewardName("<#ff55ff><b>" + escapeMiniMessage(var7) + "</b></#ff55ff>");
-         var5.sendMessage("§d§lTOWNY§a§lSMP§r §8» §7You unlocked §d" + var7 + "§7.");
+         var5.sendMessage("§d§lTOWNY§a§lREBORN§r §8» §7You unlocked §d" + var7 + "§7.");
       } catch (ReflectiveOperationException | IllegalStateException var8) {
          this.refundCosmeticKeyAfterError(var5, var8);
       }
@@ -200,18 +200,18 @@ public final class TownyCosmeticsBridge extends JavaPlugin {
    private void handleCompleteCollection(Player var1) {
       if (this.giveVirtualKey(var1, "patron", "Patron Key")) {
          this.showRewardName("<#ff55ff><b>Collection Complete</b></#ff55ff> <dark_gray>»</dark_gray> <#55ff55>Patron Key</#55ff55>");
-         var1.sendMessage("§d§lTOWNY§a§lSMP§r §8» §7Collection complete. §aYou received 1 virtual Patron Key.§7");
+         var1.sendMessage("§d§lTOWNY§a§lREBORN§r §8» §7Collection complete. §aYou received 1 virtual Patron Key.§7");
       } else {
          this.giveVirtualKey(var1, "cosmetic", "Cosmetic Key");
          this.showRewardName("<red><b>Reward Error</b></red> <dark_gray>»</dark_gray> <#55ff55>Cosmetic Key Refunded</#55ff55>");
-         var1.sendMessage("§d§lTOWNY§a§lSMP§r §8» §cThe Patron Key could not be granted. §aYour virtual Cosmetic Key was returned.§7");
+         var1.sendMessage("§d§lTOWNY§a§lREBORN§r §8» §cThe Patron Key could not be granted. §aYour virtual Cosmetic Key was returned.§7");
       }
    }
 
    private void refundCosmeticKeyAfterError(Player var1, Exception var2) {
       this.giveVirtualKey(var1, "cosmetic", "Cosmetic Key");
       this.showRewardName("<red><b>Reward Error</b></red> <dark_gray>»</dark_gray> <#55ff55>Cosmetic Key Refunded</#55ff55>");
-      var1.sendMessage("§d§lTOWNY§a§lSMP§r §8» §cThe cosmetic reward could not be processed. §aYour virtual Cosmetic Key was returned.§7");
+      var1.sendMessage("§d§lTOWNY§a§lREBORN§r §8» §cThe cosmetic reward could not be processed. §aYour virtual Cosmetic Key was returned.§7");
       this.getLogger().severe("Could not process a cosmetic reward for " + var1.getName() + ": " + var2.getMessage());
    }
 
