@@ -6,8 +6,8 @@ This update restores the five supplied Towny plugins and the key display addon o
 | --- | --- | --- |
 | TownyCosmeticsBridge | 1.2.2 | Native EC7 reward preview and virtual key service |
 | TownyRebornCrateModels | 1.0.3 | EC7 registry, interaction context and pre-start event |
-| TownyRebornHunt | 1.0.3 | Native virtual keys; legacy import and one-time lost Halloween balance recovery |
-| ExcellentCrates key patch | 7.1.0-townykeys.1 | Persist updated balances; keep current keys across rapid rejoins |
+| TownyRebornHunt | 1.0.4 | Native virtual keys; legacy import and one-time lost Halloween balance recovery |
+| ExcellentCrates key patch | 7.1.0-townykeys.2 | Persist updated balances; keep current keys across rapid rejoins; report the patch version on Paper |
 | TownyRebornLoot | 1.0.1 | EC7 opening guards; historical test reset retired |
 | TownyRebornBarrelShops | 1.0.1 | QuickShop 6.3.0.3 and BiggerBarrels runtime adapter |
 | ExcellentCratesAddon | 2.2-ec7 | EC7 key counters; legacy hologram placeholders and an unformatted virtual-key total |
@@ -44,7 +44,7 @@ Private server configurations and player databases are deliberately excluded fro
 
 ## Crate key persistence
 
-[Crate key fix and installation](excellentcrates-patch/README.md): EC7.1.0's key repository attempts a plain INSERT when saving an existing owner/key record. The patch enables native SQL updates on conflict, and merges login data without replacing current cached balances with a stale periodic save. All key types keep their remaining balances after rejoin and restart. Hunt 1.0.3 can recover confirmed unspent Halloween keys once from its payment records and the current reward usage table, with a backup, transaction, audit and durable marker. Install both JARs from `TownyReborn-Crate-Key-Fix.zip` while the server is stopped; keep the live player data folders. The build tests the original failure and the fixed native persistence/cost services against SQLite.
+[Crate key fix and installation](excellentcrates-patch/README.md): EC7.1.0's key repository attempts a plain INSERT when saving an existing owner/key record. The patch enables native SQL updates on conflict, and merges login data without replacing current cached balances with a stale periodic save. All key types keep their remaining balances after rejoin and restart. Hunt 1.0.4 can recover confirmed unspent Halloween keys once from its payment records and the current reward usage table, with a backup, transaction, audit and durable marker. Patch revision 2 updates both plugin descriptors so Paper reports the patch version and Hunt runs the startup recovery for offline players. Install both JARs from `TownyReborn-Crate-Key-Fix.zip` while the server is stopped; keep the live player data folders. The build tests the original failure, the fixed native persistence/cost services against SQLite, and startup recovery using the Paper descriptor from the final JAR. Release tests verify both descriptors and the delivered ZIP.
 
 ## MCPets shops
 

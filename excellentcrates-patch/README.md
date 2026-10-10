@@ -5,8 +5,8 @@ Für Paper 26.2 / Java 25, ExcellentCrates 7.1.0 und nightcore 2.16.7.
 ## Installation
 
 1. Server vollständig stoppen und `plugins` sichern.
-2. Die bisherige ExcellentCrates-JAR durch `ExcellentCrates-7.1.0-townykeys.1.jar` ersetzen.
-3. Die bisherige TownyRebornHunt-JAR durch `TownyRebornHunt-1.0.3.jar` ersetzen. Je Plugin nur eine JAR behalten.
+2. Die bisherige ExcellentCrates-JAR durch `ExcellentCrates-7.1.0-townykeys.2.jar` ersetzen, auch wenn bereits `townykeys.1` installiert war.
+3. Die bisherige TownyRebornHunt-JAR durch `TownyRebornHunt-1.0.4.jar` ersetzen. Je Plugin nur eine JAR behalten.
 4. Die vorhandenen Datenordner behalten, insbesondere `ExcellentCrates/data.db` und `TownyRebornHunt/players`.
 5. Server normal starten. Kein `/reload` verwenden.
 
@@ -20,7 +20,9 @@ Beim Login lädt EC7 zusätzlich die Datenbank neu. Ein schneller Rejoin vor der
 
 ## Einmalige Halloween-Reparatur
 
-TownyRebornHunt 1.0.3 gleicht beim vollständigen Start bestätigte `FOUND`-Einträge mit aufgezeichnetem `halloween2026`-Key und den gespeicherten Halloween-Belohnungszählern ab. Ausstehende `PENDING`-Funde werden nicht ausgezahlt. Es ergänzt nur fehlende Restbestände: bestätigte Funde minus bereits erhaltene Belohnungen minus unclaimed Keys. Höhere vorhandene Bestände bleiben erhalten.
+TownyRebornHunt 1.0.4 gleicht beim vollständigen Start bestätigte `FOUND`-Einträge mit aufgezeichnetem `halloween2026`-Key und den gespeicherten Halloween-Belohnungszählern ab. Ausstehende `PENDING`-Funde werden nicht ausgezahlt. Es ergänzt nur fehlende Restbestände: bestätigte Funde minus bereits erhaltene Belohnungen minus unclaimed Keys. Höhere vorhandene Bestände bleiben erhalten. Spieler müssen dafür nicht online sein.
+
+`townykeys.2` korrigiert die Versionsangabe sowohl in `plugin.yml` als auch in `paper-plugin.yml`. Im ersten Paket blieb der Paper-Deskriptor auf `7.1.0`, sodass Hunt die einmalige Reparatur auf Paper übersprang. Die Reparatur verwendet weiterhin denselben dauerhaften Marker; bereits ausgezahlte Reparaturen werden nicht wiederholt. Hunt protokolliert jetzt ausdrücklich, wenn ExcellentCrates keine unterstützte Patch-Version meldet.
 
 Diese Reparatur läuft ausschließlich für `halloween2026`, SQLite und die gepatchte EC-Version. Die Crate muss einen Key für eine Belohnung verlangen. Vorher entsteht `ExcellentCrates/data-before-key-recovery-<timestamp>.db`. Änderungen und ein dauerhafter Marker werden in einer Transaktion gespeichert. Spätere Logins, weitere Neustarts und neue Funde lösen keine erneute Nachzahlung aus. Die Tabelle `townyreborn_key_recovery` protokolliert die betroffenen UUIDs sowie Fund-, Verbrauchs- und Vorher-/Nachher-Zähler. Hunt-Fortschritt und Belohnungszähler werden nicht zurückgesetzt.
 
@@ -30,13 +32,14 @@ Bei absichtlich entzogenen Halloween-Keys oder historischen manuellen Rücksetzu
 
 ## Prüfen
 
-- Im Startlog: `Halloween key recovery restored ... confirmed unspent keys once`.
+- Im Startlog: `ExcellentCrates v7.1.0-townykeys.2` und `TownyRebornHunt v1.0.4`.
+- Bei einer bisher ausgelassenen Reparatur: `Halloween key recovery restored ... confirmed unspent keys once`.
 - `/hunt progress 6ft2Dreadhead` zeigt Funde und, für online Spieler, die verfügbaren virtuellen Keys getrennt.
-- `/cratekey` beziehungsweise der bisherige Key-Befehl zeigt den nativen Restbestand.
+- `/cratekey balance 6ft2Dreadhead` zeigt den nativen Restbestand auch für Offline-Spieler.
 - Eine Crate öffnen, ausloggen und sofort wieder einloggen. Der Restbestand muss vermindert bleiben. Auch neu gefundene Keys müssen einen Neustart überstehen.
 
 `Ghosts found: 16/40` bleibt ein historischer Fortschrittszähler. Für eine zusätzliche Hologramm-Zeile mit verfügbaren Keys kann das bestehende Addon `%ec_keyz_halloween2026%` verwenden. Das Halloween-Hologramm wird von diesem Update nicht umgestaltet.
 
 ## Build und Quelltext
 
-`JAVA_HOME=/path/to/jdk25 python3 tools/build.py` baut die zwei Ersatzklassen gegen die per SHA-256 festgelegten Original-JARs und erstellt eine vollständige gepatchte ExcellentCrates-JAR. Alle anderen Original-Einträge bleiben unverändert; die Versionsangabe lautet `7.1.0-townykeys.1`. Patch-Quelltext und GPL-3.0-Lizenz werden in der JAR mitgeliefert. Bei einem späteren offiziellen ExcellentCrates-Update muss der Patch neu geprüft werden.
+`JAVA_HOME=/path/to/jdk25 python3 tools/build.py` baut die zwei Ersatzklassen gegen die per SHA-256 festgelegten Original-JARs und erstellt eine vollständige gepatchte ExcellentCrates-JAR. Neben den zwei Klassen ändern sich ausschließlich die Versionsangaben in beiden Plugin-Deskriptoren auf `7.1.0-townykeys.2`. Patch-Quelltext und GPL-3.0-Lizenz werden in der JAR mitgeliefert. Der Starttest liest den Paper-Deskriptor aus der fertigen JAR und prüft eine Reparatur ohne online Spieler. Die Paketprüfung kontrolliert beide Deskriptoren, die unveränderten übrigen Original-Einträge und die ZIP-Prüfsummen. Bei einem späteren offiziellen ExcellentCrates-Update muss der Patch neu geprüft werden.

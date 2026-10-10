@@ -79,9 +79,6 @@ def main():
     test_cp = os.pathsep.join(str(p) for p in [*reversed(outputs), cp])
     run([JAVA / "javac", "--release", "25", "-encoding", "UTF-8", "-cp", test_cp,
          "-d", tests, *sorted((ROOT / "tests/java").rglob("*.java"))])
-    run([JAVA / "java", "--enable-native-access=ALL-UNNAMED", f"-javaagent:{DEPS / 'byte-buddy-agent.jar'}",
-         "-cp", str(tests) + os.pathsep + test_cp, "org.junit.platform.console.ConsoleLauncher", "execute",
-         f"--scan-classpath={tests}", "--disable-banner"])
     patched = DIST / "QuickShop-Hikari-6.3.0.3-townybarrels.2.jar"
     replacement = ROOT / "quickshop-patch/target/classes"
     with zipfile.ZipFile(DEPS / "QuickShop.jar") as old, zipfile.ZipFile(patched, "w", zipfile.ZIP_DEFLATED) as new:
@@ -98,8 +95,13 @@ def main():
 
     ec_patch = ROOT / "excellentcrates-patch"
     ec_classes = ec_patch / "target/classes"
-    ec_patched = DIST / "ExcellentCrates-7.1.0-townykeys.1.jar"
+    ec_version = ET.parse(ec_patch / "pom.xml").getroot().findtext("{http://maven.apache.org/POM/4.0.0}version")
+    ec_patched = DIST / f"ExcellentCrates-{ec_version}.jar"
+    for previous in DIST.glob("ExcellentCrates-*.jar"):
+        if previous != ec_patched: previous.unlink()
     with zipfile.ZipFile(DEPS / "ExcellentCrates.jar") as old, zipfile.ZipFile(ec_patched, "w", zipfile.ZIP_DEFLATED) as new:
+        descriptors = {"plugin.yml", "paper-plugin.yml"}
+        if not descriptors.issubset(old.namelist()): raise RuntimeError("EC7 plugin descriptors are missing")
         for replacement in ec_classes.rglob("*.class"):
             relative = str(replacement.relative_to(ec_classes))
             # javac may emit synthetic nested helpers for an overlaid class.
@@ -110,15 +112,19 @@ def main():
             if (ec_classes / entry.filename).is_file(): continue
             if entry.filename.startswith("META-INF/") and entry.filename.endswith((".SF", ".RSA", ".DSA")): continue
             data = old.read(entry.filename)
-            if entry.filename == "plugin.yml":
+            if entry.filename in descriptors:
                 original_version = b"version: '7.1.0'"
-                if data.count(original_version) != 1: raise RuntimeError("Unexpected EC7 plugin version")
-                data = data.replace(original_version, b"version: '7.1.0-townykeys.1'")
+                if data.count(original_version) != 1: raise RuntimeError(f"Unexpected EC7 version in {entry.filename}")
+                data = data.replace(original_version, f"version: '{ec_version}'".encode())
             new.writestr(entry, data)
         for path in ec_classes.rglob("*.class"): new.write(path, path.relative_to(ec_classes))
         new.write(ec_patch / "LICENSE", "META-INF/TOWNY-KEY-PATCH-LICENSE")
         for path in (ec_patch / "src/main/java").rglob("*.java"):
             new.write(path, "META-INF/towny-key-patch-source/" + str(path.relative_to(ec_patch / "src/main/java")))
+    # Exercise the startup gate using the actual Paper descriptor in the final JAR.
+    run([JAVA / "java", "--enable-native-access=ALL-UNNAMED", f"-javaagent:{DEPS / 'byte-buddy-agent.jar'}",
+         f"-Dtownyreborn.crates-jar={ec_patched}", "-cp", str(tests) + os.pathsep + test_cp,
+         "org.junit.platform.console.ConsoleLauncher", "execute", f"--scan-classpath={tests}", "--disable-banner"])
     jars = sorted(DIST.glob("*.jar"))
     (DIST / "SHA256SUMS").write_text("".join(f"{digest(p)}  {p.name}\n" for p in jars))
     with zipfile.ZipFile(DIST / "TownyReborn-Plugin-Update-2026-10-10.zip", "w", zipfile.ZIP_DEFLATED) as bundle:

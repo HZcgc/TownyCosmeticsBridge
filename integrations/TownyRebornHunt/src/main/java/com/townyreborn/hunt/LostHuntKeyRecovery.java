@@ -22,7 +22,12 @@ final class LostHuntKeyRecovery {
     static void run(Plugin crates, HuntLedger ledger, String event, String keyId, Logger logger)
             throws IOException, ReflectiveOperationException {
         if (!EVENT.equals(event) || !EVENT.equals(keyId)) return;
-        if (!"7.1.0-townykeys.1".equals(crates.getDescription().getVersion())) return;
+        String version = crates.getDescription().getVersion();
+        if (!"7.1.0-townykeys.1".equals(version) && !"7.1.0-townykeys.2".equals(version)) {
+            logger.warning("Halloween key recovery skipped: ExcellentCrates " + version
+                    + " does not report a supported key-storage patch. Install ExcellentCrates-7.1.0-townykeys.2.jar and fully restart.");
+            return;
+        }
         if (!crates.getServer().getOnlinePlayers().isEmpty()) {
             logger.warning("Halloween key recovery requires a full restart; online balances were not changed.");
             return;
