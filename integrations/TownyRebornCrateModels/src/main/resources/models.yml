@@ -1,0 +1,46 @@
+models:
+  tr_pack2_common_crate:
+    width: 1.4
+    height: 1.6
+    open-ticks: 48
+    idle: true
+  tr_pack2_epic_crate:
+    width: 1.4
+    height: 1.6
+    open-ticks: 48
+    idle: true
+  tr_pack2_legendary_crate:
+    width: 1.4
+    height: 1.6
+    open-ticks: 48
+    idle: true
+  tr_pack2_rare_crate:
+    width: 1.4
+    height: 1.6
+    open-ticks: 48
+    idle: true
+  tr_stuff_common_crate:
+    width: 1.4
+    height: 1.6
+    open-ticks: 85
+    idle: false
+  tr_stuff_cosmetic_crate:
+    width: 1.4
+    height: 1.6
+    open-ticks: 85
+    idle: false
+  tr_stuff_legendary_crate:
+    width: 1.4
+    height: 1.6
+    open-ticks: 96
+    idle: false
+  tr_stuff_rare_crate:
+    width: 1.4
+    height: 1.6
+    open-ticks: 85
+    idle: false
+  tr_stuff_vote_crate:
+    width: 1.4
+    height: 1.6
+    open-ticks: 85
+    idle: false

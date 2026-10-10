@@ -6,3 +6,6 @@ build/
 out/
 *.jar
 *.class
+dist/
+__pycache__/
+*.pyc

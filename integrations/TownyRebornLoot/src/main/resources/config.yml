@@ -1,0 +1,80 @@
+# The historical personal test reset has been retired; player identifiers are not bundled.
+relic-set:
+- deepwatch_crown
+- reborn_aegis
+- warden_legguards
+- trailblazer_boots
+- netherbane
+- lumberkeeper
+- deepvein
+- silkkeeper
+- earthshaper
+- harvestkeeper
+- farwatch
+- outrider
+- tidecaller
+- reborn_bulwark
+guarded-crates:
+  halloween2026:
+  - ghost_axe
+  - ghost_bow
+  - ghost_chest
+  - ghost_crossbow
+  - ghost_fishing_rod
+  - ghost_helmet
+  - ghost_hoe
+  - ghost_key
+  - ghost_mace
+  - ghost_pickaxe
+  - ghost_shield
+  - ghost_shovel
+  - ghost_spear
+  - ghost_staff
+  - ghost_sword
+  - ghost_trident
+  - ghost_wings
+  - ghost_armor_boots
+  - ghost_armor_chestplate
+  - ghost_armor_helmet
+  - ghost_armor_leggings
+  - pumpkin_axe
+  - pumpkin_bow
+  - pumpkin_chest
+  - pumpkin_crossbow
+  - pumpkin_fishing_rod
+  - pumpkin_hammer
+  - pumpkin_helmet
+  - pumpkin_hoe
+  - pumpkin_key
+  - pumpkin_mace
+  - pumpkin_pickaxe
+  - pumpkin_scythe
+  - pumpkin_shield
+  - pumpkin_shovel
+  - pumpkin_spear
+  - pumpkin_staff
+  - pumpkin_sword
+  - pumpkin_trident
+  - pumpkin_wings
+  - pumpkin_armor_boots
+  - pumpkin_armor_chestplate
+  - pumpkin_armor_helmet
+  - pumpkin_armor_leggings
+  daily:
+  - deepwatch_crown
+  - reborn_aegis
+  - warden_legguards
+  - trailblazer_boots
+  - netherbane
+  - lumberkeeper
+  - deepvein
+  - silkkeeper
+  - earthshaper
+  - harvestkeeper
+  - farwatch
+  - outrider
+  - tidecaller
+  - reborn_bulwark
+  - improved_fishing_rod
+  vote:
+  - beginner_fishing_rod

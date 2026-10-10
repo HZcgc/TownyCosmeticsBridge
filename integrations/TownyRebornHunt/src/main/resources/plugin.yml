@@ -1,0 +1,20 @@
+name: TownyRebornHunt
+version: 1.0.2
+main: com.townyreborn.hunt.TownyRebornHunt
+api-version: '1.21'
+author: Towny Reborn
+description: A persistent Halloween head hunt with one ExcellentCrates key per player and ghost.
+depend: [ExcellentCrates]
+softdepend: [HeadDB, HeadDatabase, PlaceholderAPI]
+commands:
+  hunt:
+    aliases: [ghosthunt, halloweenhunt]
+    description: View Halloween progress or manage hunt heads.
+    usage: /hunt
+permissions:
+  townyreborn.hunt.play:
+    description: Find Halloween heads and view your progress.
+    default: true
+  townyreborn.hunt.admin:
+    description: Set up, move, remove and inspect hunt heads and reset progress.
+    default: op

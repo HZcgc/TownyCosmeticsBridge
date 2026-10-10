@@ -1,0 +1,34 @@
+# Towny Reborn Halloween Hunt
+# Existing virtual ExcellentCrates key: halloween2026
+enabled: true
+event-id: halloween2026
+key-id: halloween2026
+# 44 hidden ghosts at spawn. One key per find; no bonus keys.
+max-finds: 44
+prefix: '&d&lTOWNY &a&lREBORN &8» &r'
+sound:
+  enabled: true
+  found: entity.experience_orb.pickup
+completion-title: true
+messages:
+  progress: '&fHalloween Hunt: &a{found}&7/&a{total} &fghosts found. &7Right-click hidden heads to earn Halloween Keys.'
+  found: '&fGhost found! &a{found}&7/&a{total} &8| &d+1 Halloween Key'
+  complete: '&aAll {total} ghosts found! &fEnjoy your Halloween rewards.'
+  already-found: '&7You have already found this ghost.'
+  limit: '&aYou have collected all {total} Halloween Keys.'
+  paused: '&7The Halloween Hunt is currently paused.'
+  no-permission: '&cYou cannot use this hunt command.'
+  pending: '&eThis find needs staff review. Please contact staff; it will not give a second key.'
+  unavailable: '&eThe hunt reward is not ready. Please try again shortly or tell staff.'
+  setup-on: '&aSetup ON. &fPlace HDB heads to register them automatically. &7Use /hunt setup again when finished.'
+  setup-off: '&7Setup OFF. You can now collect ghosts normally.'
+  setup-inspect: '&7Registered ghost: &a{id} &8| &7Setup mode does not collect rewards.'
+  registered: '&fGhost &a{id} &fregistered. &a{active}&7/&a{total} &fheads placed.'
+  moved: '&fGhost &a{id} &fmoved. Existing finds keep the same ID.'
+  removed: '&fGhost &a{id} &funregistered. &7The decorative head remains in the world.'
+  protected-admin: '&7This hunt head or its support is protected. Use /hunt remove first.'
+  head-count: '&fRegistered ghosts: &a{active}&7/&a{total}'
+  ready: '&aReady. &fReward: 1 virtual &d{key} &fkey per find. &a{active}&7/&a{total} &fheads registered.'
+  reloaded: '&aHunt settings reloaded. Setup modes have been switched off.'
+  reset: '&fReset &a{count} &ffinds for &a{player}&f. &7Existing keys were not changed.'
+  confirmed: '&fConfirmed ghost &a{id} &ffor &a{player}&f. &7No additional key was given.'

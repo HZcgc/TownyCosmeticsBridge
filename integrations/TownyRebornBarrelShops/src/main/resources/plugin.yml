@@ -1,0 +1,14 @@
+name: TownyRebornBarrelShops
+version: 1.0.1
+main: com.townyreborn.barrelshops.TownyRebornBarrelShops
+api-version: '1.20'
+depend: [QuickShop-Hikari, BiggerBarrels]
+description: Connects QuickShop stock and transactions to BiggerBarrels inventories.
+commands:
+  trbarrelshops:
+    description: Show barrel shop integration status or refresh stock signs.
+    usage: /trbarrelshops [status|refresh]
+    permission: townyreborn.barrelshops.admin
+permissions:
+  townyreborn.barrelshops.admin:
+    default: op

@@ -1,0 +1,14 @@
+name: TownyRebornLoot
+version: 1.0.1
+main: com.townyreborn.loot.TownyRebornLoot
+api-version: '1.21'
+depend: [ItemsAdder, ExcellentCrates, ExcellentEnchants]
+description: Enchanted ItemsAdder loot with ExcellentCrates 7 opening guards.
+author: Towny Reborn
+commands:
+  trloot:
+    permission: townyreborn.loot.admin
+    usage: /trloot give <player> <profile> | relics <player> | reset | status | reload
+permissions:
+  townyreborn.loot.admin:
+    default: op

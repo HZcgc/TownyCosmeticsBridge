@@ -1,6 +1,7 @@
 package net.townysmp.cosmetics;
 
 import java.lang.reflect.Method;
+import com.townyreborn.compat.ExcellentCrates7;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,12 +28,14 @@ public final class TownyCosmeticsBridge extends JavaPlugin {
    private final AtomicLong rewardNameGeneration = new AtomicLong();
    private Plugin ultraCosmetics;
    private Plugin excellentCrates;
+   private ExcellentCrates7 cratesApi;
 
    public void onEnable() {
       this.ultraCosmetics = this.getServer().getPluginManager().getPlugin("UltraCosmetics");
       this.excellentCrates = this.getServer().getPluginManager().getPlugin("ExcellentCrates");
       if (this.ultraCosmetics != null && this.excellentCrates != null) {
          try {
+            this.cratesApi = new ExcellentCrates7(this.excellentCrates);
             this.validateUltraCosmeticsProfileApi();
             this.setExcellentCratesRewardName("<#ff55ff><b>Random</b></#ff55ff> <#55ff55><b>Cosmetic</b></#55ff55>");
             this.getLogger().info("Profile-based cosmetic rewards and Patron compensation are active.");
@@ -215,13 +218,20 @@ public final class TownyCosmeticsBridge extends JavaPlugin {
       this.getLogger().severe("Could not process a cosmetic reward for " + var1.getName() + ": " + var2.getMessage());
    }
 
-   private boolean giveVirtualKey(Player var1, String var2, String var3) {
-      boolean var4 = this.getServer().dispatchCommand(this.getServer().getConsoleSender(), "crates key give " + var1.getName() + " " + var2 + " 1 -sf");
-      if (!var4) {
-         this.getLogger().severe("Could not grant the virtual " + var3 + " for " + var1.getName() + ".");
+   private boolean giveVirtualKey(Player player, String id, String label) {
+      try {
+         Object key = this.cratesApi.virtualKey(id);
+         int before = this.cratesApi.keyBalance(player, key);
+         if (before < 0 || before == Integer.MAX_VALUE) throw new IllegalStateException("Invalid key balance");
+         this.cratesApi.giveOneKey(player, key);
+         if (this.cratesApi.keyBalance(player, key) != before + 1) {
+            throw new IllegalStateException("Key balance did not increase by one");
+         }
+         return true;
+      } catch (ReflectiveOperationException | RuntimeException error) {
+         this.getLogger().severe("Could not grant " + label + " for " + player.getName() + ": " + error.getMessage());
+         return false;
       }
-
-      return var4;
    }
 
    private void showRewardName(String var1) {
@@ -245,19 +255,8 @@ public final class TownyCosmeticsBridge extends JavaPlugin {
       });
    }
 
-   private void setExcellentCratesRewardName(String var1) throws ReflectiveOperationException {
-      Object var2 = this.excellentCrates.getClass().getMethod("getCrateManager").invoke(this.excellentCrates);
-      Object var3 = var2.getClass().getMethod("getCrateById", String.class).invoke(var2, "cosmetic");
-      if (var3 == null) {
-         throw new IllegalStateException("Missing ExcellentCrates crate: cosmetic");
-      }
-
-      Object var4 = var3.getClass().getMethod("getReward", String.class).invoke(var3, "random_cosmetic");
-      if (var4 == null) {
-         throw new IllegalStateException("Missing ExcellentCrates reward: random_cosmetic");
-      }
-
-      var4.getClass().getMethod("setName", String.class).invoke(var4, var1);
+   private void setExcellentCratesRewardName(String name) throws ReflectiveOperationException {
+      if (this.cratesApi != null) this.cratesApi.setRewardName(CRATE_ID, REWARD_ID, name);
    }
 
    private static Method findCompatibleMethod(Class<?> var0, String var1, Object... var2) throws NoSuchMethodException {

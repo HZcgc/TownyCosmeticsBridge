@@ -1,14 +1,14 @@
-name: Build and release
+name: Build plugins and regression tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'codex/**' ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -22,29 +22,17 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
-          cache: maven
 
-      - name: Build against Paper 26.2
-        run: mvn --batch-mode --no-transfer-progress clean verify
+      - name: Build five plugins and patched QuickShop; run regression tests
+        run: |
+          python3 -m pip install PyYAML==6.0.2
+          python3 tools/build.py
+          python3 -m unittest discover -s tests -p 'test_*.py'
 
-      - name: Upload plugin JAR
+      - name: Upload plugin JARs
         uses: actions/upload-artifact@v4
         with:
-          name: TownyCosmeticsBridge-1.2.1-Paper-26.2
-          path: target/TownyCosmeticsBridge-1.2.1.jar
+          name: TownyReborn-Plugin-Update-2026-10-10
+          path: dist/*
           if-no-files-found: error
 
-      - name: Publish GitHub release
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: v1.2.1
-          JAR: target/TownyCosmeticsBridge-1.2.1.jar
-        run: |
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "$JAR" --clobber
-          else
-            gh release create "$TAG" "$JAR" \
-              --title "TownyCosmeticsBridge 1.2.1" \
-              --generate-notes
-          fi

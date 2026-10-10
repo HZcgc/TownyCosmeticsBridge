@@ -1,0 +1,3 @@
+# Visibility applies only to /trcrate models, never globally to NPCs or pets.
+# Bounded to 32..160 blocks. Unloaded chunks are not kept alive.
+render-distance: 96

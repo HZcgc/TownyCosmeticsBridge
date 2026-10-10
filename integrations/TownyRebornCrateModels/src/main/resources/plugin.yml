@@ -1,0 +1,16 @@
+name: TownyRebornCrateModels
+version: 1.0.3
+main: com.townyreborn.cratemodels.TownyRebornCrateModels
+api-version: '1.21'
+author: Towny Reborn
+description: Fixed animated ModelEngine crates with native ExcellentCrates interactions.
+depend: [ModelEngine, ExcellentCrates]
+commands:
+  trcrate:
+    description: Place and manage animated crate models.
+    usage: /trcrate place <crate> <model> | remove <placement> | animate <placement> | list | models | status | reload
+    permission: townyreborn.cratemodels.admin
+permissions:
+  townyreborn.cratemodels.admin:
+    description: Place and remove animated crate models.
+    default: op

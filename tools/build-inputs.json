@@ -1,0 +1,66 @@
+{
+  "paper-api.jar": {
+    "url": "https://repo.papermc.io/repository/maven-public/io/papermc/paper/paper-api/26.2.build.121-stable/paper-api-26.2.build.121-stable.jar",
+    "sha256": "fe0aa0caadeb98242b7b8b94d6a15f6dc465557e47ab9074f4b0329f3a457f83"
+  },
+  "paper-bundle.jar": {
+    "url": "https://fill-data.papermc.io/v1/objects/7b7b3b43c009103e1971a0576c26f655a7dd9b56a0a2a4438e352c03a7fecd08/paper-26.2-123.jar",
+    "sha256": "7b7b3b43c009103e1971a0576c26f655a7dd9b56a0a2a4438e352c03a7fecd08"
+  },
+  "ExcellentCrates.jar": {
+    "url": "https://hangar.papermc.io/api/v1/projects/NightExpress/ExcellentCrates/versions/7.1.0/PAPER/download",
+    "sha256": "8cbb21b8273dce49bca451fee25c58f5e0f7cee04015c14dd550500cf7f36470"
+  },
+  "nightcore.jar": {
+    "url": "https://hangar.papermc.io/api/v1/projects/NightExpress/nightcore/versions/2.16.7/PAPER/download",
+    "sha256": "645c643635ef0add0e38fa82cf6609a2350b5ea28e257ab2fc93a017864bc301"
+  },
+  "QuickShop.jar": {
+    "url": "https://github.com/QuickShop-Community/QuickShop-Hikari/releases/download/6.3.0.3/QuickShop-Hikari-6.3.0.3.jar",
+    "sha256": "eb65b63d803b2c61be6827f803572ba71f56bbad9f1cd5959b9b746df0669c3a"
+  },
+  "PlaceholderAPI.jar": {
+    "url": "https://repo.extendedclip.com/releases/me/clip/placeholderapi/2.12.3/placeholderapi-2.12.3.jar",
+    "sha256": "8abc7422e2db496a35b7df0e8a9a1facf2938d1169c7ff43bde8635bc9902406"
+  },
+  "junit-platform-console-standalone.jar": {
+    "url": "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-console-standalone/1.12.2/junit-platform-console-standalone-1.12.2.jar",
+    "sha256": "329bd10288875a74d04c9ca6b7c9889c265ddf87b21a9ea42a7f7392f391472a"
+  },
+  "mockito-core.jar": {
+    "url": "https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.21.0/mockito-core-5.21.0.jar",
+    "sha256": "03db23de742cbca42aa3d6127fdace560fac37b036d931870801f84c288bd286"
+  },
+  "byte-buddy.jar": {
+    "url": "https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy/1.18.3/byte-buddy-1.18.3.jar",
+    "sha256": "d78396e3c5bce3f2865c9186647481e5589d34cacc632484715b686108d17c66"
+  },
+  "byte-buddy-agent.jar": {
+    "url": "https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-agent/1.18.3/byte-buddy-agent-1.18.3.jar",
+    "sha256": "3d4c6ff9a441306969ec223db1b37e986788f0b9e077be2a39e2fbbfc11b04e0"
+  },
+  "objenesis.jar": {
+    "url": "https://repo.maven.apache.org/maven2/org/objenesis/objenesis/3.4/objenesis-3.4.jar",
+    "sha256": "95488102feaf2e2858adf6b299353677dac6c15294006f8ed1c5556f8e3cd251"
+  },
+  "log4j-api.jar": {
+    "url": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-api/2.25.1/log4j-api-2.25.1.jar",
+    "sha256": "20b9c77c0a9e54d1063a39e551dcaf98c7d8e7a4994648f84d0b9e14c71f7215"
+  },
+  "slf4j-api.jar": {
+    "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar",
+    "sha256": "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832"
+  },
+  "guava.jar": {
+    "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.8-jre/guava-33.4.8-jre.jar",
+    "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+  },
+  "failureaccess.jar": {
+    "url": "https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar",
+    "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb"
+  },
+  "gson.jar": {
+    "url": "https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar",
+    "sha256": "dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0"
+  }
+}

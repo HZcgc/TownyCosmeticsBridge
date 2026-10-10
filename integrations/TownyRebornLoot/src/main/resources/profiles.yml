@@ -1,0 +1,749 @@
+profiles:
+  ghost_axe:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_axe
+    material: NETHERITE_AXE
+    name: Ghost Axe
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:efficiency: 7
+      minecraft:sharpness: 8
+      minecraft:silk_touch: 1
+      excellentenchants:telekinesis: 1
+      excellentenchants:glassbreaker: 1
+    description: Collect timber directly and break glass instantly.
+    collection: Halloween 2026
+    glint: true
+  ghost_bow:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_bow
+    material: BOW
+    name: Ghost Bow
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:power: 5
+      minecraft:flame: 1
+      excellentenchants:sniper: 1
+    description: Fast, flaming arrows.
+    collection: Halloween 2026
+    glint: true
+  ghost_chest:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_chest
+    material: PAPER
+    name: Ghost Chest
+    enchants: {}
+    description: ''
+    collection: Halloween 2026
+    glint: false
+  ghost_crossbow:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_crossbow
+    material: CROSSBOW
+    name: Ghost Crossbow
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:quick_charge: 3
+      minecraft:piercing: 4
+      excellentenchants:sniper: 1
+    description: Faster arrows with a quick reload.
+    collection: Halloween 2026
+    glint: true
+  ghost_fishing_rod:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_fishing_rod
+    material: FISHING_ROD
+    name: Ghost Fishing Rod
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:luck_of_the_sea: 4
+      minecraft:lure: 3
+      excellentenchants:river_master: 3
+      excellentenchants:seasoned_angler: 2
+    description: Longer cast and +20% Minecraft fishing XP.
+    collection: Halloween 2026
+    glint: true
+  ghost_helmet:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_helmet
+    material: PAPER
+    name: Ghost Headpiece
+    enchants: {}
+    description: ''
+    collection: Halloween 2026
+    glint: false
+  ghost_hoe:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_hoe
+    material: NETHERITE_HOE
+    name: Ghost Hoe
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:efficiency: 7
+      excellentenchants:replanter: 1
+      excellentenchants:telekinesis: 1
+    description: Replant your crops and collect the harvest directly.
+    collection: Halloween 2026
+    glint: true
+  ghost_key:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_key
+    material: PAPER
+    name: Ghost Key
+    enchants: {}
+    description: ''
+    collection: Halloween 2026
+    glint: false
+  ghost_mace:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_mace
+    material: MACE
+    name: Ghost Mace
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:density: 6
+      minecraft:wind_burst: 3
+      minecraft:fire_aspect: 2
+    description: Heavy smash attacks with Wind Burst.
+    collection: Halloween 2026
+    glint: true
+  ghost_pickaxe:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_pickaxe
+    material: NETHERITE_PICKAXE
+    name: Ghost Pickaxe
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:efficiency: 7
+      minecraft:fortune: 4
+      excellentenchants:telekinesis: 1
+    description: Mined drops go straight to your inventory.
+    collection: Halloween 2026
+    glint: true
+  ghost_shield:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_shield
+    material: SHIELD
+    name: Ghost Shield
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+    description: A durable shield for your Halloween adventures.
+    collection: Halloween 2026
+    glint: true
+  ghost_shovel:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_shovel
+    material: NETHERITE_SHOVEL
+    name: Ghost Shovel
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:efficiency: 7
+      minecraft:fortune: 4
+      excellentenchants:smelter: 1
+      excellentenchants:telekinesis: 1
+    description: 20% chance to smelt drops, including sand into glass. Sneak to disable smelting.
+    collection: Halloween 2026
+    glint: true
+  ghost_spear:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_spear
+    material: NETHERITE_SWORD
+    name: Ghost Spear
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:sharpness: 8
+      minecraft:looting: 3
+      minecraft:sweeping_edge: 3
+      excellentenchants:decapitator: 1
+      excellentenchants:bane_of_netherspawn: 2
+    description: A powerful blade with a chance to collect mob heads.
+    collection: Halloween 2026
+    glint: true
+  ghost_staff:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_staff
+    material: NETHERITE_SWORD
+    name: Ghost Staff
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:sharpness: 8
+      minecraft:looting: 3
+      minecraft:sweeping_edge: 3
+      excellentenchants:decapitator: 1
+      excellentenchants:bane_of_netherspawn: 2
+    description: A powerful blade with a chance to collect mob heads.
+    collection: Halloween 2026
+    glint: true
+  ghost_sword:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_sword
+    material: NETHERITE_SWORD
+    name: Ghost Sword
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:sharpness: 8
+      minecraft:looting: 3
+      minecraft:sweeping_edge: 3
+      excellentenchants:decapitator: 1
+      excellentenchants:bane_of_netherspawn: 2
+    description: A powerful blade with a chance to collect mob heads.
+    collection: Halloween 2026
+    glint: true
+  ghost_trident:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_trident
+    material: TRIDENT
+    name: Ghost Trident
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:impaling: 5
+      minecraft:loyalty: 3
+      minecraft:channeling: 1
+    description: Returns to you and channels lightning in storms.
+    collection: Halloween 2026
+    glint: true
+  ghost_wings:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghost_wings
+    material: PAPER
+    name: Ghost Wings
+    enchants: {}
+    description: ''
+    collection: Halloween 2026
+    glint: false
+  ghost_armor_boots:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghostboots
+    material: NETHERITE_BOOTS
+    name: Ghost Armor Boots
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:protection: 5
+      minecraft:feather_falling: 4
+      minecraft:depth_strider: 3
+      minecraft:soul_speed: 3
+      excellentenchants:lightweight: 1
+    description: Safe steps on farmland and turtle eggs.
+    collection: Halloween 2026
+    glint: true
+  ghost_armor_chestplate:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghostchestplate
+    material: NETHERITE_CHESTPLATE
+    name: Ghost Armor Chestplate
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:protection: 5
+      excellentenchants:hardened: 1
+    description: 6% chance for Resistance I for 3 seconds when damaged.
+    collection: Halloween 2026
+    glint: true
+  ghost_armor_helmet:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghosthelmet
+    material: NETHERITE_HELMET
+    name: Ghost Armor Helmet
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:protection: 5
+      minecraft:respiration: 3
+      minecraft:aqua_affinity: 1
+      excellentenchants:night_vision: 1
+      excellentenchants:water_breathing: 1
+    description: Night vision and water breathing while worn.
+    collection: Halloween 2026
+    glint: true
+  ghost_armor_leggings:
+    itemsadder: plny_halloween_ghost_set:plny_halloween_ghostleggings
+    material: NETHERITE_LEGGINGS
+    name: Ghost Armor Leggings
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:protection: 5
+      minecraft:swift_sneak: 3
+      excellentenchants:elemental_protection: 2
+    description: 6% less elemental and potion damage.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_axe:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_axe
+    material: NETHERITE_AXE
+    name: Pumpkin Axe
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:efficiency: 7
+      minecraft:sharpness: 8
+      minecraft:silk_touch: 1
+      excellentenchants:telekinesis: 1
+      excellentenchants:glassbreaker: 1
+    description: Collect timber directly and break glass instantly.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_bow:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_bow
+    material: BOW
+    name: Pumpkin Bow
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:power: 5
+      minecraft:flame: 1
+      excellentenchants:sniper: 1
+    description: Fast, flaming arrows.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_chest:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_chest
+    material: PAPER
+    name: Pumpkin Chest
+    enchants: {}
+    description: ''
+    collection: Halloween 2026
+    glint: false
+  pumpkin_crossbow:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_crossbow
+    material: CROSSBOW
+    name: Pumpkin Crossbow
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:quick_charge: 3
+      minecraft:multishot: 1
+      excellentenchants:sniper: 1
+    description: Faster arrows with a quick reload.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_fishing_rod:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_fishing_rod
+    material: FISHING_ROD
+    name: Pumpkin Fishing Rod
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:luck_of_the_sea: 4
+      minecraft:lure: 3
+      excellentenchants:river_master: 2
+      excellentenchants:seasoned_angler: 2
+    description: Longer cast and +20% Minecraft fishing XP.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_hammer:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_hammer
+    material: MACE
+    name: Pumpkin Hammer
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:density: 6
+      minecraft:wind_burst: 3
+      minecraft:fire_aspect: 2
+    description: Heavy smash attacks with Wind Burst.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_helmet:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_helmet
+    material: PAPER
+    name: Pumpkin Headpiece
+    enchants: {}
+    description: ''
+    collection: Halloween 2026
+    glint: false
+  pumpkin_hoe:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_hoe
+    material: NETHERITE_HOE
+    name: Pumpkin Hoe
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:efficiency: 7
+      excellentenchants:replanter: 1
+      excellentenchants:telekinesis: 1
+    description: Replant your crops and collect the harvest directly.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_key:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_key
+    material: PAPER
+    name: Pumpkin Key
+    enchants: {}
+    description: ''
+    collection: Halloween 2026
+    glint: false
+  pumpkin_mace:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_mace
+    material: MACE
+    name: Pumpkin Mace
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:density: 6
+      minecraft:wind_burst: 3
+      minecraft:fire_aspect: 2
+    description: Heavy smash attacks with Wind Burst.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_pickaxe:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_pickaxe
+    material: NETHERITE_PICKAXE
+    name: Pumpkin Pickaxe
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:efficiency: 7
+      minecraft:fortune: 4
+      excellentenchants:telekinesis: 1
+    description: Mined drops go straight to your inventory.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_scythe:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_scythe
+    material: NETHERITE_SWORD
+    name: Pumpkin Scythe
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:sharpness: 8
+      minecraft:looting: 3
+      minecraft:sweeping_edge: 3
+      excellentenchants:decapitator: 1
+      excellentenchants:village_defender: 2
+    description: A powerful blade with a chance to collect mob heads.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_shield:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_shield
+    material: SHIELD
+    name: Pumpkin Shield
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+    description: A durable shield for your Halloween adventures.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_shovel:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_shovel
+    material: NETHERITE_SHOVEL
+    name: Pumpkin Shovel
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:efficiency: 7
+      minecraft:fortune: 4
+      excellentenchants:smelter: 1
+      excellentenchants:telekinesis: 1
+    description: 20% chance to smelt drops, including sand into glass. Sneak to disable smelting.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_spear:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_spear
+    material: NETHERITE_SWORD
+    name: Pumpkin Spear
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:sharpness: 8
+      minecraft:looting: 3
+      minecraft:sweeping_edge: 3
+      excellentenchants:decapitator: 1
+      excellentenchants:village_defender: 2
+    description: A powerful blade with a chance to collect mob heads.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_staff:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_staff
+    material: NETHERITE_SWORD
+    name: Pumpkin Staff
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:sharpness: 8
+      minecraft:looting: 3
+      minecraft:sweeping_edge: 3
+      excellentenchants:decapitator: 1
+      excellentenchants:village_defender: 2
+    description: A powerful blade with a chance to collect mob heads.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_sword:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_sword
+    material: NETHERITE_SWORD
+    name: Pumpkin Sword
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:sharpness: 8
+      minecraft:looting: 3
+      minecraft:sweeping_edge: 3
+      excellentenchants:decapitator: 1
+      excellentenchants:village_defender: 2
+    description: A powerful blade with a chance to collect mob heads.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_trident:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_trident
+    material: TRIDENT
+    name: Pumpkin Trident
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:impaling: 5
+      minecraft:riptide: 3
+    description: Ride the rain.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_wings:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_set_wings
+    material: PAPER
+    name: Pumpkin Wings
+    enchants: {}
+    description: ''
+    collection: Halloween 2026
+    glint: false
+  pumpkin_armor_boots:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_setboots
+    material: NETHERITE_BOOTS
+    name: Pumpkin Armor Boots
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:protection: 5
+      minecraft:feather_falling: 4
+      minecraft:depth_strider: 3
+      minecraft:soul_speed: 3
+      excellentenchants:lightweight: 1
+    description: Safe steps on farmland and turtle eggs.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_armor_chestplate:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_setchestplate
+    material: NETHERITE_CHESTPLATE
+    name: Pumpkin Armor Chestplate
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:protection: 5
+      excellentenchants:hardened: 1
+    description: 6% chance for Resistance I for 3 seconds when damaged.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_armor_helmet:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_sethelmet
+    material: NETHERITE_HELMET
+    name: Pumpkin Armor Helmet
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:protection: 5
+      minecraft:respiration: 3
+      minecraft:aqua_affinity: 1
+      excellentenchants:night_vision: 1
+      excellentenchants:water_breathing: 1
+    description: Night vision and water breathing while worn.
+    collection: Halloween 2026
+    glint: true
+  pumpkin_armor_leggings:
+    itemsadder: plny_halloween_pumpkin_set:plny_halloween_pumpkin_setleggings
+    material: NETHERITE_LEGGINGS
+    name: Pumpkin Armor Leggings
+    enchants:
+      minecraft:unbreaking: 5
+      minecraft:mending: 1
+      minecraft:protection: 5
+      minecraft:swift_sneak: 3
+      excellentenchants:elemental_protection: 2
+    description: 6% less elemental and potion damage.
+    collection: Halloween 2026
+    glint: true
+  deepwatch_crown:
+    material: DIAMOND_HELMET
+    name: Deepwatch Crown
+    collection: Relic Collection
+    description: See the depths. Explore the darkness.
+    enchants:
+      excellentenchants:night_vision: 1
+      excellentenchants:water_breathing: 1
+      minecraft:aqua_affinity: 1
+      minecraft:mending: 1
+      minecraft:protection: 4
+      minecraft:respiration: 3
+      minecraft:unbreaking: 3
+    glint: true
+  reborn_aegis:
+    material: DIAMOND_CHESTPLATE
+    name: Reborn Aegis
+    collection: Relic Collection
+    description: 6% chance for Resistance I for 3 seconds when damaged.
+    enchants:
+      minecraft:mending: 1
+      minecraft:protection: 4
+      minecraft:unbreaking: 3
+      excellentenchants:hardened: 1
+    glint: true
+  warden_legguards:
+    material: DIAMOND_LEGGINGS
+    name: Warden Legguards
+    collection: Relic Collection
+    description: 6% less elemental and potion damage. Swift Sneak III.
+    enchants:
+      minecraft:mending: 1
+      minecraft:protection: 4
+      minecraft:unbreaking: 3
+      excellentenchants:elemental_protection: 2
+      minecraft:swift_sneak: 3
+    glint: true
+  trailblazer_boots:
+    material: DIAMOND_BOOTS
+    name: Trailblazer Boots
+    collection: Relic Collection
+    description: Tread lightly. Leave your crops untouched.
+    enchants:
+      excellentenchants:lightweight: 1
+      minecraft:depth_strider: 3
+      minecraft:feather_falling: 4
+      minecraft:mending: 1
+      minecraft:protection: 4
+      minecraft:unbreaking: 3
+    glint: true
+  netherbane:
+    material: DIAMOND_SWORD
+    name: Netherbane
+    collection: Relic Collection
+    description: A blade forged to defend your home.
+    enchants:
+      excellentenchants:bane_of_netherspawn: 2
+      excellentenchants:village_defender: 2
+      minecraft:looting: 3
+      minecraft:mending: 1
+      minecraft:sharpness: 5
+      minecraft:sweeping_edge: 3
+      minecraft:unbreaking: 3
+    glint: true
+  lumberkeeper:
+    material: DIAMOND_AXE
+    name: Lumberkeeper
+    collection: Relic Collection
+    description: Gather timber. Clear glass with ease.
+    enchants:
+      excellentenchants:glassbreaker: 1
+      excellentenchants:telekinesis: 1
+      minecraft:efficiency: 5
+      minecraft:mending: 1
+      minecraft:unbreaking: 3
+    glint: true
+  deepvein:
+    material: DIAMOND_PICKAXE
+    name: Deepvein
+    collection: Relic Collection
+    description: Follow the vein. Gather its riches.
+    enchants:
+      excellentenchants:telekinesis: 1
+      minecraft:efficiency: 5
+      minecraft:fortune: 3
+      minecraft:mending: 1
+      minecraft:unbreaking: 3
+    glint: true
+  silkkeeper:
+    material: DIAMOND_PICKAXE
+    name: Silkkeeper
+    collection: Relic Collection
+    description: Preserve every block you collect.
+    enchants:
+      excellentenchants:telekinesis: 1
+      minecraft:efficiency: 5
+      minecraft:mending: 1
+      minecraft:silk_touch: 1
+      minecraft:unbreaking: 3
+    glint: true
+  earthshaper:
+    material: DIAMOND_SHOVEL
+    name: Earthshaper
+    collection: Relic Collection
+    description: Shape the land. Gather every drop.
+    enchants:
+      excellentenchants:telekinesis: 1
+      minecraft:efficiency: 5
+      minecraft:mending: 1
+      minecraft:unbreaking: 3
+    glint: true
+  harvestkeeper:
+    material: DIAMOND_HOE
+    name: Harvestkeeper
+    collection: Relic Collection
+    description: Plant again. Keep your harvest close.
+    enchants:
+      excellentenchants:replanter: 1
+      excellentenchants:telekinesis: 1
+      minecraft:efficiency: 5
+      minecraft:fortune: 3
+      minecraft:mending: 1
+      minecraft:unbreaking: 3
+    glint: true
+  farwatch:
+    material: BOW
+    name: Farwatch
+    collection: Relic Collection
+    description: A steady shot across the horizon.
+    enchants:
+      excellentenchants:sniper: 1
+      minecraft:mending: 1
+      minecraft:power: 5
+      minecraft:unbreaking: 3
+    glint: true
+  outrider:
+    material: CROSSBOW
+    name: Outrider
+    collection: Relic Collection
+    description: Fast reloads. Faster arrows.
+    enchants:
+      excellentenchants:sniper: 1
+      minecraft:mending: 1
+      minecraft:piercing: 4
+      minecraft:quick_charge: 3
+      minecraft:unbreaking: 3
+    glint: true
+  tidecaller:
+    itemsadder: ginko_fishermans_trail_icons_pack:master_rod
+    material: FISHING_ROD
+    name: Tidecaller
+    collection: Relic Collection
+    description: Longer cast and +20% Minecraft fishing XP.
+    enchants:
+      minecraft:unbreaking: 3
+      minecraft:mending: 1
+      minecraft:lure: 3
+      minecraft:luck_of_the_sea: 3
+      excellentenchants:river_master: 3
+      excellentenchants:seasoned_angler: 2
+    glint: true
+  reborn_bulwark:
+    material: SHIELD
+    name: Reborn Bulwark
+    collection: Relic Collection
+    description: Hold the line for Towny Reborn.
+    enchants:
+      minecraft:mending: 1
+      minecraft:unbreaking: 3
+    glint: true
+  beginner_fishing_rod:
+    itemsadder: ginko_fishermans_trail_icons_pack:beginner_fishing_rod
+    material: FISHING_ROD
+    name: Trail Beginner Rod
+    collection: Fishing Collection
+    description: A real fishing rod. Use it normally with PyroFishing.
+    enchants:
+      minecraft:unbreaking: 3
+      minecraft:lure: 1
+      minecraft:luck_of_the_sea: 1
+    glint: true
+  improved_fishing_rod:
+    itemsadder: ginko_fishermans_trail_icons_pack:improved_rod
+    material: FISHING_ROD
+    name: Trail Improved Rod
+    collection: Fishing Collection
+    description: A real fishing rod. Use it normally with PyroFishing.
+    enchants:
+      minecraft:unbreaking: 3
+      minecraft:mending: 1
+      minecraft:lure: 2
+      minecraft:luck_of_the_sea: 2
+      excellentenchants:river_master: 2
+      excellentenchants:seasoned_angler: 1
+    glint: true
