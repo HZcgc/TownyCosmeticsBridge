@@ -66,5 +66,13 @@
   "joml.jar": {
     "url": "https://repo.maven.apache.org/maven2/org/joml/joml/1.10.8/joml-1.10.8.jar",
     "sha256": "bf19510145178df82cd3bd37edd514c13f411531ec5545299fd3abcbc98fe7c2"
+  },
+  "LuckPermsAPI.jar": {
+    "url": "https://repo.maven.apache.org/maven2/net/luckperms/api/5.4/api-5.4.jar",
+    "sha256": "086e3971ea63c0b5ad567881b2dfd955acbbffa24fe85ceac8abf54b114ce986"
+  },
+  "VaultAPI.jar": {
+    "url": "https://jitpack.io/com/github/MilkBowl/VaultAPI/1.7/VaultAPI-1.7.jar",
+    "sha256": "47f6a400a8ab22012e6a320f7bfc63621ce4a246e1c60502ff7fc91d532d2601"
   }
 }

@@ -1,0 +1,19 @@
+# Prices are per pet, for a permanent unlock. The real store package price is
+# configured separately in the store dashboard; this is its in-game label.
+prefix: '&d&lTOWNY&a&lREBORN &8» &r'
+defaults:
+  ingame-price: 50000.0
+  store-price: 10.99
+  store-url: 'https://shop.townyreborn.com'
+  hologram-height: 2.5
+  hitbox-width: 1.8
+  hitbox-height: 2.0
+hologram:
+  lines:
+    - '&d{pet}'
+    - '&a{ingame_price} $ &8| &a{store_price} €'
+    - '&fRechtsklick zum Freischalten'
+  view-range: 2.5
+confirmation-timeout-seconds: 30
+# Only catalog entries explicitly added/placed by an admin are sold.
+# MCPets, MythicMobs, ModelEngine and ItemsAdder files are never modified.

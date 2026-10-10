@@ -23,7 +23,7 @@ jobs:
           distribution: temurin
           java-version: '25'
 
-      - name: Build Towny plugins, crate offsets, key display and patched QuickShop; run regression tests
+      - name: Build Towny plugins, crate offsets, key display, pet shops and patched QuickShop; run regression tests
         run: |
           python3 -m pip install PyYAML==6.0.2
           python3 tools/build.py

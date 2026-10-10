@@ -1,0 +1,18 @@
+name: TownyRebornPetShops
+version: '${project.version}'
+main: com.townyreborn.petshops.TownyRebornPetShops
+api-version: '1.21'
+author: Towny Reborn
+description: Clickable MCPets models on pedestals with holograms, Vault purchases and store grants.
+depend: [Citizens, LuckPerms, Vault]
+softdepend: [MCPets, ModelEngine, ItemsAdder, MythicMobs]
+commands:
+  trpetshop:
+    aliases: [petshop]
+    description: MCPets shop and NPC management.
+    usage: /trpetshop help
+permissions:
+  townyreborn.petshops.admin:
+    default: op
+  townyreborn.petshops.use:
+    default: true

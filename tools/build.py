@@ -98,6 +98,12 @@ def main():
         for path in [*jars, DIST / "SHA256SUMS", ROOT / "INSTALLATION.md"]:
             bundle.write(path, path.name)
     print("Build and tests passed. Files:", DIST)
+    pet_project = ROOT / "integrations/TownyRebornPetShops"
+    with zipfile.ZipFile(DIST / "TownyReborn-Petshops-1.0.0.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
+        bundle.write(DIST / "TownyRebornPetShops-1.0.0.jar", "plugins/TownyRebornPetShops-1.0.0.jar")
+        for name in ["config.yml", "pets.yml"]:
+            bundle.write(pet_project / "src/main/resources" / name, "plugins/TownyRebornPetShops/" + name)
+        bundle.write(pet_project / "README.md", "INSTALLATION.md")
 
 
 if __name__ == "__main__": main()

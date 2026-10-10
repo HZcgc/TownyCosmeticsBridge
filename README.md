@@ -11,6 +11,7 @@ This update restores the five supplied Towny plugins and the key display addon o
 | TownyRebornBarrelShops | 1.0.1 | QuickShop 6.3.0.3 and BiggerBarrels runtime adapter |
 | ExcellentCratesAddon | 2.2-ec7 | EC7 key counters; legacy hologram placeholders and an unformatted virtual-key total |
 | TownyRebornCrateOffsets | 1.0.0 | Per-crate X/Y/Z displacement of the native opening animation |
+| TownyRebornPetShops | 1.0.0 | MCPets models on pedestals, holograms, permanent Vault purchases and offline store grants |
 
 The four recovered projects are under `integrations/`. Source was recovered from the exact supplied JARs using CFR 0.152; only API compatibility and compilation corrections were applied. Existing settings, model placements, hunt player files and loot profiles are retained. Hunt continues to respect the configured `max-finds` (the supplied JAR defaults to 44).
 
@@ -26,7 +27,7 @@ python3 -m pip install PyYAML==6.0.2
 python3 -m unittest discover -s tests -p 'test_*.py'
 ```
 
-The build downloads pinned, SHA-256 verified dependencies using curl, compiles the Towny plugins, the key display addon and the wrapper patch, and runs twenty-two Java regression tests against the real EC7 and QuickShop interfaces and native animation and batch classes. Output JARs and their checksums are in `dist/`. GitHub Actions builds and publishes these as a downloadable workflow artifact. Maven project files are also provided; the QuickShop projects require the 6.3.0.3 release installed locally as `com.ghostchu.quickshop:quickshop-runtime:6.3.0.3`.
+The build downloads pinned, SHA-256 verified dependencies using curl, compiles the Towny plugins, the key display addon and the wrapper patch, and runs thirty-six Java regression tests covering the real EC7 and QuickShop interfaces, native animation and batch classes, and permanent pet purchases. Output JARs and their checksums are in `dist/`. GitHub Actions builds and publishes these as a downloadable workflow artifact. Maven project files are also provided; the QuickShop projects require the 6.3.0.3 release installed locally as `com.ghostchu.quickshop:quickshop-runtime:6.3.0.3`.
 
 `integrations/TownyRebornKeyDisplay` replaces Cyvertray_'s MIT-licensed ExcellentCratesAddon 2.1. Its old reflection calls silently returned zero after the EC7 API change. The replacement uses the public EC7 service, retains `%ec_keyz_<key-id>%` and `%ec_physicalkeyz_<key-id>%`, and survives PlaceholderAPI reloads. `%ec_totalkeys_daily,vote,patron,cosmetic%` sums the four virtual balances directly as a plain integer, including amounts over 999; it does not require the Math expansion. Counters read each viewer's current balance and never grant or consume keys. Replace the old addon JAR rather than installing both versions.
 
@@ -39,6 +40,12 @@ ExcellentCrates 7.1.0 does not expose a public animation-position setter or its 
 Private server configurations and player databases are deliberately excluded from this repository. The separate configuration overlay accompanies the server update package.
 
 `python3 tools/configure_ec7.py EXCELLENTCRATES DELUXEMENUS` updates copies of the two configuration folders for EC7.1. It enables native batches up to 20 for every crate, disables opening cooldowns that otherwise cap a batch at one, and provides all twenty amount buttons. Existing interaction cooldowns, reward quotas, weights, payouts, item payloads, locations and database settings are retained. Native EC skips the amount menu when only one opening is available. The four standard crates, their key/reward labels and a separate preview profile use Towny Reborn's pink/lime palette. Halloween keeps its own key/reward labels, hologram settings and original preview profile, and stays absent from the public DeluxeMenus crate menu. Menu preview/open commands use `crate preview ID PLAYER` and `crate open ID PLAYER`; balances use the existing key display addon. The tool also updates legacy key payouts elsewhere in DeluxeMenus while retaining their recipients and amounts. Apply the generated files with the server stopped; this tool never reads or writes player databases.
+
+## MCPets shops
+
+[Pet shop installation and commands](integrations/TownyRebornPetShops/README.md): stand on a pedestal and place the animated pet model with `/trpetshop place <MCPets-ID>`, configure its individual prices with `/trpetshop price <ID> 50000 10.99`, and its package link with `/trpetshop store <ID> https://shop.example.com/package/123`. The ingame purchase uses Vault, asks for confirmation, and saves a single permanent MCPets permission through LuckPerms. Console-only `trpetshop grant {id} <MCPets-ID> {transaction}` supports offline Tebex delivery. This addon does not modify UltraCosmetics or crate rewards. Generic builds begin with an empty catalog; add or place only the MCPets you wish to sell.
+
+`tools/configure_pet_interactions.py` prepares a two-file overlay from current MCPets/MythicMobs config copies: right-click plays the existing animation; sneak-right-click opens the native MCPets interaction menu. It retains the other settings and animation mechanics and validates both inputs before writing. The pet shop README includes the command and the settings for future pet skills.
 
 ## Cosmetics bridge
 

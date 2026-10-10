@@ -1,0 +1,5 @@
+# /trpetshop add <MCPets-ID> reads the existing MCPets definition.
+# /trpetshop place <MCPets-ID> can add it and place a modeled Citizens NPC.
+# Each entry can override ingame-price, store-price, store-url, model,
+# icon-item-model, idle-animation, hologram-height and hitbox dimensions.
+pets: {}
