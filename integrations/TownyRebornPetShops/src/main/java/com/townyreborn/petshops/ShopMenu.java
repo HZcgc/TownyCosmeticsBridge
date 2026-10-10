@@ -17,29 +17,29 @@ final class ShopMenu implements InventoryHolder {
     ShopMenu(Player player, PetCatalog.Pet pet, boolean confirmation, boolean owned, long timeoutSeconds) {
         this.player=player.getUniqueId(); this.pet=pet.id(); this.confirmation=confirmation; this.price=pet.price();
         expires=System.currentTimeMillis()+timeoutSeconds*1000;
-        inventory=Bukkit.createInventory(this,27,color(confirmation ? "&dKauf bestätigen" : "&d&lTOWNY&a&lREBORN &8| &dPets"));
+        inventory=Bukkit.createInventory(this,27,color(confirmation ? "&dConfirm purchase" : "&d&lTOWNY&a&lREBORN &8| &dPets"));
         ItemStack glass=item(Material.GRAY_STAINED_GLASS_PANE," ");
         for (int i=0;i<27;i++) inventory.setItem(i,glass);
-        ItemStack icon=item(Material.PAPER,"&d"+pet.name(),"&7Einmal freischalten, dauerhaft besitzen.");
+        ItemStack icon=item(Material.PAPER,"&d"+pet.name(),"&7Unlock once, own permanently.");
         if (!pet.iconModel().isBlank()) {
             var meta=icon.getItemMeta(); NamespacedKey key=NamespacedKey.fromString(pet.iconModel());
             if (key!=null) { meta.setItemModel(key); icon.setItemMeta(meta); }
         }
         inventory.setItem(13,icon);
         if (owned) {
-            inventory.setItem(11,item(Material.LIME_DYE,"&aBereits freigeschaltet","&7Dieses Pet gehört dir bereits."));
-            inventory.setItem(15,item(Material.BOOK,"&aMeine Pets öffnen","&7Klicken, um das MCPets-Menü zu öffnen."));
+            inventory.setItem(11,item(Material.LIME_DYE,"&aAlready unlocked","&7You already own this pet."));
+            inventory.setItem(15,item(Material.BOOK,"&aOpen my pets","&7Click to open the MCPets menu."));
         } else if (confirmation) {
-            inventory.setItem(11,item(Material.LIME_CONCRETE,"&aFür "+money(pet.price())+" $ kaufen",
-                "&7Pet: &f"+pet.name(),"&7Einmaliger Kauf. Das Geld wird jetzt abgezogen."));
-            inventory.setItem(15,item(Material.RED_CONCRETE,"&cAbbrechen","&7Zurück zur Auswahl."));
+            inventory.setItem(11,item(Material.LIME_CONCRETE,"&aBuy for "+money(pet.price())+" $",
+                "&7Pet: &f"+pet.name(),"&7One-time purchase. The money will be taken now."));
+            inventory.setItem(15,item(Material.RED_CONCRETE,"&cCancel","&7Return to the buying options."));
         } else {
-            inventory.setItem(11,item(Material.EMERALD,"&aMit Ingame-Geld kaufen",
-                "&7Preis: &a"+money(pet.price())+" $","&7Klicken zur Kaufbestätigung."));
-            inventory.setItem(15,item(pet.storeUrl().isBlank()?Material.BARRIER:Material.SUNFLOWER,"&dIm Store kaufen",
-                "&7Preis: &a"+euros(pet.storePrice())+" €",pet.storeUrl().isBlank()?"&7Shop-Link noch nicht eingerichtet.":"&7Klicken für den Shop-Link im Chat."));
+            inventory.setItem(11,item(Material.EMERALD,"&aBuy with in-game money",
+                "&7Price: &a"+money(pet.price())+" $","&7Click to confirm your purchase."));
+            inventory.setItem(15,item(pet.storeUrl().isBlank()?Material.BARRIER:Material.SUNFLOWER,"&dBuy on Tebex",
+                "&7Price: &a"+euros(pet.storePrice())+" €",pet.storeUrl().isBlank()?"&7Tebex link has not been configured yet.":"&7Click to receive the Tebex link in chat."));
         }
-        inventory.setItem(22,item(Material.BARRIER,"&cSchließen"));
+        inventory.setItem(22,item(Material.BARRIER,"&cClose"));
     }
     static ItemStack item(Material material, String name, String... lore) {
         var stack=new ItemStack(material); var meta=stack.getItemMeta();
@@ -47,10 +47,10 @@ final class ShopMenu implements InventoryHolder {
     }
     static Component color(String text) { return LegacyComponentSerializer.legacyAmpersand().deserialize(text.replace('§','&')); }
     static String money(double n) {
-        var f=java.text.NumberFormat.getNumberInstance(Locale.GERMANY); f.setMaximumFractionDigits(2); return f.format(n);
+        var f=java.text.NumberFormat.getNumberInstance(Locale.US); f.setMaximumFractionDigits(2); return f.format(n);
     }
     static String euros(double n) {
-        var f=java.text.NumberFormat.getNumberInstance(Locale.GERMANY); f.setMinimumFractionDigits(2); f.setMaximumFractionDigits(2); return f.format(n);
+        var f=java.text.NumberFormat.getNumberInstance(Locale.US); f.setMinimumFractionDigits(2); f.setMaximumFractionDigits(2); return f.format(n);
     }
     @Override public Inventory getInventory() { return inventory; }
 }

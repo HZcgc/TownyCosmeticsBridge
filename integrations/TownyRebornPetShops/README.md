@@ -1,127 +1,119 @@
-# Towny Reborn Petshops auf Podesten
+# Towny Reborn pedestal pet shops — 1.2.0
 
-Das auf einem Podest ausgestellte **3D-Petmodell** mit Hologramm öffnet beim Anklicken die Auswahl zwischen einem dauerhaften Kauf für **50.000 $** und dem **10,99-€-Store-Paket**. Der Ingame-Kauf benötigt eine zweite Bestätigung. Preis, Store-Link, ModelEngine-Modell, Icon und Hologrammhöhe sind pro Pet einstellbar; weitere Pets können über ihre vorhandene MCPets-ID hinzugefügt werden.
+Place the animated **3D pet model** on a pedestal with an English hologram. **Right-click** plays its interaction animation; **left-click** opens the choice between a permanent unlock for **75,000 $** and a **10.99 € Tebex package**. The in-game option asks for a second confirmation before payment. Models use a configurable **64-block render distance** and turn toward the nearest visible player within **8 blocks**.
 
-Neue MCPets-Definitionen in `plugins/MCPets/Pets` werden standardmäßig alle **15 Sekunden** im Hintergrund erkannt. `add`, `place` und `bind` lesen neue Definitionen auch sofort ein. Beim Anlegen eines Angebots entsteht automatisch `plugins/TownyRebornPetShops/shops/<Pet-ID>.yml`, einschließlich des fertigen Tebex-Konsolenbefehls. Für neue Pets ist keine Codeänderung und kein Petshop-Neustart nötig.
+Only native MCPets permissions are unlocked. UltraCosmetics and cosmetic crate rewards are unchanged. The shop plays ModelEngine animation clips without running MythicMobs combat skills. Prices, package links, models, icons, hologram heights and interaction animations are configurable per pet.
 
-Nur MCPets-Berechtigungen werden freigeschaltet. UltraCosmetics und der Cosmetic-Crate werden nicht verändert. Shop-NPCs zeigen das Pet-Modell mit seiner Idle-Animation. MythicMobs-Kampffähigkeiten werden am Shop-NPC nicht ausgeführt. Die Modell- und Resourcepack-Dateien bleiben bestehen.
+## Install or update
 
-## Eigene Pets anklicken
+1. Use Paper 26.2 / Java 25, Citizens, LuckPerms and Vault. Models also require MCPets, MythicMobs, ModelEngine and the matching ItemsAdder resource pack. A Vault economy provider such as EssentialsX is needed for in-game payments. The model adapter is verified against ModelEngine R4.1.0.
+2. Stop the server and replace the old pet shop JAR with `plugins/TownyRebornPetShops-1.2.0.jar` from this ZIP. Keep only one pet shop JAR. **Keep the existing `plugins/TownyRebornPetShops` data folder**, especially `shops`, `npcs.yml` and `transactions.yml`. The `examples` folder is for reference; do not copy it over live data.
+3. Start normally and check `/trpetshop status` and `/trpetshop list`. Existing pedestal bindings are reused. Legacy 50,000-dollar offers and the old default price migrate once to 75,000. Other custom prices, links, store prices, models, heights and payment records are retained. The shipped German click instruction becomes English; custom hologram lines remain available for editing.
+4. For a new pedestal, stand where its model should appear and run `/trpetshop place <MCPets-ID>`. The plugin creates a protected invisible Citizens carrier, adds the pet model and hologram, and prints the NPC ID, pet file path and Tebex console command.
+5. Set the matching package URL with `/trpetshop store <MCPets-ID> https://shop.example.com/package/123456`. The default link goes to the store homepage until a package link is configured. `off` disables the link.
 
-Bei einem beschworenen eigenen Pet spielt **Rechtsklick** die vorhandene Animation. **Shift + Rechtsklick** öffnet das native MCPets-Interaktionsmenü. Dafür verwendet MCPets diese Einstellungen:
+The addon creates no pedestal blocks and places no models at unknown locations. Citizens stores the position. Use `/npc select <NPC-ID>` and normal Citizens movement commands to move a model; the hologram follows. Both the NPC ID and UUID are checked so reused NPC numbers cannot acquire unrelated shop bindings.
 
-```yaml
-RightClickToOpenMenu: true
-LeftClickToOpenMenu: false
-SneakMode: true
-```
-
-Die fünf Interaktions-Skills der vier gelieferten Pets bekommen zusätzlich `TriggerConditions: [crouching false]`. Dadurch startet beim Öffnen des Menüs keine Animation. Beim Bone Dragon wird die fehlerhafte Bedingung `onground{} true cancel` durch `(onground && offgcd) true` ersetzt. Animationen, Sounds und ihre vorhandenen Cooldowns bleiben erhalten. Auf dem Verkaufspodest öffnet der Klick weiterhin die Kauf-Auswahl.
-
-Das vorbereitete Serverpaket enthält nur die geänderten `plugins/MCPets/config.yml` und `plugins/MythicMobs/skills/townyreborn_halloween_pets.yml` zusätzlich zum Shop-Addon. Bei gestopptem Server übernehmen und neu starten. Wer zwischenzeitlich seine Einstellungen geändert hat, kann aus aktuellen Kopien einen neuen Overlay erzeugen:
-
-```bash
-python3 tools/configure_pet_interactions.py \
-  --mcpets-config /backup/plugins/MCPets/config.yml \
-  --mythic-skills /backup/plugins/MythicMobs/skills/townyreborn_halloween_pets.yml \
-  --output /tmp/pet-interactions
-```
-
-Der Helfer erhält Kommentare und andere Einstellungen. Für zukünftige Pet-Animations-Skills dieselbe Trigger-Bedingung am Interaktions-Skill ergänzen. Primärquellen: [MCPets-Klick-Einstellungen](https://mcpets.gitbook.io/mcpets/tutorials/config-templates/config-file), [MythicMobs-TriggerConditions](https://wiki.mythiccraft.io/mythicmobs/Skills/Metaskills), [Crouching](https://wiki.mythiccraft.io/mythicmobs/skills/conditions/crouching).
-
-## Installation und NPCs
-
-1. Paper 26.2 / Java 25, Citizens, LuckPerms und Vault verwenden. Für funktionierende Pets außerdem MCPets, MythicMobs, ModelEngine und das passende ItemsAdder-Resourcepack. Ein Vault-Economy-Anbieter wie EssentialsX wird für Ingame-Käufe benötigt.
-2. `TownyRebornPetShops-1.1.0.jar` und bei der Erstinstallation den mitgelieferten Datenordner in `plugins` kopieren. Beim Update den Server stoppen, die alte Petshop-JAR ersetzen und den vorhandenen Datenordner behalten. Es darf nur eine Petshop-JAR installiert sein. Bestehende `config.yml`, `pets.yml`, `shops`, `npcs.yml` und `transactions.yml` bleiben erhalten.
-3. Normal starten und `/trpetshop status` sowie `/trpetshop list` prüfen. Ohne aktives MCPets-Plugin oder Economy-Anbieter werden keine Ingame-Käufe ausgeführt.
-4. Auf das vorbereitete Podest an die gewünschte Position stellen und `/trpetshop place <MCPets-ID>` ausführen. Das Addon übernimmt die MCPets-Definition, erstellt einen geschützten Citizens-NPC mit dem Pet-Modell und ergänzt das Hologramm. Im Chat werden die Pet-Datei und der konkrete Tebex-Befehl ausgegeben.
-5. Einen HTTPS-Link zum passenden Store-Paket mit `/trpetshop store <MCPets-ID> <Link>` setzen. Bis dahin führt der voreingestellte Link zur Store-Startseite. `off` deaktiviert den Store-Button.
-
-Es werden keine NPCs automatisch an unbekannten Positionen aufgestellt. Beispiel für die gelieferten Pets:
-
-```text
-/trpetshop place nm_bryborn_the_bone_dragon
-```
-
-Die aktuelle Spielerposition auf dem Podest wird verwendet. Das sichtbare Objekt ist das Pet selbst; der unsichtbare Citizens-Träger wird bereits vor dem Spawn ausgeblendet und ist unbeweglich. Das Addon baut oder ersetzt keine Podest-Blöcke. Die NPC-ID wird im Chat ausgegeben. Citizens speichert seine Position; nach `/npc select <ID>` kann der NPC mit den üblichen Citizens-Befehlen bewegt werden. Das Hologramm folgt ihm. Die Bindung speichert auch die NPC-UUID, damit wiederverwendete NPC-Nummern nicht versehentlich einen anderen NPC zum Shop machen.
-
-## Preise, Links und neue Pets
+## Commands and settings
 
 ```text
 /trpetshop add <MCPets-ID>
-/trpetshop price <MCPets-ID> 50000 10.99
+/trpetshop place <MCPets-ID>
+/trpetshop price <MCPets-ID> 75000 10.99
 /trpetshop store <MCPets-ID> https://shop.example.com/package/123456
 /trpetshop height <MCPets-ID> 2.8
-/trpetshop model <MCPets-ID> <ModelEngine-Modell-ID>
-/trpetshop place <MCPets-ID>
+/trpetshop model <MCPets-ID> <ModelEngine-model-ID>
+/trpetshop animation <MCPets-ID> <auto|animation-name|off>
+/trpetshop range 64
+/trpetshop open <MCPets-ID>
+/trpetshop reload
 ```
 
-`place` kann weitere NPCs für dasselbe Pet erstellen. Alternativ `/trpetshop bind <MCPets-ID> <NPC-ID>` für einen vorhandenen Citizens-NPC verwenden. Ohne NPC-ID wird der ausgewählte NPC verwendet. Sein bestehendes Modell bleibt erhalten; so lassen sich auch bereits mit ItemsAdder gestaltete Verkäufer einbinden. Bereits vorhandene Verkaufsbefehle des NPCs vorher entfernen.
+`place` can create several pedestals for the same pet. `/trpetshop bind <MCPets-ID> [NPC-ID]` links an existing Citizens NPC, or the currently selected one, and keeps its existing model. Remove previous sales commands on that NPC first. `/trpetshop remove <NPC-ID>` removes the binding and deletes addon-created NPCs; previously existing NPCs remain.
 
-`/trpetshop remove <NPC-ID>` entfernt die Shop-Verknüpfung. Vom Addon erstellte NPCs werden entfernt; zuvor vorhandene, lediglich gebundene NPCs bleiben stehen.
+`config.yml` controls default prices and English hologram lines. `npc.render-distance` accepts 16–256 blocks and sets Citizens tracking and the individual ModelEngine model's radius. Shop models get per-model occlusion overrides so pedestal blocks cannot hide the invisible carrier. Client visibility is also bounded by loaded chunks and client settings/resource packs. `npc.look-at-player-range` defaults to 8 blocks; `npc.update-interval-ticks` defaults to 4. Set the look range to 0 for a fixed orientation. `interaction.cooldown-seconds` defaults to 3; longer clips cannot restart before they finish.
 
-Grundeinstellungen stehen in `config.yml`, jedes Angebot in **`shops/<Pet-ID>.yml`**. Version 1.1 übernimmt bestehende Angebote aus `pets.yml` einmalig samt Preisen, Links, Modellen und Hologrammhöhen. Bereits vorhandene Einzeldateien haben Vorrang. Die alte Datei bleibt als Migrationshistorie bestehen; Änderungen an Angeboten danach in den Einzeldateien durchführen. Der Standardpreis gilt pro Pet und einmalig. Preise müssen positiv sein und höchstens zwei Nachkommastellen haben. Der im Addon angezeigte Store-Preis ändert **nicht** den echten Paketpreis im Store-Dashboard. Beispiel für die automatisch erzeugte Datei `shops/future_pet.yml`:
+`auto` selects a native interaction clip. The supplied pets use Bone Dragon `flap`, Clown `honk`, Mummy `crush` and Witch Cat `cauldron`. Use `animation` to choose another loaded clip, such as the Clown's `honkshot`, or disable it with `off`. The same setting works for future pets.
+
+Admin permission: `townyreborn.petshops.admin` (op by default). Player access: `townyreborn.petshops.use` (allowed by default). `/trpetshop help` lists the English commands. Reload closes purchase menus; a confirmation cannot charge an outdated price.
+
+## Individual pet files and future pets
+
+New MCPets definitions in `plugins/MCPets/Pets`, including subfolders, are discovered asynchronously every 15 seconds. `add`, `place` and `bind` read them immediately. Install and load a future pet's MCPets definition, MythicMobs mob, ModelEngine model and resource pack, then run `/trpetshop place <new-ID>`. No addon code change or restart is needed. Discovery alone does not create an offer or pedestal.
+
+Each offer creates **`plugins/TownyRebornPetShops/shops/<Pet-ID>.yml`**. The package URL and exact Tebex grant command live in the same file:
 
 ```yaml
 schema-version: 1
+offer-version: 2
 pet-id: future_pet
 enabled: true
 name: 'Future Pet'
 permission: 'pet.future'
 model: 'future_pet'
 icon-item-model: 'custom:heads/future_pet'
-ingame-price: 50000.0
+ingame-price: 75000.0
 store-price: 10.99
 store-url: 'https://shop.example.com/package/123456'
 hologram-height: 2.5
 hitbox-width: 1.8
 hitbox-height: 2.0
 idle-animation: idle
+interaction-animation: auto
 tebex:
   command: 'trpetshop grant {id} future_pet {transaction}'
   execution: SERVER_CONSOLE
   unlock: PERMANENT
 ```
 
-Das Pet muss in `plugins/MCPets/Pets` existieren. Seine Berechtigung wird dort gelesen; Wildcards und UltraCosmetics-Berechtigungen werden abgelehnt. `permission`, `pet-id`, `schema-version` und der `tebex`-Block werden vom Addon erzeugt. Der Store-Befehl führt keine frei konfigurierbaren Befehle aus, sondern schaltet genau das native MCPets-Permission-Node dauerhaft frei. Bei einer abweichenden Modell-ID `model` entsprechend setzen. Das Icon wird aus modernen MCPets-Itemdaten übernommen; Käufer erhalten keine Pet-Items.
+Edit prices, `store-url` or `interaction-animation` here and run `/trpetshop reload`. Positive prices must have at most two decimal places. The displayed store price does not change Tebex's actual price. Retain both version fields so later manual prices are not re-migrated.
 
-Für ein zukünftiges Pet dessen MCPets-Definition, MythicMobs-Mob, ModelEngine-Modell und Resourcepack installieren und in den jeweiligen Plugins laden. Danach reicht `/trpetshop place <neue-ID>`; ein vorheriges `add` oder Petshop-Reload ist nicht nötig. Der Petshop lädt keine Modelle oder neue Pets in fremden Plugins. Die Erkennung berücksichtigt auch Unterordner. Das Intervall steht in `discovery-interval-seconds` (5 bis 3600 Sekunden). Doppelte IDs oder ungültige Dateien ersetzen den letzten gültigen Katalog nicht. Neue Definitionen allein erstellen keine Angebote oder Podeste; die Platzierung bestimmt der Admin.
+The pet ID, native permission and Tebex block are generated from MCPets. Edited grant commands cannot execute arbitrary console commands. Wildcards and UltraCosmetics permissions are rejected. Icons are read from modern MCPets item components; purchases grant permanent access rather than an item. Invalid or duplicate definitions retain the last valid catalog. `discovery-interval-seconds` accepts 5–3600 seconds.
 
-Nach manuellen Änderungen `/trpetshop reload` verwenden. Aktive Kaufmenüs werden geschlossen. Alte Bestätigungen gelten bei geändertem Preis nicht mehr. `/trpetshop open <MCPets-ID>` öffnet das Kaufmenü auch per Befehl. Admin-Berechtigung: `townyreborn.petshops.admin` (op); Spielerzugriff: `townyreborn.petshops.use` (standardmäßig erlaubt).
+Legacy `pets.yml` offers migrate to individual files once; existing individual files take precedence. The old file remains as history. Edit offers afterward in `shops/<Pet-ID>.yml`.
 
-## Store-Anbindung
+## Tebex delivery
 
-Pro Pet im Store ein einmaliges Paket für **10,99 €** anlegen, höchstens einen Kauf pro Spieler erlauben und den Paket-Link im Addon eintragen. Als bei bestätigter Zahlung ausgeführten Konsolenbefehl ohne führenden Schrägstrich verwenden:
-
-In der automatisch angelegten `shops/<Pet-ID>.yml` steht der bereits auf dieses Pet zugeschnittene Befehl unter **`tebex.command`**. Diesen unverändert als Zahlungsbefehl für die Serverkonsole in dessen Tebex-Paket kopieren. Beispiel:
+Create a one-time **10.99 €** package per pet in Tebex, limit repeat purchases as appropriate, and copy its URL into `store-url`. Copy **`tebex.command`** from its generated pet file into the package as a payment command for the **server console**, without a leading slash:
 
 ```text
 trpetshop grant {id} <MCPets-ID> {transaction}
 ```
 
-Bei Tebex ist `{id}` die Minecraft-UUID. Auch UUIDs ohne Bindestriche werden akzeptiert. Bekannte Spielernamen funktionieren für manuelle Tests; im Store die UUID verwenden. Der Befehl ist nur für Serverkonsole beziehungsweise RCON erlaubt. Er funktioniert offline, speichert die einzelne Pet-Berechtigung dauerhaft und belastet kein Ingame-Konto. Wiederholte Store-Befehle sind idempotent.
+`{id}` is the Minecraft UUID; UUIDs without hyphens also work. Known player names are accepted for manual console tests. Delivery works offline, grants only that pet's permanent LuckPerms permission and never withdraws in-game money. Repeated delivery is idempotent. Configure the actual package and a test payment in the Tebex dashboard; the addon does not publish products.
 
-Eine manuelle Testzahlung im Store verwenden. Mit diesem Addon wurden keine Store-Pakete veröffentlicht: Paketpreis und endgültiger Paket-Link müssen im Store-Dashboard gesetzt werden. Ein HTTPS-Link darf `{player}` und `{uuid}` enthalten; Spielernamen werden URL-kodiert. Der Store-Button sendet einen klickbaren Link im Chat, den der Minecraft-Client nach dem Klick im Browser öffnet.
+HTTPS links may contain `{player}` and `{uuid}`; names are URL-encoded. The Tebex option sends a clickable chat link, which the Minecraft client opens in a browser after the player clicks it.
 
-Primärquellen: [MCPets-Berechtigungen](https://mcpets.gitbook.io/mcpets/tutorials/config-templates/pet-config), [Tebex-Befehlsvariablen](https://docs.tebex.io/creators/command-management/an-introduction-to-commands), [ItemsAdder-Citizens-Modelle](https://wiki.itemsadder.com/adding-content/entities/citizens/).
+## Purchases and recovery
 
-## Kaufprüfung und Wiederherstellung
+Effective MCPets permissions and completed addon transactions both count as ownership, including permissions from groups or previous unlocks. Simultaneous in-game/store operations for one player and pet are locked until completion; repeated clicks cannot charge twice.
 
-Besitz wird über die effektive MCPets-Berechtigung und abgeschlossene Addon-Transaktionen geprüft. Vorhandene Freischaltungen durch Gruppen oder andere Quellen werden anerkannt. Gleichzeitige Ingame- und Store-Vorgänge für denselben Spieler und dasselbe Pet sind gesperrt, bis der Vorgang abgeschlossen ist. Vault bestätigt den Abzug vor dem dauerhaften Speichern der LuckPerms-Berechtigung.
+If a future pack changes the native permission for an existing pet ID, completed addon purchases receive the new permission without another payment. Original prices, payment sources and Tebex receipts remain intact. This is checked on discovery, startup, reload and login.
 
-Ändert ein späteres Pet-Pack die native Berechtigung für dieselbe Pet-ID, erhalten Käufer mit einer abgeschlossenen Addon-Transaktion die neue Berechtigung ohne weitere Zahlung. Ursprünglicher Preis, Zahlungsquelle und Store-Transaktion bleiben erhalten. Dies wird beim Erkennen der Änderung, Start, Reload oder Login geprüft.
-
-Ein bestätigter Abzug mit ausstehender Berechtigung bleibt als `CHARGED` gespeichert und wird beim Start oder nächsten Login ohne weitere Abbuchung fertiggestellt. Bei einem Absturz genau während der Abbuchung oder einer unklaren Economy-Antwort bleibt `PREPARED` gesperrt. Es gibt dann keine zweite automatische Abbuchung oder pauschale Rückzahlung.
-
-`/trpetshop pending` zeigt offene Vorgänge. Nach Prüfung des Economy-Bankverlaufs kann ein Admin gezielt entscheiden:
+A confirmed charge awaiting permission storage stays `CHARGED` and completes after restart/login without another withdrawal. An uncertain withdrawal stays `PREPARED`, blocking another payment until bank history is checked. `/trpetshop pending` lists these purchases. After verification, an admin can run:
 
 ```text
 /trpetshop resolve <UUID> <MCPets-ID> paid
 /trpetshop resolve <UUID> <MCPets-ID> unpaid
 ```
 
-`paid` liefert das Pet ohne weiteren Abzug. `unpaid` ist nur für ungeklärte `PREPARED`-Vorgänge erlaubt und gibt einen neuen Kauf frei, nachdem bestätigt wurde, dass kein Geld abgezogen wurde. Transaktionsdateien und Economy-Daten beim Backup gemeinsam sichern.
+`paid` completes delivery without another withdrawal. `unpaid` is only valid for a `PREPARED` purchase verified as not charged. Back up transactions together with economy data.
 
-Mit einem Spieler ohne op und ohne Pet-Berechtigung prüfen: Auswahl am NPC, Abbrechen ohne Abzug, zu wenig Guthaben, Kauf für 50.000 $, Pet im MCPets-Menü, erneuter Klick ohne zweite Abbuchung, Besitz nach Neustart und eine manuelle Store-Testzahlung. Operatoren besitzen durch ihre Berechtigungen häufig bereits alle Pets.
+## Owned pets
 
-Die Tests prüfen Dateipersistenz, Doppelkäufe, fehlendes Guthaben, gesperrte Käufe, Save-Fehler, Neustart-Wiederherstellung, offline Store-Freischaltungen, automatische Erkennung neuer Pet-Definitionen, sofortiges Hinzufügen, sichere Migration, generierte Tebex-Befehle, Item-Modelle und den Erhalt individueller Preise/Links. Die endgültige 3D-Darstellung hängt von den auf dem Server geladenen Modellen und dem Resourcepack des Clients ab.
+This update preserves the earlier summoned-pet setup: right-click runs that pet's native interaction; **sneak + right-click** opens its MCPets menu. It does not overwrite MCPets/MythicMobs settings. That setup uses `RightClickToOpenMenu: true`, `LeftClickToOpenMenu: false`, `SneakMode: true`, and `TriggerConditions: [crouching false]` on interaction skills so opening the menu does not also trigger an animation.
+
+If needed, prepare that separate overlay from current configuration copies:
+
+```sh
+python3 tools/configure_pet_interactions.py \
+  --mcpets-config /backup/plugins/MCPets/config.yml \
+  --mythic-skills /backup/plugins/MythicMobs/skills/townyreborn_halloween_pets.yml \
+  --output /tmp/pet-interactions
+```
+
+The helper preserves comments, existing mechanics and unrelated settings. Use the same crouching condition for future pet skills. This 1.2.0 ZIP contains the shop addon and examples; it does not replace live MCPets/MythicMobs files.
+
+Tests cover native ModelEngine events, render/culling setters, body/head rotation, one-shot clips, one-time 75k migration, custom links, generated commands, discovery, permanent purchases, duplicate charges and restart recovery. On the live server, also check model visibility at a distance, both clicks, a non-op player's 75k purchase, ownership after restart and Tebex test delivery.
+
+API references: [ModelEngine animations](https://wiki.mythiccraft.io/modelengine/API/Basic/Play-Stop-Animation), [MCPets click settings](https://mcpets.gitbook.io/mcpets/tutorials/config-templates/config-file), [MCPets permissions](https://mcpets.gitbook.io/mcpets/tutorials/config-templates/pet-config), [Tebex command variables](https://docs.tebex.io/creators/command-management/an-introduction-to-commands).

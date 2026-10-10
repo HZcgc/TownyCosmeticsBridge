@@ -148,7 +148,7 @@ def main():
     with zipfile.ZipFile(pet_bundle, "w", zipfile.ZIP_DEFLATED) as bundle:
         bundle.write(DIST / f"TownyRebornPetShops-{pet_version}.jar", f"plugins/TownyRebornPetShops-{pet_version}.jar")
         for name in ["config.yml", "pets.yml"]:
-            bundle.write(pet_project / "src/main/resources" / name, "plugins/TownyRebornPetShops/" + name)
+            bundle.write(pet_project / "src/main/resources" / name, "examples/TownyRebornPetShops/" + name)
         bundle.write(pet_project / "README.md", "INSTALLATION.md")
 
 

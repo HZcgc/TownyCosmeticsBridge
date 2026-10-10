@@ -15,7 +15,7 @@ class PetPurchaseTest {
     private static final UUID PLAYER=UUID.fromString("11111111-2222-3333-4444-555555555555");
     private final List<Throwable> errors=new ArrayList<>();
     private PetCatalog.Pet pet() {
-        return new PetCatalog.Pet("fox","pet.fox","Fox","fox","",true,50000,10.99,"https://shop.example.com/package/123?username={player}",2.5,1.8f,2,"idle");
+        return new PetCatalog.Pet("fox","pet.fox","Fox","fox","",true,50000,10.99,"https://shop.example.com/package/123?username={player}",2.5,1.8f,2,"idle","auto");
     }
     private final class Bank implements PurchaseService.Gateway {
         double balance=100000; int withdrawals,grants; String lastPermission; boolean owns,ready=true,allowed=true,failWithdrawal,throwAfterWithdrawal;
@@ -109,7 +109,7 @@ class PetPurchaseTest {
     }
     private PetCatalog.Pet updatedPermission() {
         var p=pet(); return new PetCatalog.Pet(p.id(),"pet.fox_v2",p.name(),p.model(),p.iconModel(),p.enabled(),
-            p.price(),p.storePrice(),p.storeUrl(),p.hologramHeight(),p.width(),p.height(),p.idle());
+            p.price(),p.storePrice(),p.storeUrl(),p.hologramHeight(),p.width(),p.height(),p.idle(),p.interaction());
     }
     @Test void anUpdatedNativePermissionKeepsThePaidEntitlementAndOriginalReceipt() throws Exception {
         var bank=new Bank(); assertEquals(Result.BOUGHT,done(service(ledger(),bank).buy(PLAYER,pet())));

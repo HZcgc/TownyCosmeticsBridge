@@ -17,7 +17,7 @@ final class PetCatalog {
     record Definition(String id, String permission, String name, String model, String iconModel) {}
     record Pet(String id, String permission, String name, String model, String iconModel,
                boolean enabled, double price, double storePrice, String storeUrl,
-               double hologramHeight, float width, float height, String idle) {
+               double hologramHeight, float width, float height, String idle, String interaction) {
         Pet {
             validId(id);
             if (permission == null || !permission.matches("[A-Za-z0-9_.-]{1,200}") || permission.startsWith("ultracosmetics."))
@@ -25,6 +25,8 @@ final class PetCatalog {
             if (name == null || name.isBlank() || model == null || !model.matches("[A-Za-z0-9_:-]{1,128}"))
                 throw new IllegalArgumentException("Invalid pet name/model: " + id);
             PetCatalog.price(price); PetCatalog.price(storePrice); validUrl(storeUrl);
+            if (interaction == null || !interaction.matches("[A-Za-z0-9_.:-]{1,128}"))
+                throw new IllegalArgumentException("Invalid interaction animation: " + id);
             if (!Double.isFinite(hologramHeight) || Math.abs(hologramHeight)>32 || !Float.isFinite(width)
                     || !Float.isFinite(height) || width<=0 || height<=0 || width>16 || height>16)
                 throw new IllegalArgumentException("Invalid hologram/hitbox size: " + id);
@@ -93,6 +95,10 @@ final class PetCatalog {
         var loaded=new LinkedHashMap<String, Pet>();
         for (var entry:documents.entrySet()) {
             String id=entry.getKey(); var document=entry.getValue();
+            if (document.getInt("offer-version", 0) < 2) {
+                if (document.getDouble("ingame-price", 75000) == 50000) document.set("ingame-price", 75000.0);
+                changed.add(id);
+            }
             Pet pet=parseShop(id,document,found); loaded.put(id,pet);
             if (generated(document,pet)) changed.add(id);
         }
@@ -113,19 +119,23 @@ final class PetCatalog {
             String perm=d==null ? s.getString("permission","") : d.permission();
             return new Pet(id,perm,s.getString("name",d==null?id:d.name()),
                 s.getString("model",d==null?id:d.model()),s.getString("icon-item-model",d==null?"":d.iconModel()),
-                s.getBoolean("enabled",true),s.getDouble("ingame-price",defaults.getDouble("ingame-price",50000)),
+                s.getBoolean("enabled",true),s.getDouble("ingame-price",defaults.getDouble("ingame-price",75000)),
                 s.getDouble("store-price",defaults.getDouble("store-price",10.99)),s.getString("store-url",defaults.getString("store-url","")),
                 s.getDouble("hologram-height",defaults.getDouble("hologram-height",2.5)),
                 (float)s.getDouble("hitbox-width",defaults.getDouble("hitbox-width",1.8)),
-                (float)s.getDouble("hitbox-height",defaults.getDouble("hitbox-height",2)),s.getString("idle-animation","idle"));
+                (float)s.getDouble("hitbox-height",defaults.getDouble("hitbox-height",2)),s.getString("idle-animation","idle"),
+                s.getString("interaction-animation", "auto"));
         } catch (RuntimeException e) { throw new IOException("Invalid shop entry: "+id,e); }
     }
     private static boolean generated(YamlConfiguration document, Pet pet) {
         boolean changed=false;
-        Map<String,Object> fields=Map.of("schema-version",1,"pet-id",pet.id(),"permission",pet.permission(),
+        Map<String,Object> fields=Map.of("schema-version",1,"offer-version",2,"pet-id",pet.id(),"permission",pet.permission(),
             "tebex.command",tebexCommand(pet.id()),"tebex.execution","SERVER_CONSOLE","tebex.unlock","PERMANENT");
         for (var entry:fields.entrySet()) if (!Objects.equals(document.get(entry.getKey()),entry.getValue())) {
             document.set(entry.getKey(),entry.getValue()); changed=true;
+        }
+        if (!document.contains("interaction-animation")) {
+            document.set("interaction-animation", pet.interaction()); changed=true;
         }
         return changed;
     }
@@ -137,16 +147,18 @@ final class PetCatalog {
         if (d==null) throw new IllegalArgumentException("Unknown MCPets ID: "+id);
         var s=new YamlConfiguration();
         s.options().setHeader(List.of("Settings for this pet; /trpetshop reload applies manual edits.",
+            "Set store-url to this pet's Tebex package; interaction-animation can be auto or a model animation.",
             "The permission and tebex block are generated from the MCPets ID.",
             "Copy tebex.command into this pet's Tebex package as a server-console payment command."));
-        s.set("enabled",true); s.set("name",d.name()); s.set("permission",d.permission());
+        s.set("offer-version",2); s.set("enabled",true); s.set("name",d.name()); s.set("permission",d.permission());
         s.set("model",d.model()); s.set("icon-item-model",d.iconModel());
-        s.set("ingame-price",defaults.getDouble("ingame-price",50000));
+        s.set("ingame-price",defaults.getDouble("ingame-price",75000));
         s.set("store-price",defaults.getDouble("store-price",10.99));
         s.set("store-url",defaults.getString("store-url",""));
         s.set("hologram-height",defaults.getDouble("hologram-height",2.5));
         s.set("hitbox-width",defaults.getDouble("hitbox-width",1.8));
         s.set("hitbox-height",defaults.getDouble("hitbox-height",2)); s.set("idle-animation","idle");
+        s.set("interaction-animation", "auto");
         Pet pet=parseShop(id,s,definitions); generated(s,pet);
         FilesIO.write(shopFile(id),s); reload(); return get(id);
     }

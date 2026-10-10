@@ -1,4 +1,8 @@
 {
+  "ModelEngineAPI.jar": {
+    "url": "https://mvn.lumine.io/repository/maven-public/com/ticxo/modelengine/ModelEngine/R4.1.0/ModelEngine-R4.1.0.jar",
+    "sha256": "a3f9859fe035a27836d8033c56d97ab09d583850ec579b0344b72b69b6c98f3e"
+  },
   "paper-api.jar": {
     "url": "https://repo.papermc.io/repository/maven-public/io/papermc/paper/paper-api/26.2.build.121-stable/paper-api-26.2.build.121-stable.jar",
     "sha256": "fe0aa0caadeb98242b7b8b94d6a15f6dc465557e47ab9074f4b0329f3a457f83"

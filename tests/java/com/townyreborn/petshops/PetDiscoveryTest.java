@@ -17,7 +17,7 @@ class PetDiscoveryTest {
         Files.writeString(path,"Id: "+id+"\nPermission: "+permission+"\nMythicMob: "+id+"\nIcon:\n  Name: Future Pet\n");
     }
     private PetCatalog catalog() throws Exception {
-        var defaults=new YamlConfiguration(); defaults.set("ingame-price",50000); defaults.set("store-price",10.99);
+        var defaults=new YamlConfiguration(); defaults.set("ingame-price",75000); defaults.set("store-price",10.99);
         defaults.set("store-url","https://shop.example.com");
         return new PetCatalog(legacy(),definitions(),defaults);
     }
@@ -40,7 +40,8 @@ class PetDiscoveryTest {
         var pet=catalog.add("future_fox");
         Path file=catalog.shopFile(pet.id()); var data=FilesIO.read(file);
         assertEquals("pet.future_fox",data.getString("permission"));
-        assertEquals(50000,data.getDouble("ingame-price")); assertEquals(10.99,data.getDouble("store-price"));
+        assertEquals(75000,data.getDouble("ingame-price")); assertEquals(10.99,data.getDouble("store-price"));
+        assertEquals("auto",data.getString("interaction-animation")); assertEquals(2,data.getInt("offer-version"));
         assertEquals("trpetshop grant {id} future_fox {transaction}",data.getString("tebex.command"));
         assertEquals("SERVER_CONSOLE",data.getString("tebex.execution")); assertEquals("PERMANENT",data.getString("tebex.unlock"));
         catalog.set(pet.id(),"ingame-price",75000.0); catalog.set(pet.id(),"store-url","https://shop.example.com/package/987");
@@ -62,6 +63,21 @@ class PetDiscoveryTest {
         assertEquals(80000,catalog().get("future_fox").price());
         Files.delete(file); assertTrue(catalog().pets().isEmpty()); // A removed offer is not resurrected.
     }
+    @Test void legacyFiftyThousandOffersUpgradeOnceWithoutChangingTheirStorePackage() throws Exception {
+        install("future_fox","pet.future_fox"); legacyOffer("future_fox",50000);
+        var catalog=catalog();
+        assertEquals(75000,catalog.get("future_fox").price()); assertEquals(17.99,catalog.get("future_fox").storePrice());
+        assertEquals("https://shop.example.com/package/custom",catalog.get("future_fox").storeUrl());
+        assertEquals(2,FilesIO.read(catalog.shopFile("future_fox")).getInt("offer-version"));
+        catalog.set("future_fox","ingame-price",50000.0);
+        catalog.set("future_fox","interaction-animation","wag_tail");
+        var reloaded=catalog(); assertEquals(50000,reloaded.get("future_fox").price());
+        assertEquals("wag_tail",reloaded.get("future_fox").interaction());
+        var data=FilesIO.read(reloaded.shopFile("future_fox")); data.set("interaction-animation","bad animation name");
+        FilesIO.write(reloaded.shopFile("future_fox"),data);
+        assertThrows(IOException.class,reloaded::reload);
+        assertEquals("wag_tail",reloaded.get("future_fox").interaction());
+    }
     @Test void anInvalidLegacyOfferStopsMigrationBeforeAnyOfferIsWritten() throws Exception {
         install("future_fox","pet.future_fox"); install("future_cat","pet.future_cat");
         legacyOffer("future_fox",65000); legacyOffer("future_cat",-1);
@@ -74,7 +90,7 @@ class PetDiscoveryTest {
         Path file=catalog.shopFile("future_fox"); var data=FilesIO.read(file); data.set("ingame-price",-1);
         FilesIO.write(file,data); byte[] bad=Files.readAllBytes(file);
         assertThrows(IOException.class,catalog::reload);
-        assertEquals(50000,catalog.get("future_fox").price()); assertArrayEquals(bad,Files.readAllBytes(file));
+        assertEquals(75000,catalog.get("future_fox").price()); assertArrayEquals(bad,Files.readAllBytes(file));
     }
     @Test void nativePermissionChangesRefreshOnlyGeneratedDataAndNeverResetThePrice() throws Exception {
         install("future_fox","pet.future_fox"); var catalog=catalog(); catalog.add("future_fox");

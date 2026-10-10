@@ -1,8 +1,9 @@
 # Prices are per pet, for a permanent unlock. The real store package price is
 # configured separately in the store dashboard; this is its in-game label.
 prefix: '&d&lTOWNY&a&lREBORN &8» &r'
+presentation-version: 2
 defaults:
-  ingame-price: 50000.0
+  ingame-price: 75000.0
   store-price: 10.99
   store-url: 'https://shop.townyreborn.com'
   hologram-height: 2.5
@@ -12,8 +13,16 @@ hologram:
   lines:
     - '&d{pet}'
     - '&a{ingame_price} $ &8| &a{store_price} €'
-    - '&fRechtsklick zum Freischalten'
+    - '&fLeft-click to view buying options'
+    - '&7Right-click to interact'
   view-range: 2.5
+npc:
+  # Blocks, applied to Citizens tracking and the individual ModelEngine model.
+  render-distance: 64
+  look-at-player-range: 8.0
+  update-interval-ticks: 4
+interaction:
+  cooldown-seconds: 3.0
 confirmation-timeout-seconds: 30
 # New definitions are scanned asynchronously; add/place/bind also scan immediately.
 discovery-interval-seconds: 15

@@ -49,6 +49,25 @@ class ReleasePackagingTest(unittest.TestCase):
                 self.assertEqual(digest, hashlib.sha256(bundle.read(path)).hexdigest())
             self.assertFalse(any(name.endswith((".db", ".properties")) for name in bundle.namelist()))
 
+    def test_pet_update_preserves_live_configs_and_ships_the_new_defaults_in_the_jar(self):
+        version = project_version("integrations/TownyRebornPetShops")
+        jar_path = f"plugins/TownyRebornPetShops-{version}.jar"
+        with zipfile.ZipFile(ROOT / f"dist/TownyReborn-Petshops-{version}.zip") as bundle:
+            self.assertEqual({jar_path}, {name for name in bundle.namelist() if name.startswith("plugins/")})
+            self.assertIn("examples/TownyRebornPetShops/config.yml", bundle.namelist())
+            self.assertFalse(any(name.endswith(("npcs.yml", "transactions.yml")) or "/shops/" in name
+                                 for name in bundle.namelist()))
+            self.assertEqual((ROOT / f"dist/TownyRebornPetShops-{version}.jar").read_bytes(), bundle.read(jar_path))
+        with zipfile.ZipFile(ROOT / f"dist/TownyRebornPetShops-{version}.jar") as jar:
+            self.assertEqual(version, yaml.safe_load(jar.read("plugin.yml"))["version"])
+            defaults = yaml.safe_load(jar.read("config.yml"))
+            self.assertEqual(75000, defaults["defaults"]["ingame-price"])
+            self.assertEqual(10.99, defaults["defaults"]["store-price"])
+            self.assertEqual(64, defaults["npc"]["render-distance"])
+            self.assertTrue(any("Left-click" in line for line in defaults["hologram"]["lines"]))
+            self.assertTrue(any("Right-click" in line for line in defaults["hologram"]["lines"]))
+            self.assertFalse(any(name.startswith("com/ticxo/") for name in jar.namelist()))
+
 
 if __name__ == "__main__":
     unittest.main()
