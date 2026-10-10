@@ -1,0 +1,7 @@
+name: ExcellentCratesAddon
+version: '${project.version}'
+main: com.cyvertray.ecratesplaceholder.Main
+api-version: '26.2'
+authors: [Cyvertray_, TownyReborn]
+description: Virtual and physical key counters using the ExcellentCrates 7 API.
+depend: [PlaceholderAPI, ExcellentCrates]
