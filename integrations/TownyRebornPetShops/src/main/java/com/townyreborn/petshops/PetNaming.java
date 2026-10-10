@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
 import org.bukkit.event.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -54,6 +55,9 @@ final class PetNaming implements Listener {
     }
     boolean open(Player player,Object pet) throws ReflectiveOperationException {
         if (!player.isSneaking() || !owned(player,pet)) return false;
+        return start(player,pet);
+    }
+    private boolean start(Player player,Object pet) {
         UUID playerId=player.getUniqueId(); Session current=sessions.get(playerId); long now=System.currentTimeMillis();
         if (current!=null && current.pet()==pet && now-current.created()<350) return true;
         Session session=new Session(pet,now); sessions.put(playerId,session);
@@ -118,6 +122,17 @@ final class PetNaming implements Listener {
         if (event.getHand()==EquipmentSlot.HAND && interact(event.getPlayer(),event.getRightClicked())) event.setCancelled(true);
     }
     @EventHandler(priority=EventPriority.HIGHEST) public void clickAt(PlayerInteractAtEntityEvent event) { click(event); }
+    @EventHandler(priority=EventPriority.MONITOR) public void menuClick(InventoryClickEvent event) {
+        if (!(event.getWhoClicked() instanceof Player player) || !enabled(player)) return;
+        try {
+            // Native NORMAL handlers have armed the chat prompt and cancelled the click.
+            // Consume only that prompt, without changing inventory items or cancellation.
+            Object pet=pets.pendingMenuRename(player,event.getView().getTitle());
+            if (pet==null || !owned(player,pet)) return;
+            pets.cancelMenuRename(player);
+            start(player,pet);
+        } catch (ReflectiveOperationException e) { errors.accept(e); }
+    }
     @EventHandler public void quit(PlayerQuitEvent event) { sessions.remove(event.getPlayer().getUniqueId()); }
     void clear() { sessions.clear(); }
 }

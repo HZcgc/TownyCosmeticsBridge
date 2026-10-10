@@ -7,7 +7,9 @@ import java.util.function.BiConsumer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
 import org.bukkit.event.player.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -79,5 +81,47 @@ class PetNamingTest {
         when(player.hasPermission(PetNaming.PERMISSION)).thenReturn(false); assertFalse(naming.interact(player,entity));
         when(player.hasPermission(PetNaming.PERMISSION)).thenReturn(true); plugin.getConfig().set("naming.enabled",false);
         assertFalse(naming.interact(player,entity)); assertTrue(tasks.isEmpty());
+    }
+    private InventoryClickEvent nativeMenuClick() {
+        var event=mock(InventoryClickEvent.class); var view=mock(InventoryView.class);
+        when(event.getWhoClicked()).thenReturn(player); when(event.getView()).thenReturn(view);
+        when(view.getTitle()).thenReturn("Pet interactions");
+        when(event.isCancelled()).thenReturn(true); // MCPets cancels every click before MONITOR.
+        return event;
+    }
+    @Test void nativeRenameButtonUsesTheRgbDialogWithoutRequiringSneakingOrNativeColorPermission() throws Exception {
+        when(player.isSneaking()).thenReturn(false);
+        when(pets.pendingMenuRename(player,"Pet interactions")).thenReturn(pet,null);
+        var event=nativeMenuClick();
+        try (var bukkit=mockStatic(Bukkit.class)) {
+            bukkit.when(Bukkit::getScheduler).thenReturn(scheduler);
+            naming.menuClick(event); naming.menuClick(event);
+            verify(pets).cancelMenuRename(player); assertEquals(1,tasks.size()); tasks.removeFirst().run();
+        }
+        var session=org.mockito.ArgumentCaptor.forClass(PetNaming.Session.class);
+        verify(naming).show(eq(player),session.capture());
+        naming.save(player,session.getValue(),"&#54DAF4H&#54C8EBZ&#54B7E2c&#54A5D9g&#5493D1c");
+        var saved=org.mockito.ArgumentCaptor.forClass(String.class); verify(pets).rename(eq(pet),saved.capture());
+        assertEquals("HZcgc",org.bukkit.ChatColor.stripColor(saved.getValue()));
+        assertFalse(saved.getValue().contains("&")); assertTrue(saved.getValue().contains("§x"));
+        verify(player,never()).hasPermission("mcpets.color");
+        verify(event,never()).setCancelled(anyBoolean()); verify(event,never()).setCurrentItem(any());
+        naming.save(player,session.getValue(),"Changed"); verify(pets,times(1)).rename(eq(pet),anyString());
+        assertTrue(errors.isEmpty());
+    }
+    @Test void unrelatedNativeActionsOtherOwnersAndRevokedPetsKeepTheirNativeFlow() throws Exception {
+        var event=nativeMenuClick(); naming.menuClick(event);
+        when(pets.pendingMenuRename(player,"Pet interactions")).thenReturn(pet);
+        when(pets.owner(pet)).thenReturn(UUID.randomUUID()); naming.menuClick(event);
+        when(pets.owner(pet)).thenReturn(owner); when(pets.present(pet)).thenReturn(false); naming.menuClick(event);
+        verify(pets,never()).cancelMenuRename(any()); assertTrue(tasks.isEmpty()); assertTrue(errors.isEmpty());
+    }
+    @Test void disablingNamingOrDenyingRenameDoesNotConsumeNativeChatPrompts() throws Exception {
+        var event=nativeMenuClick(); when(player.hasPermission(PetNaming.PERMISSION)).thenReturn(false);
+        naming.menuClick(event);
+        when(player.hasPermission(PetNaming.PERMISSION)).thenReturn(true); plugin.getConfig().set("naming.enabled",false);
+        naming.menuClick(event);
+        verify(pets,never()).pendingMenuRename(any(),any()); verify(pets,never()).cancelMenuRename(any());
+        assertTrue(tasks.isEmpty());
     }
 }

@@ -14,7 +14,7 @@ final class Integrations {
     enum Click { SHOP, INTERACT, IGNORE }
     static final class MCPets {
         private final Class<?> pet, globals, utils;
-        private final Method find, owner, present, currentName, rename, limit;
+        private final Method find, owner, present, currentName, rename, limit, lastInteracted, waitingForName, menuTitle;
         final Class<? extends Event> interaction;
         private final Method eventPet;
         MCPets(Plugin plugin) throws ReflectiveOperationException {
@@ -25,6 +25,11 @@ final class Integrations {
             find=pet.getMethod("getFromEntity",Entity.class); owner=pet.getMethod("getOwner");
             present=pet.getMethod("isStillHere"); currentName=pet.getMethod("getCurrentName");
             rename=pet.getMethod("setDisplayName",String.class,boolean.class);
+            lastInteracted=pet.getMethod("getFromLastInteractedWith",Player.class);
+            Class<?> listener=Class.forName("fr.nocsy.mcpets.listeners.PetInteractionMenuListener",false,loader);
+            waitingForName=listener.getMethod("getWaitingForAnswer");
+            Class<?> menu=Class.forName("fr.nocsy.mcpets.data.inventories.PetInteractionMenu",false,loader);
+            menuTitle=menu.getMethod("getTitle");
             Method length;
             try { length=globals.getMethod("getMaxNameLength"); }
             catch (NoSuchMethodException e) { length=globals.getMethod("getMaxNameLenght"); } // MCPets 4.1.5
@@ -47,6 +52,14 @@ final class Integrations {
         void rename(Object value,String name) throws ReflectiveOperationException {
             rename.invoke(value,name,true); // The native player database persists the name across respawns/restarts.
             if (!Objects.equals(name,currentName(value))) throw new IllegalStateException("The pet name could not be applied.");
+        }
+        Object pendingMenuRename(Player player,String title) throws ReflectiveOperationException {
+            if (!Objects.equals(menuTitle.invoke(null),title) || !pendingNames().contains(player.getUniqueId())) return null;
+            return lastInteracted.invoke(null,player);
+        }
+        void cancelMenuRename(Player player) throws ReflectiveOperationException { pendingNames().remove(player.getUniqueId()); }
+        @SuppressWarnings("unchecked") private Collection<UUID> pendingNames() throws ReflectiveOperationException {
+            return (Collection<UUID>)waitingForName.invoke(null);
         }
         void openMenu(Player player,Object value) throws ReflectiveOperationException {
             pet.getMethod("setLastInteractedWith",Player.class).invoke(value,player);

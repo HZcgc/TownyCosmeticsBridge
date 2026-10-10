@@ -18,6 +18,14 @@ class PetNameFormatTest {
             assertEquals("Hi",PlainTextComponentSerializer.plainText().serialize(LegacyComponentSerializer.legacySection().deserialize(name.legacy())));
         }
     }
+    @Test void rgbirdflopDefaultOutputDoesNotLeaveTheAmpersandsSeenInNativeMcpetsChatRenames() {
+        var name=PetNameFormat.parse("&#54DAF4H&#54C8EBZ&#54B7E2c&#54A5D9g&#5493D1c",16);
+        assertEquals("HZcgc",plain(name)); assertEquals("HZcgc",org.bukkit.ChatColor.stripColor(name.legacy()));
+        assertFalse(name.legacy().contains("&"));
+        assertEquals("§x§5§4§d§a§f§4H§x§5§4§c§8§e§bZ§x§5§4§b§7§e§2c§x§5§4§a§5§d§9g§x§5§4§9§3§d§1c",name.legacy());
+        var rendered=LegacyComponentSerializer.legacySection().deserialize(name.legacy());
+        assertEquals("HZcgc",PlainTextComponentSerializer.plainText().serialize(rendered));
+    }
     @Test void miniMessageGradientsWorkOnOldMCPetsAndFormattingSurvives() {
         var name=PetNameFormat.parse("<gradient:#ff55ff:#aaff55><bold>Hi</bold></gradient>",16);
         assertEquals("Hi",plain(name));
