@@ -68,6 +68,30 @@ class ReleasePackagingTest(unittest.TestCase):
             self.assertTrue(any("Right-click" in line for line in defaults["hologram"]["lines"]))
             self.assertFalse(any(name.startswith("com/ticxo/") for name in jar.namelist()))
 
+    def test_quickshop_overlay_preserves_barrels_and_ships_animal_comparison_and_real_item_transfer(self):
+        version = project_version("quickshop-patch")
+        jar_path = ROOT / f"dist/QuickShop-Hikari-{version}.jar"
+        with zipfile.ZipFile(ROOT / "build/deps/QuickShop.jar") as original, zipfile.ZipFile(jar_path) as patched:
+            self.assertEqual(version, yaml.safe_load(patched.read("plugin.yml"))["version"])
+            changed = {name for name in original.namelist() if original.read(name) != patched.read(name)}
+            self.assertEqual({"plugin.yml",
+                "com/ghostchu/quickshop/shop/inventory/BukkitInventoryWrapper.class",
+                "com/ghostchu/quickshop/shop/SimpleInventoryTransaction.class",
+                "com/ghostchu/quickshop/shop/SimpleInventoryTransaction$1.class",
+                "com/ghostchu/quickshop/shop/SimpleInventoryTransaction$SimpleInventoryTransactionBuilder.class",
+                "com/ghostchu/quickshop/shop/SimpleInventoryTransaction$SimpleTransactionCallback.class",
+                "com/ghostchu/quickshop/util/matcher/item/BukkitItemMatcherImpl.class"}, changed)
+            for name in ["AnimalNbt", "CapturedEntityItemMatcher"]:
+                self.assertIn(f"com/ghostchu/quickshop/util/matcher/item/{name}.class", patched.namelist())
+            self.assertIn("META-INF/TOWNY-BARREL-PATCH-LICENSE", patched.namelist())
+            self.assertIn("META-INF/towny-patch-source/README.md", patched.namelist())
+            for path in (ROOT / "quickshop-patch/src/main/java").rglob("*.java"):
+                source_name = "META-INF/towny-patch-source/" + str(path.relative_to(ROOT / "quickshop-patch/src/main/java"))
+                self.assertEqual(path.read_bytes(), patched.read(source_name))
+            self.assertFalse(any(name.endswith((".db", ".mv.db")) for name in patched.namelist()))
+            self.assertFalse(any(name.startswith("com/github/nutt1101/") for name in patched.namelist()))
+        self.assertEqual([jar_path], list((ROOT / "dist").glob("QuickShop-Hikari-*.jar")))
+
 
 if __name__ == "__main__":
     unittest.main()

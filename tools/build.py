@@ -79,17 +79,25 @@ def main():
     test_cp = os.pathsep.join(str(p) for p in [*reversed(outputs), cp])
     run([JAVA / "javac", "--release", "25", "-encoding", "UTF-8", "-cp", test_cp,
          "-d", tests, *sorted((ROOT / "tests/java").rglob("*.java"))])
-    patched = DIST / "QuickShop-Hikari-6.3.0.3-townybarrels.2.jar"
+    qs_patch = ROOT / "quickshop-patch"
+    qs_version = ET.parse(qs_patch / "pom.xml").getroot().findtext("{http://maven.apache.org/POM/4.0.0}version")
+    patched = DIST / f"QuickShop-Hikari-{qs_version}.jar"
+    for previous in DIST.glob("QuickShop-Hikari-*.jar"):
+        if previous != patched: previous.unlink()
     replacement = ROOT / "quickshop-patch/target/classes"
     with zipfile.ZipFile(DEPS / "QuickShop.jar") as old, zipfile.ZipFile(patched, "w", zipfile.ZIP_DEFLATED) as new:
         for entry in old.infolist():
             if (replacement / entry.filename).is_file(): continue
             if entry.filename.startswith("META-INF/") and entry.filename.endswith((".SF", ".RSA", ".DSA")): continue
             data = old.read(entry.filename)
-            if entry.filename == "plugin.yml": data = data.replace(b"6.3.0.3", b"6.3.0.3-townybarrels.2")
+            if entry.filename == "plugin.yml":
+                if data.count(b"version: 6.3.0.3\n") != 1:
+                    raise RuntimeError("Unexpected QuickShop release descriptor")
+                data = data.replace(b"version: 6.3.0.3\n", f"version: {qs_version}\n".encode())
             new.writestr(entry, data)
         for path in replacement.rglob("*.class"): new.write(path, path.relative_to(replacement))
         new.write(ROOT / "quickshop-patch/LICENSE", "META-INF/TOWNY-BARREL-PATCH-LICENSE")
+        new.write(qs_patch / "README.md", "META-INF/towny-patch-source/README.md")
         for path in (ROOT / "quickshop-patch/src/main/java").rglob("*.java"):
             new.write(path, "META-INF/towny-patch-source/" + str(path.relative_to(ROOT / "quickshop-patch/src/main/java")))
 
@@ -131,6 +139,7 @@ def main():
         for path in [*jars, DIST / "SHA256SUMS", ROOT / "INSTALLATION.md"]:
             bundle.write(path, path.name)
         bundle.write(ec_patch / "README.md", "excellentcrates-patch/README.md")
+        bundle.write(qs_patch / "README.md", "quickshop-patch/README.md")
     key_bundle = DIST / "TownyReborn-Crate-Key-Fix.zip"
     hunt_version = ET.parse(ROOT / "integrations/TownyRebornHunt/pom.xml").getroot().findtext("{http://maven.apache.org/POM/4.0.0}version")
     with zipfile.ZipFile(key_bundle, "w", zipfile.ZIP_DEFLATED) as bundle:

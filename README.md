@@ -16,7 +16,7 @@ This update restores the five supplied Towny plugins and the key display addon o
 
 The four recovered projects are under `integrations/`. Source was recovered from the exact supplied JARs using CFR 0.152; only API compatibility and compilation corrections were applied. Existing settings, model placements, hunt player files and loot profiles are retained. Hunt continues to respect the configured `max-finds` (the supplied JAR defaults to 44).
 
-The [QuickShop patch](quickshop-patch/README.md) is required alongside BarrelShops. It routes stock operations to the expanded inventory and preserves normal inventories and physical shop locations.
+The [QuickShop patch](quickshop-patch/README.md) is required alongside BarrelShops. It routes stock operations to the expanded inventory, matches axolotl buckets and CatchBall animals without individual runtime identity, and transfers the actual stocked item instead of cloning the shop template. Normal inventories and physical shop locations are preserved.
 
 ## Build and test
 
