@@ -103,6 +103,20 @@ trpetshop grant {id} <MCPets-ID> {transaction}
 
 HTTPS links may contain `{player}` and `{uuid}`; names are URL-encoded. The Tebex option sends a clickable chat link, which the Minecraft client opens in a browser after the player clicks it.
 
+## Purchase announcements
+
+After the first permanent unlock has been delivered and saved, all online players receive a pink/lime Towny Reborn chat announcement: **`TOWNYREBORN » Player has purchased Pet!`**. This covers both in-game purchases and offline Tebex deliveries. Simply opening the store link, a rejected payment, a pending unlock, repeated Tebex commands, joins and permission repairs do not produce another announcement.
+
+These settings are added automatically to an existing `config.yml`, preserving prices, pet files and custom texts:
+
+```yaml
+announcements:
+  enabled: true
+  message: '&a{player} &7has purchased &d{pet}&7!'
+```
+
+The normal `prefix` is prepended. Placeholders are `{player}`, `{pet}`, `{pet_id}` and `{source}` (`in-game` or `Tebex`). Offline delivery uses the known player name; if no name is available, it uses `A player`. A durable announcement claim is saved before broadcasting to prevent duplicate announcements after recovery. A process crash between that save and the broadcast may omit that message; it never repeats it or takes another payment. Completed purchases from older versions are not announced retroactively.
+
 ## Purchases and recovery
 
 Effective MCPets permissions and completed addon transactions both count as ownership, including permissions from groups or previous unlocks. Simultaneous in-game/store operations for one player and pet are locked until completion; repeated clicks cannot charge twice.
@@ -120,7 +134,20 @@ A confirmed charge awaiting permission storage stays `CHARGED` and completes aft
 
 ## Owned pets
 
-This update preserves the earlier summoned-pet setup: right-click runs that pet's native interaction; **sneak + right-click** opens its MCPets menu. It does not overwrite MCPets/MythicMobs settings. That setup uses `RightClickToOpenMenu: true`, `LeftClickToOpenMenu: false`, `SneakMode: true`, and `TriggerConditions: [crouching false]` on interaction skills so opening the menu does not also trigger an animation.
+Right-click still runs a summoned pet's native interaction. In **1.3.0**, **shift + right-click your own pet** opens an English naming dialog with **Save name**, **MCPets menu** and **Cancel**. The native MCPets menu retains its mount, inventory, skins and other actions. Other players' pets and shop pedestal models cannot be renamed. `townyreborn.petshops.rename` is allowed for players by default; explicitly denying it, or setting `naming.enabled: false`, retains the native interaction flow.
+
+Paste the name and color codes from [RGBirdflop](https://www.birdflop.com/resources/rgb/) into the name field, without a `/nick` command. Supported output formats include:
+
+```text
+&aBuddy
+&#ff55ffH&#aaff55i
+&x&f&f&5&5&f&fH&x&a&a&f&f&5&5i
+<gradient:#ff55ff:#aaff55>Buddy</gradient>
+```
+
+Expanded `§x` colors, `<#rrggbb>` colors, bold/italic/underline and rainbow tags also work. The dialog accepts up to 4096 input characters so long gradients fit; only visible characters count toward `naming.max-length` (default 16). MCPets' own configured limit and blacklist are also enforced. Names use the native MCPets player database and ModelEngine name tag, so colors persist after respawn/rejoin/restart. The adapter supports MCPets 4.1.5's legacy name setter and misspelled `MaxNameLenght` getter, as well as newer versions. Ordinary players do not need MCPets' separate native color permission for this addon dialog.
+
+No live MCPets/MythicMobs configuration is overwritten. Keep the earlier summoned-pet setup: `RightClickToOpenMenu: true`, `LeftClickToOpenMenu: false`, `SneakMode: true`, and `TriggerConditions: [crouching false]` on interaction skills so opening the menu does not also trigger an animation.
 
 If needed, prepare that separate overlay from current configuration copies:
 
@@ -131,8 +158,8 @@ python3 tools/configure_pet_interactions.py \
   --output /tmp/pet-interactions
 ```
 
-The helper preserves comments, existing mechanics and unrelated settings. Use the same crouching condition for future pet skills. This 1.2.1 ZIP contains the shop addon and examples; it does not replace live MCPets/MythicMobs files.
+The helper preserves comments, existing mechanics and unrelated settings. Use the same crouching condition for future pet skills. This 1.3.0 ZIP contains the shop addon and examples; it does not replace live MCPets/MythicMobs files.
 
-Tests cover native ModelEngine events, render/culling setters, body/head rotation, one-shot clips, sound names/timing/category, nested sound helpers, duplicate interactions, queued sound cleanup, one-time 75k migration, custom links, generated commands, discovery, permanent purchases and restart recovery. On the live server, also check the four models' sounds/visibility, both clicks, a non-op player's 75k purchase, ownership after restart and Tebex test delivery.
+Tests cover native ModelEngine events, render/culling setters, body/head rotation, one-shot clips, sound names/timing/category, nested sound helpers, duplicate interactions, queued sound cleanup, one-time 75k migration, custom links, generated commands, discovery, permanent purchases, announcement claims/retries and restart recovery. Naming tests cover exact RGB colors, MiniMessage gradients, long formatted names, native limits/blacklists, owner checks, duplicate events, stale dialogs and native menu access. On the live server, also check the four models' sounds/visibility, both clicks, a non-op player's 75k purchase and announcement, ownership after restart, offline Tebex test delivery and a colored pet name after respawn/rejoin.
 
 API references: [ModelEngine animations](https://wiki.mythiccraft.io/modelengine/API/Basic/Play-Stop-Animation), [MythicMobs sounds](https://wiki.mythiccraft.io/mythicmobs/skills/mechanics/Sound), [MCPets click settings](https://mcpets.gitbook.io/mcpets/tutorials/config-templates/config-file), [MCPets permissions](https://mcpets.gitbook.io/mcpets/tutorials/config-templates/pet-config), [Tebex command variables](https://docs.tebex.io/creators/command-management/an-introduction-to-commands).

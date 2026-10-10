@@ -5,13 +5,18 @@ import org.bukkit.configuration.ConfigurationSection;
 
 /** One-time upgrade of the shipped settings; individual admin edits survive reloads. */
 final class ShopSettings {
+    static final String ANNOUNCEMENT="&a{player} &7has purchased &d{pet}&7!";
     static final List<String> HOLOGRAM = List.of("&d{pet}", "&a{ingame_price} $ &8| &a{store_price} €",
         "&fLeft-click to view buying options", "&7Right-click to interact");
 
     private ShopSettings() {}
 
     static boolean upgrade(ConfigurationSection config) {
-        if (config.contains("presentation-version", true) && config.getInt("presentation-version", 0) >= 2) return false;
+        boolean changed=false;
+        for (var entry:Map.of("announcements.enabled",true,"announcements.message",ANNOUNCEMENT,
+                "naming.enabled",true,"naming.max-length",16).entrySet())
+            if (!config.contains(entry.getKey(),true)) { config.set(entry.getKey(),entry.getValue()); changed=true; }
+        if (config.contains("presentation-version", true) && config.getInt("presentation-version", 0) >= 2) return changed;
         if (!config.contains("defaults.ingame-price", true) || config.getDouble("defaults.ingame-price", 75000) == 50000)
             config.set("defaults.ingame-price", 75000.0);
         List<String> lines = new ArrayList<>(config.getStringList("hologram.lines"));

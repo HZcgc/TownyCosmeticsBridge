@@ -2,6 +2,15 @@
 # configured separately in the store dashboard; this is its in-game label.
 prefix: '&d&lTOWNY&a&lREBORN &8» &r'
 presentation-version: 2
+announcements:
+  enabled: true
+  # Uses the prefix above. A successful first unlock is announced once.
+  # Available placeholders: {player}, {pet}, {pet_id}, {source}.
+  message: '&a{player} &7has purchased &d{pet}&7!'
+naming:
+  enabled: true
+  # Visible characters only; MCPets' own maximum is also respected.
+  max-length: 16
 defaults:
   ingame-price: 75000.0
   store-price: 10.99

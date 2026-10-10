@@ -36,6 +36,7 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
     private LuckPerms permissions;
     private Integrations.Citizens citizens;
     private Integrations.Models models;
+    private PetNaming naming;
     private NamespacedKey marker;
     private boolean discoveryRunning;
     private long lastDiscoveryFailure;
@@ -59,9 +60,14 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
             catalog=loadCatalog();
             bindings=new NpcBindings(getDataFolder().toPath().resolve("npcs.yml"));
             ledger=new PurchaseLedger(getDataFolder().toPath().resolve("transactions.yml"));
-            purchases=new PurchaseService(ledger,new Gateway(),this::error);
+            purchases=new PurchaseService(ledger,new Gateway(),this::error,this::announcePurchase);
             Bukkit.getPluginManager().registerEvents(this,this);
             registerCitizensEvents();
+            Plugin mc=Bukkit.getPluginManager().getPlugin("MCPets");
+            if (mc!=null && mc.isEnabled()) {
+                naming=new PetNaming(this,new Integrations.MCPets(mc),(player,text)->message(player,text),this::error);
+                naming.register();
+            }
             if (models!=null) Bukkit.getPluginManager().registerEvent(models.interaction,this,EventPriority.HIGHEST,(listener,event)-> {
                 try {
                     UUID baseId=models.baseId(event);
@@ -71,6 +77,12 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
                         if (event instanceof Cancellable c) c.setCancelled(true);
                         Player player=models.player(event);
                         runMain(()->click(player,npc,action));
+                    } else if (naming!=null && action==Click.INTERACT) {
+                        Player player=models.player(event);
+                        runMain(()-> {
+                            Entity entity=Bukkit.getEntity(baseId);
+                            if (entity!=null && naming.interact(player,entity) && event instanceof Cancellable c) c.setCancelled(true);
+                        });
                     }
                 } catch (ReflectiveOperationException e) { error(e); }
             },this,false);
@@ -87,6 +99,7 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
         } catch (Exception|LinkageError e) { error(e); Bukkit.getPluginManager().disablePlugin(this); }
     }
     @Override public void onDisable() {
+        if (naming!=null) naming.clear();
         for (UUID id:List.copyOf(active.keySet())) cleanup(id);
         for (Player player:Bukkit.getOnlinePlayers()) if (player.getOpenInventory().getTopInventory().getHolder() instanceof ShopMenu) player.closeInventory();
         lastClick.clear(); failures.clear();
@@ -370,6 +383,20 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
             case ERROR -> "&cThe transaction could not be saved. No money was taken.";
         });
     }
+    private void announcePurchase(Entry entry) {
+        if (!isEnabled() || !getConfig().getBoolean("announcements.enabled",true)) return;
+        UUID uuid=entry.key().player();
+        Player online=Bukkit.getPlayer(uuid);
+        var user=permissions.getUserManager().getUser(uuid);
+        String name=online!=null?online.getName():user==null?null:user.getUsername();
+        if (name==null || name.isBlank()) name=Bukkit.getOfflinePlayer(uuid).getName();
+        if (name==null || name.isBlank()) name="A player";
+        PetCatalog.Pet pet=catalog.get(entry.key().pet());
+        String text=getConfig().getString("announcements.message",ShopSettings.ANNOUNCEMENT)
+            .replace("{player}",name).replace("{pet}",pet==null?entry.key().pet():pet.name())
+            .replace("{pet_id}",entry.key().pet()).replace("{source}",entry.source().equals("ingame")?"in-game":"Tebex");
+        Bukkit.broadcast(ShopMenu.color(getConfig().getString("prefix","&d&lTOWNY&a&lREBORN &8» &r")+text));
+    }
     private void recoverCharged(UUID player) {
         for (Entry entry:ledger.entries()) if (player==null || entry.key().player().equals(player)) {
             PetCatalog.Pet pet=catalog.get(entry.key().pet());
@@ -454,7 +481,7 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
                     for (Binding b:bindings.all()) message(sender,"&7NPC "+b.id()+" → "+b.pet());
                 }
                 case "status" -> message(sender,"&7Shop-Pets: "+catalog.pets().size()+", MCPets: "+catalog.availableIds().size()+", NPCs: "+bindings.all().size()+", active: "+active.size()+", ModelEngine: "+(models!=null));
-                case "reload" -> { reloadConfig(); if (ShopSettings.upgrade(getConfig())) saveConfig(); PetCatalog replacement=loadCatalog(); catalog=replacement; startDiscovery(); startPedestals(); refresh(); recoverCharged(null); message(sender,"&aPet shop configuration reloaded."); }
+                case "reload" -> { reloadConfig(); if (ShopSettings.upgrade(getConfig())) saveConfig(); PetCatalog replacement=loadCatalog(); catalog=replacement; if (naming!=null) naming.clear(); startDiscovery(); startPedestals(); refresh(); recoverCharged(null); message(sender,"&aPet shop configuration reloaded."); }
                 case "grant" -> {
                     if (sender instanceof Player || !(sender instanceof ConsoleCommandSender || sender instanceof RemoteConsoleCommandSender))
                         throw new IllegalArgumentException("Store grants are console-only");

@@ -8,8 +8,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 final class PurchaseLedger {
     enum Phase { PREPARED, CHARGED, DONE }
     record Key(UUID player, String pet) {}
-    record Entry(Key key, String permission, double price, Phase phase, String source, String transaction) {
-        Entry phase(Phase p) { return new Entry(key,permission,price,p,source,transaction); }
+    record Entry(Key key, String permission, double price, Phase phase, String source, String transaction, boolean announcementHandled) {
+        Entry(Key key, String permission, double price, Phase phase, String source, String transaction) {
+            this(key,permission,price,phase,source,transaction,phase==Phase.DONE);
+        }
+        Entry phase(Phase p) { return new Entry(key,permission,price,p,source,transaction,announcementHandled); }
+        Entry completed() { return new Entry(key,permission,price,Phase.DONE,source,transaction,true); }
     }
     private final Path file;
     private Map<Key, Entry> entries=new LinkedHashMap<>();
@@ -29,8 +33,12 @@ final class PurchaseLedger {
                     double price=s.getDouble("price");
                     if (!permission.matches("[A-Za-z0-9_.-]{1,200}") || !Double.isFinite(price) || price<0)
                         throw new IllegalArgumentException("Invalid transaction");
-                    entries.put(key,new Entry(key,permission,price,Phase.valueOf(s.getString("phase")),
-                            s.getString("source","unknown"),s.getString("transaction","")));
+                    Phase phase=Phase.valueOf(s.getString("phase"));
+                    if (s.contains("announcement-handled") && !s.isBoolean("announcement-handled"))
+                        throw new IllegalArgumentException("Invalid announcement state");
+                    entries.put(key,new Entry(key,permission,price,phase,
+                            s.getString("source","unknown"),s.getString("transaction",""),
+                            s.getBoolean("announcement-handled",phase==Phase.DONE)));
                 }
             }
         } catch (RuntimeException e) { throw new IOException("Invalid transactions; refusing purchases",e); }
@@ -49,6 +57,7 @@ final class PurchaseLedger {
             var s=y.createSection("players."+e.key().player()+"."+e.key().pet());
             s.set("permission",e.permission()); s.set("price",e.price()); s.set("phase",e.phase().name());
             s.set("source",e.source()); s.set("transaction",e.transaction());
+            s.set("announcement-handled",e.announcementHandled());
         }
         FilesIO.write(file,y);
     }

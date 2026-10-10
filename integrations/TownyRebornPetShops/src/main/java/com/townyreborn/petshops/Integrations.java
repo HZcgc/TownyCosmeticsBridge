@@ -8,10 +8,53 @@ import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 
-/** Public APIs, resolved from the installed Citizens and ModelEngine plugins. */
+/** Public APIs, resolved from the installed Citizens, ModelEngine and MCPets plugins. */
 final class Integrations {
     private Integrations() {}
     enum Click { SHOP, INTERACT, IGNORE }
+    static final class MCPets {
+        private final Class<?> pet, globals, utils;
+        private final Method find, owner, present, currentName, rename, limit;
+        final Class<? extends Event> interaction;
+        private final Method eventPet;
+        MCPets(Plugin plugin) throws ReflectiveOperationException {
+            var loader=plugin.getClass().getClassLoader();
+            pet=Class.forName("fr.nocsy.mcpets.data.Pet",false,loader);
+            globals=Class.forName("fr.nocsy.mcpets.data.config.GlobalConfig",false,loader);
+            utils=Class.forName("fr.nocsy.mcpets.utils.Utils",false,loader);
+            find=pet.getMethod("getFromEntity",Entity.class); owner=pet.getMethod("getOwner");
+            present=pet.getMethod("isStillHere"); currentName=pet.getMethod("getCurrentName");
+            rename=pet.getMethod("setDisplayName",String.class,boolean.class);
+            Method length;
+            try { length=globals.getMethod("getMaxNameLength"); }
+            catch (NoSuchMethodException e) { length=globals.getMethod("getMaxNameLenght"); } // MCPets 4.1.5
+            limit=length;
+            interaction=Class.forName("fr.nocsy.mcpets.events.PetOwnerInteractEvent",false,loader).asSubclass(Event.class);
+            eventPet=interaction.getMethod("getPet");
+        }
+        Object find(Entity entity) throws ReflectiveOperationException { return find.invoke(null,entity); }
+        Object eventPet(Event event) throws ReflectiveOperationException { return eventPet.invoke(event); }
+        UUID owner(Object value) throws ReflectiveOperationException { return (UUID)owner.invoke(value); }
+        boolean present(Object value) throws ReflectiveOperationException { return (boolean)present.invoke(value); }
+        String currentName(Object value) throws ReflectiveOperationException { return (String)currentName.invoke(value); }
+        int maxNameLength() throws ReflectiveOperationException {
+            Object config=globals.getMethod("getInstance").invoke(null);
+            return Math.clamp(((Number)limit.invoke(config)).intValue(),1,128);
+        }
+        String blockedWord(String name) throws ReflectiveOperationException {
+            return (String)utils.getMethod("isInBlackList",String.class).invoke(null,name);
+        }
+        void rename(Object value,String name) throws ReflectiveOperationException {
+            rename.invoke(value,name,true); // The native player database persists the name across respawns/restarts.
+            if (!Objects.equals(name,currentName(value))) throw new IllegalStateException("The pet name could not be applied.");
+        }
+        void openMenu(Player player,Object value) throws ReflectiveOperationException {
+            pet.getMethod("setLastInteractedWith",Player.class).invoke(value,player);
+            Class<?> menu=Class.forName("fr.nocsy.mcpets.data.inventories.PetInteractionMenu",true,pet.getClassLoader());
+            Object instance=menu.getConstructor(pet,UUID.class).newInstance(value,player.getUniqueId());
+            menu.getMethod("open",Player.class).invoke(instance,player);
+        }
+    }
     static final class Citizens {
         private final Class<?> api, npcType, registryType, metadataType, selectorType, metadataEnum;
         private final ClassLoader loader;

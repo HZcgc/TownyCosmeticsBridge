@@ -33,4 +33,17 @@ class ShopSettingsTest {
         config.set("npc.render-distance",400); assertEquals(256,ShopSettings.renderDistance(config));
         assertEquals("75,000",ShopMenu.money(75000)); assertEquals("10.99",ShopMenu.euros(10.99));
     }
+    @Test void announcementAndNamingDefaultsUpgradeExistingVersionTwoConfigsWithoutResettingCustomSettings() {
+        var config=new YamlConfiguration(); config.set("presentation-version",2);
+        config.set("defaults.ingame-price",88000); config.set("hologram.lines",List.of("Custom holo"));
+        assertTrue(ShopSettings.upgrade(config)); assertTrue(config.getBoolean("announcements.enabled"));
+        assertEquals(ShopSettings.ANNOUNCEMENT,config.getString("announcements.message"));
+        assertTrue(config.getBoolean("naming.enabled")); assertEquals(16,config.getInt("naming.max-length"));
+        assertEquals(88000,config.getDouble("defaults.ingame-price")); assertEquals(List.of("Custom holo"),config.getStringList("hologram.lines"));
+        config.set("announcements.enabled",false); config.set("announcements.message","Custom: {player}/{pet}");
+        config.set("naming.enabled",false); config.set("naming.max-length",12);
+        assertFalse(ShopSettings.upgrade(config)); assertFalse(config.getBoolean("announcements.enabled"));
+        assertEquals("Custom: {player}/{pet}",config.getString("announcements.message"));
+        assertFalse(config.getBoolean("naming.enabled")); assertEquals(12,config.getInt("naming.max-length"));
+    }
 }

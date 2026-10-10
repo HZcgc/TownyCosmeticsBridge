@@ -20,9 +20,10 @@ final class PurchaseService {
     private final PurchaseLedger ledger;
     private final Gateway gateway;
     private final Consumer<Throwable> errors;
+    private final Consumer<Entry> delivered;
     private final Set<Key> busy=new HashSet<>();
-    PurchaseService(PurchaseLedger ledger, Gateway gateway, Consumer<Throwable> errors) {
-        this.ledger=ledger; this.gateway=gateway; this.errors=errors;
+    PurchaseService(PurchaseLedger ledger, Gateway gateway, Consumer<Throwable> errors, Consumer<Entry> delivered) {
+        this.ledger=ledger; this.gateway=gateway; this.errors=errors; this.delivered=delivered;
     }
     boolean owns(UUID player, PetCatalog.Pet pet) {
         Entry entry=ledger.get(new Key(player,pet.id()));
@@ -60,11 +61,11 @@ final class PurchaseService {
         if (busy.contains(key)) return result(Result.BUSY);
         Entry existing=ledger.get(key);
         if (existing!=null && existing.phase()!=Phase.DONE) return result(Result.PENDING);
-        busy.add(key);
         // Retry saves the same permanent permission without an economy withdrawal.
-        Entry entry=existing==null ? new Entry(key,pet.permission(),0,Phase.CHARGED,"store",transaction)
+        Entry entry=existing==null ? new Entry(key,pet.permission(),0,Phase.CHARGED,"store",transaction,gateway.owns(player,pet.permission()))
             : existing.permission().equals(pet.permission()) ? existing
-            : new Entry(key,pet.permission(),existing.price(),Phase.CHARGED,existing.source(),existing.transaction());
+            : new Entry(key,pet.permission(),existing.price(),Phase.CHARGED,existing.source(),existing.transaction(),existing.announcementHandled());
+        busy.add(key);
         try { if (existing!=entry) ledger.put(entry); }
         catch (IOException e) { errors.accept(e); busy.remove(key); return result(Result.ERROR); }
         return completeGrant(entry,Result.GRANTED);
@@ -80,7 +81,16 @@ final class PurchaseService {
             gateway.grant(entry.key().player(),entry.permission()).whenComplete((ignored,error)-> {
                 try {
                     if (error!=null) { errors.accept(error); output.complete(Result.PENDING); }
-                    else { ledger.put(entry.phase(Phase.DONE)); output.complete(success); }
+                    else {
+                        Entry current=ledger.get(entry.key());
+                        boolean announce=!entry.announcementHandled() && (current==null || !current.announcementHandled());
+                        Entry done=entry.completed();
+                        // Persist the claim before broadcasting: retries/recovery cannot announce twice.
+                        ledger.put(done);
+                        if (announce) try { delivered.accept(done); }
+                        catch (RuntimeException e) { errors.accept(e); /* Delivery already succeeded. */ }
+                        output.complete(success);
+                    }
                 } catch (IOException e) { errors.accept(e); output.complete(Result.PENDING); }
                 finally { busy.remove(entry.key()); }
             });

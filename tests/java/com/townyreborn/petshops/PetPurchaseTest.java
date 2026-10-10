@@ -14,6 +14,7 @@ class PetPurchaseTest {
     @TempDir Path folder;
     private static final UUID PLAYER=UUID.fromString("11111111-2222-3333-4444-555555555555");
     private final List<Throwable> errors=new ArrayList<>();
+    private final List<Entry> announcements=new ArrayList<>();
     private PetCatalog.Pet pet() {
         return new PetCatalog.Pet("fox","pet.fox","Fox","fox","",true,50000,10.99,"https://shop.example.com/package/123?username={player}",2.5,1.8f,2,"idle","auto",Map.of());
     }
@@ -35,7 +36,7 @@ class PetPurchaseTest {
         }
     }
     private PurchaseLedger ledger() throws Exception { return new PurchaseLedger(folder.resolve("transactions.yml")); }
-    private PurchaseService service(PurchaseLedger ledger,Bank bank) { return new PurchaseService(ledger,bank,errors::add); }
+    private PurchaseService service(PurchaseLedger ledger,Bank bank) { return new PurchaseService(ledger,bank,errors::add,announcements::add); }
     private static Result done(CompletionStage<Result> stage) { return stage.toCompletableFuture().join(); }
 
     @Test void confirmedPurchaseChargesOnceAndOwnershipSurvivesRestart() throws Exception {
@@ -46,6 +47,7 @@ class PetPurchaseTest {
         assertEquals(Result.ALREADY_OWNED,done(service(ledger(),bank).buy(PLAYER,pet())));
         assertEquals(1,bank.withdrawals);
         assertEquals(Phase.DONE,ledger().get(new Key(PLAYER,"fox")).phase());
+        assertEquals(1,announcements.size()); assertEquals("ingame",announcements.getFirst().source());
     }
     @Test void inheritedOrPreviouslyGrantedPermissionPreventsCharge() throws Exception {
         var bank=new Bank(); bank.owns=true;
@@ -58,6 +60,7 @@ class PetPurchaseTest {
         bank.balance=100000; bank.failWithdrawal=true;
         assertEquals(Result.NO_MONEY,done(service.buy(PLAYER,pet())));
         assertEquals(0,bank.grants); assertTrue(ledger().entries().isEmpty());
+        assertTrue(announcements.isEmpty());
     }
     @Test void missingEconomyOrExplicitDenyDoesNotCharge() throws Exception {
         var bank=new Bank(); var service=service(ledger(),bank); bank.ready=false;
@@ -74,15 +77,20 @@ class PetPurchaseTest {
         assertEquals(Result.BUSY,done(service.grant(PLAYER,pet(),"tbx-1")));
         assertEquals(1,bank.withdrawals); bank.grantResult.complete(null);
         assertEquals(Result.BOUGHT,done(first));
+        assertEquals(1,announcements.size());
     }
     @Test void failedPermissionSaveRecoversAfterRestartWithoutAnotherWithdrawal() throws Exception {
         var bank=new Bank(); bank.grantResult=CompletableFuture.failedFuture(new IllegalStateException("Storage offline"));
         assertEquals(Result.PENDING,done(service(ledger(),bank).buy(PLAYER,pet())));
+        assertTrue(announcements.isEmpty());
         var reloaded=ledger(); var entry=reloaded.get(new Key(PLAYER,"fox"));
         assertEquals(Phase.CHARGED,entry.phase());
         bank.grantResult=CompletableFuture.completedFuture(null);
         assertEquals(Result.GRANTED,done(service(reloaded,bank).recover(entry)));
         assertEquals(1,bank.withdrawals); assertEquals(Phase.DONE,ledger().get(entry.key()).phase());
+        assertEquals(1,announcements.size());
+        assertEquals(Result.GRANTED,done(service(ledger(),bank).recover(entry))); // Stale recovery snapshot.
+        assertEquals(1,announcements.size());
     }
     @Test void uncertainWithdrawalRemainsBlockedAcrossRestartForBankVerification() throws Exception {
         var bank=new Bank(); bank.throwAfterWithdrawal=true;
@@ -106,6 +114,7 @@ class PetPurchaseTest {
         assertEquals(0,bank.withdrawals); assertEquals(100000,bank.balance);
         assertEquals("tbx-1",ledger().get(new Key(PLAYER,"fox")).transaction());
         assertEquals(Result.ALREADY_OWNED,done(service(ledger(),bank).buy(PLAYER,pet())));
+        assertEquals(1,announcements.size()); assertEquals("store",announcements.getFirst().source());
     }
     private PetCatalog.Pet updatedPermission() {
         var p=pet(); return new PetCatalog.Pet(p.id(),"pet.fox_v2",p.name(),p.model(),p.iconModel(),p.enabled(),
@@ -119,6 +128,7 @@ class PetPurchaseTest {
         assertEquals(50000,receipt.price()); assertEquals("ingame",receipt.source());
         assertEquals(1,bank.withdrawals); assertEquals(50000,bank.balance);
         assertEquals(Result.ALREADY_OWNED,done(service(ledger(),bank).buy(PLAYER,updatedPermission())));
+        assertEquals(1,announcements.size());
     }
     @Test void aFailedPermissionUpdateIsRecoverableWithoutChargingAgainOrReplacingTheStoreTransaction() throws Exception {
         var bank=new Bank(); assertEquals(Result.GRANTED,done(service(ledger(),bank).grant(PLAYER,pet(),"tbx-original")));
@@ -130,6 +140,30 @@ class PetPurchaseTest {
         bank.grantResult=CompletableFuture.completedFuture(null);
         assertEquals(Result.GRANTED,done(service(ledger(),bank).recover(receipt)));
         assertEquals(0,bank.withdrawals); assertEquals("tbx-original",ledger().get(receipt.key()).transaction());
+        assertEquals(1,announcements.size());
+    }
+    @Test void announcementClaimIsDurableBeforeBroadcastAndBroadcastFailureDoesNotUndoThePurchase() throws Exception {
+        var bank=new Bank(); var saved=ledger();
+        var service=new PurchaseService(saved,bank,errors::add,entry-> {
+            try { assertTrue(ledger().get(entry.key()).announcementHandled()); assertEquals(Phase.DONE,ledger().get(entry.key()).phase()); }
+            catch (Exception e) { throw new AssertionError(e); }
+            throw new IllegalStateException("Chat plugin rejected the broadcast");
+        });
+        assertEquals(Result.BOUGHT,done(service.buy(PLAYER,pet()))); assertEquals(1,errors.size());
+        assertEquals(Result.GRANTED,done(service(ledger(),bank).grant(PLAYER,pet(),"tbx-retry")));
+        assertTrue(announcements.isEmpty()); assertEquals(1,bank.withdrawals);
+    }
+    @Test void olderCompletedTransactionsDoNotProduceRetroactiveAnnouncements() throws Exception {
+        var entry=new Entry(new Key(PLAYER,"fox"),"pet.fox",50000,Phase.DONE,"ingame","");
+        ledger().put(entry); var y=FilesIO.read(folder.resolve("transactions.yml"));
+        y.set("players."+PLAYER+".fox.announcement-handled",null); FilesIO.write(folder.resolve("transactions.yml"),y);
+        var bank=new Bank(); assertEquals(Result.GRANTED,done(service(ledger(),bank).grant(PLAYER,updatedPermission(),"repair")));
+        assertTrue(announcements.isEmpty()); assertTrue(ledger().get(entry.key()).announcementHandled());
+    }
+    @Test void aStoreGrantForAnAlreadyOwnedNativePetDoesNotAnnounceAnotherPurchase() throws Exception {
+        var bank=new Bank(); bank.owns=true;
+        assertEquals(Result.GRANTED,done(service(ledger(),bank).grant(PLAYER,pet(),"tbx-1")));
+        assertTrue(announcements.isEmpty()); assertEquals(0,bank.withdrawals);
     }
     @Test void damagedTransactionFileFailsClosed() throws Exception {
         Files.writeString(folder.resolve("transactions.yml"),"version: 1\nplayers:\n  not-a-uuid:\n    fox:\n      permission: pet.fox\n      phase: CHARGED\n");

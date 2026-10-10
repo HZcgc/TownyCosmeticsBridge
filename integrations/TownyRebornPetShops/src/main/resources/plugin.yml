@@ -16,3 +16,6 @@ permissions:
     default: op
   townyreborn.petshops.use:
     default: true
+  townyreborn.petshops.rename:
+    description: Rename your own summoned MCPets with colors and gradients.
+    default: true

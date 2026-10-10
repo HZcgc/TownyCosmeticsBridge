@@ -12,7 +12,7 @@ This update restores the five supplied Towny plugins and the key display addon o
 | TownyRebornBarrelShops | 1.0.1 | QuickShop 6.3.0.3 and BiggerBarrels runtime adapter |
 | ExcellentCratesAddon | 2.2-ec7 | EC7 key counters; legacy hologram placeholders and an unformatted virtual-key total |
 | TownyRebornCrateOffsets | 1.0.0 | Per-crate X/Y/Z displacement of the native opening animation |
-| TownyRebornPetShops | 1.2.1 | English 75k pet shops, player-facing models, extended visibility and native interaction sounds |
+| TownyRebornPetShops | 1.3.0 | English 75k pet shops, native interaction sounds, purchase announcements and RGB pet names |
 
 The four recovered projects are under `integrations/`. Source was recovered from the exact supplied JARs using CFR 0.152; only API compatibility and compilation corrections were applied. Existing settings, model placements, hunt player files and loot profiles are retained. Hunt continues to respect the configured `max-finds` (the supplied JAR defaults to 44).
 
@@ -53,6 +53,8 @@ Private server configurations and player databases are deliberately excluded fro
 New definitions are discovered asynchronously every 15 seconds and immediately on `add`, `place` or `bind`. Each offer gets `shops/<pet-id>.yml` with prices, link, model, interaction animation and exact `tebex.command`. Version 1.2 upgrades legacy 50k offers once to 75k while keeping other custom prices, links and purchase/NPC records. Replace only the addon JAR; example configs are outside `plugins` to preserve live data. Packages must still be created in Tebex; generated setup files do not publish products.
 
 Version 1.2.1 synchronizes right-click animations with their native MythicMobs sound sequences. Automatic sound lookup follows the MCPets `MythicMob` ID and its `~onInteract` skills, including the selected Clown animation's separate sound profile. `interaction-sounds` defaults to `auto`; custom animation maps or `off` can be set in each pet file. Delayed sounds stop when the pedestal is removed/reloaded or a newer interaction replaces the old one. Hologram height remains adjustable per pet with `/trpetshop height <ID> 2.8`.
+
+Version 1.3.0 announces a first successful in-game or Tebex pet unlock in server chat, once per player and pet. `announcements.enabled` and `announcements.message` control it without replacing existing settings. Shift-right-click your own summoned MCPet to rename it in an English text-input dialog, or open its native MCPets menu. RGBirdflop `&#rrggbb`, expanded `&x`/`§x` colors and MiniMessage gradients work; names are saved by MCPets and retain their colors after respawns/restarts. The visible-character limit also respects MCPets' configured maximum. UltraCosmetics and shop pedestals keep their existing interactions.
 
 `tools/configure_pet_interactions.py` prepares a two-file overlay from current MCPets/MythicMobs config copies: right-click plays the existing animation; sneak-right-click opens the native MCPets interaction menu. It retains the other settings and animation mechanics and validates both inputs before writing. The pet shop README includes the command and the settings for future pet skills.
 
