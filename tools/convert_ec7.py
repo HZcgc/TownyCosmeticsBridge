@@ -2,7 +2,21 @@
 """Convert legacy ExcellentCrates objects; never copies or modifies player databases."""
 import argparse
 from pathlib import Path
+import re
 import yaml
+
+
+LEGACY_KEY_GIVE = re.compile(
+    r"^(?P<slash>/?)crates\s+key\s+give\s+(?P<player>\S+)\s+(?P<key>\S+)\s+(?P<amount>\d+)(?:\s+-sf)?$"
+)
+
+
+def convert_command(command):
+    match = LEGACY_KEY_GIVE.fullmatch(command)
+    if match is None:
+        return command
+    return (f"{match['slash']}cratekey give {match['player']} "
+            f"{match['key']} {match['amount']}")
 
 
 def cooldown(enabled=False, mode="CUSTOM", value=0):
@@ -58,11 +72,13 @@ def convert(source: Path, destination: Path):
                           "profile": "csgo_animation:default"},
             "preview": {"enabled": old.get("Preview", {}).get("Enabled", True),
                         "config": "inventory:default"},
-            "opening": {"enabled": True, "opening_commands": old.get("Post-Open", {}).get("Commands", [])},
+            "opening": {"enabled": True, "opening_commands": [
+                convert_command(command) for command in old.get("Post-Open", {}).get("Commands", [])]},
             "cooldowns": {"global": cooldown(), "individual": cooldown(
                 old.get("OpeningCooldown", {}).get("Enabled", False),
                 value=old.get("OpeningCooldown", {}).get("Value", 0))},
             "blocks": {"positions": positions},
+            "hologram": {"enabled": old.get("Block", {}).get("Hologram", {}).get("Enabled", False)},
         }
         for rid, reward in rewards.items():
             limits = reward.get("Limits", {})
@@ -89,7 +105,8 @@ def convert(source: Path, destination: Path):
             }
             if reward["Type"] == "COMMAND":
                 value["commands"] = {"enabled": True, "iterations": 1, "give_mode": "NORMAL",
-                                     "bundles": {"legacy": {"commands": reward["Commands"], "weight": 1.0}}}
+                                     "bundles": {"legacy": {"commands": [convert_command(command) for command in reward["Commands"]],
+                                                            "weight": 1.0}}}
             elif reward["Type"] == "ITEM":
                 value["items"] = {"item_list": reward["ItemsData"]}
             else:
