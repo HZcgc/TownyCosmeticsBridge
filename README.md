@@ -6,7 +6,8 @@ This update restores the five supplied Towny plugins and the key display addon o
 | --- | --- | --- |
 | TownyCosmeticsBridge | 1.2.2 | Native EC7 reward preview and virtual key service |
 | TownyRebornCrateModels | 1.0.3 | EC7 registry, interaction context and pre-start event |
-| TownyRebornHunt | 1.0.2 | Native virtual keys; transactional legacy SQLite migration |
+| TownyRebornHunt | 1.0.3 | Native virtual keys; legacy import and one-time lost Halloween balance recovery |
+| ExcellentCrates key patch | 7.1.0-townykeys.1 | Persist updated balances; keep current keys across rapid rejoins |
 | TownyRebornLoot | 1.0.1 | EC7 opening guards; historical test reset retired |
 | TownyRebornBarrelShops | 1.0.1 | QuickShop 6.3.0.3 and BiggerBarrels runtime adapter |
 | ExcellentCratesAddon | 2.2-ec7 | EC7 key counters; legacy hologram placeholders and an unformatted virtual-key total |
@@ -40,6 +41,10 @@ ExcellentCrates 7.1.0 does not expose a public animation-position setter or its 
 Private server configurations and player databases are deliberately excluded from this repository. The separate configuration overlay accompanies the server update package.
 
 `python3 tools/configure_ec7.py EXCELLENTCRATES DELUXEMENUS` updates copies of the two configuration folders for EC7.1. It enables native batches up to 20 for every crate, disables opening cooldowns that otherwise cap a batch at one, and provides all twenty amount buttons. Existing interaction cooldowns, reward quotas, weights, payouts, item payloads, locations and database settings are retained. Native EC skips the amount menu when only one opening is available. The four standard crates, their key/reward labels and a separate preview profile use Towny Reborn's pink/lime palette. Halloween keeps its own key/reward labels, hologram settings and original preview profile, and stays absent from the public DeluxeMenus crate menu. Menu preview/open commands use `crate preview ID PLAYER` and `crate open ID PLAYER`; balances use the existing key display addon. The tool also updates legacy key payouts elsewhere in DeluxeMenus while retaining their recipients and amounts. Apply the generated files with the server stopped; this tool never reads or writes player databases.
+
+## Crate key persistence
+
+[Crate key fix and installation](excellentcrates-patch/README.md): EC7.1.0's key repository attempts a plain INSERT when saving an existing owner/key record. The patch enables native SQL updates on conflict, and merges login data without replacing current cached balances with a stale periodic save. All key types keep their remaining balances after rejoin and restart. Hunt 1.0.3 can recover confirmed unspent Halloween keys once from its payment records and the current reward usage table, with a backup, transaction, audit and durable marker. Install both JARs from `TownyReborn-Crate-Key-Fix.zip` while the server is stopped; keep the live player data folders. The build tests the original failure and the fixed native persistence/cost services against SQLite.
 
 ## MCPets shops
 

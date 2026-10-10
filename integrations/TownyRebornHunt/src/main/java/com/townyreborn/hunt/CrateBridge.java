@@ -15,6 +15,10 @@ final class CrateBridge {
         api.virtualKey(id);
     }
 
+    int balance(Player player, String id) throws ReflectiveOperationException {
+        return api.keyBalance(player, api.virtualKey(id));
+    }
+
     ClaimService.Payment prepare(Player player, String id) throws ReflectiveOperationException {
         if (!player.isOnline()) throw new IllegalStateException("The player is offline.");
         Object key = api.virtualKey(id);

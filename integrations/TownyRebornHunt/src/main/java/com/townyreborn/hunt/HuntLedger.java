@@ -9,6 +9,8 @@ import java.nio.file.attribute.FileAttribute;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -113,6 +115,26 @@ final class HuntLedger {
             arrayList.add(string.substring(5));
         }
         return arrayList.stream().sorted().toList();
+    }
+
+    /** Confirmed, recorded key payments only; pending finds cannot be recovered. */
+    synchronized Map<UUID, Integer> confirmedKeyPayments(String keyId) throws IOException {
+        Map<UUID, Integer> payments = new LinkedHashMap<>();
+        try (Stream<Path> folders = Files.list(this.players)) {
+            for (Path folder : folders.filter(Files::isDirectory).sorted().toList()) {
+                UUID owner;
+                try { owner = UUID.fromString(folder.getFileName().toString()); }
+                catch (IllegalArgumentException invalidName) { continue; }
+                Properties data = load(owner);
+                int count = 0;
+                for (String field : data.stringPropertyNames()) {
+                    if (field.startsWith("head.") && "FOUND".equals(data.getProperty(field))
+                            && keyId.equals(data.getProperty("key." + field.substring(5)))) count++;
+                }
+                if (count > 0) payments.put(owner, count);
+            }
+        }
+        return Map.copyOf(payments);
     }
 
     synchronized int reset(UUID uUID) throws IOException {

@@ -77,6 +77,8 @@ implements Listener {
             LegacyCrateMigration.run(Bukkit.getPluginManager().getPlugin("ExcellentCrates"), this.getLogger());
             this.crates = new CrateBridge(Bukkit.getPluginManager().getPlugin("ExcellentCrates"));
             this.loadHunt();
+            LostHuntKeyRecovery.run(Bukkit.getPluginManager().getPlugin("ExcellentCrates"), this.ledger,
+                    this.eventId, this.keyId, this.getLogger());
             Bukkit.getPluginManager().registerEvents((Listener)this, (Plugin)this);
             this.registerPlaceholders();
             this.getLogger().info("Loaded " + this.heads.activeCount() + "/" + this.maximum + " ghosts for " + this.eventId + ". Reward: 1 virtual " + this.keyId + " key per ghost.");
@@ -488,9 +490,14 @@ implements Listener {
         return true;
     }
 
-    private void showProgress(CommandSender commandSender, UUID uUID) throws IOException {
+    private void showProgress(CommandSender commandSender, UUID uUID) throws IOException, ReflectiveOperationException {
         HuntLedger.Summary summary = this.ledger.summary(uUID);
         this.tell(commandSender, "progress", "found", summary.found(), "total", this.maximum);
+        Player online = Bukkit.getPlayer(uUID);
+        if (online != null) {
+            commandSender.sendMessage(this.text(this.getConfig().getString("prefix", "")
+                    + "&fAvailable Halloween Keys: &d" + this.crates.balance(online, this.keyId)));
+        }
         if (summary.pending() > 0) {
             this.tell(commandSender, "pending", new Object[0]);
         }

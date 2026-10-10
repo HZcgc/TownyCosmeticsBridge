@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pinned JDK 25 build, regression tests and complete QuickShop overlay packaging."""
+"""Pinned JDK 25 build, regression tests and complete plugin overlay packaging."""
 import hashlib
 import json
 import os
@@ -46,7 +46,8 @@ def main():
                 (libraries / Path(name).name).write_bytes(jar.read(name))
     cp = os.pathsep.join(str(p) for p in [DEPS / "paper-api.jar", DEPS / "slf4j-api.jar",
          DEPS / "log4j-api.jar", libraries / "*", DEPS / "*"])
-    projects = [ROOT, *sorted((ROOT / "integrations").glob("Towny*")), ROOT / "quickshop-patch"]
+    projects = [ROOT, *sorted((ROOT / "integrations").glob("Towny*")),
+                ROOT / "quickshop-patch", ROOT / "excellentcrates-patch"]
     outputs = []
     DIST.mkdir(exist_ok=True)
     for project in projects:
@@ -60,7 +61,7 @@ def main():
         pom = ET.parse(project / "pom.xml").getroot()
         artifact = pom.findtext("m:artifactId", namespaces=ns)
         version = pom.findtext("m:version", namespaces=ns)
-        if project.name == "quickshop-patch": continue
+        if project.name in {"quickshop-patch", "excellentcrates-patch"}: continue
         jar_path = DIST / f"{artifact}-{version}.jar"
         for previous in DIST.glob(f"{artifact}-*.jar"):
             if previous != jar_path: previous.unlink()
@@ -74,7 +75,7 @@ def main():
     tests = BUILD / "test-classes"
     if tests.exists(): shutil.rmtree(tests)
     tests.mkdir()
-    # The replacement wrapper must precede the original QuickShop class on the test classpath.
+    # Replacement classes must precede the original plugin classes on the test classpath.
     test_cp = os.pathsep.join(str(p) for p in [*reversed(outputs), cp])
     run([JAVA / "javac", "--release", "25", "-encoding", "UTF-8", "-cp", test_cp,
          "-d", tests, *sorted((ROOT / "tests/java").rglob("*.java"))])
@@ -94,11 +95,44 @@ def main():
         new.write(ROOT / "quickshop-patch/LICENSE", "META-INF/TOWNY-BARREL-PATCH-LICENSE")
         for path in (ROOT / "quickshop-patch/src/main/java").rglob("*.java"):
             new.write(path, "META-INF/towny-patch-source/" + str(path.relative_to(ROOT / "quickshop-patch/src/main/java")))
+
+    ec_patch = ROOT / "excellentcrates-patch"
+    ec_classes = ec_patch / "target/classes"
+    ec_patched = DIST / "ExcellentCrates-7.1.0-townykeys.1.jar"
+    with zipfile.ZipFile(DEPS / "ExcellentCrates.jar") as old, zipfile.ZipFile(ec_patched, "w", zipfile.ZIP_DEFLATED) as new:
+        for replacement in ec_classes.rglob("*.class"):
+            relative = str(replacement.relative_to(ec_classes))
+            # javac may emit synthetic nested helpers for an overlaid class.
+            outer = relative.split("$", 1)[0] + ".class" if "$" in relative else relative
+            if outer not in old.namelist():
+                raise RuntimeError(f"Unexpected EC7 replacement: {replacement.name}")
+        for entry in old.infolist():
+            if (ec_classes / entry.filename).is_file(): continue
+            if entry.filename.startswith("META-INF/") and entry.filename.endswith((".SF", ".RSA", ".DSA")): continue
+            data = old.read(entry.filename)
+            if entry.filename == "plugin.yml":
+                original_version = b"version: '7.1.0'"
+                if data.count(original_version) != 1: raise RuntimeError("Unexpected EC7 plugin version")
+                data = data.replace(original_version, b"version: '7.1.0-townykeys.1'")
+            new.writestr(entry, data)
+        for path in ec_classes.rglob("*.class"): new.write(path, path.relative_to(ec_classes))
+        new.write(ec_patch / "LICENSE", "META-INF/TOWNY-KEY-PATCH-LICENSE")
+        for path in (ec_patch / "src/main/java").rglob("*.java"):
+            new.write(path, "META-INF/towny-key-patch-source/" + str(path.relative_to(ec_patch / "src/main/java")))
     jars = sorted(DIST.glob("*.jar"))
     (DIST / "SHA256SUMS").write_text("".join(f"{digest(p)}  {p.name}\n" for p in jars))
     with zipfile.ZipFile(DIST / "TownyReborn-Plugin-Update-2026-10-10.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
         for path in [*jars, DIST / "SHA256SUMS", ROOT / "INSTALLATION.md"]:
             bundle.write(path, path.name)
+        bundle.write(ec_patch / "README.md", "excellentcrates-patch/README.md")
+    key_bundle = DIST / "TownyReborn-Crate-Key-Fix.zip"
+    hunt_version = ET.parse(ROOT / "integrations/TownyRebornHunt/pom.xml").getroot().findtext("{http://maven.apache.org/POM/4.0.0}version")
+    with zipfile.ZipFile(key_bundle, "w", zipfile.ZIP_DEFLATED) as bundle:
+        bundle.write(ec_patched, f"plugins/{ec_patched.name}")
+        hunt = DIST / f"TownyRebornHunt-{hunt_version}.jar"
+        bundle.write(hunt, f"plugins/{hunt.name}")
+        bundle.write(ec_patch / "README.md", "INSTALLATION.md")
+        bundle.writestr("SHA256SUMS", "".join(f"{digest(p)}  plugins/{p.name}\n" for p in [ec_patched, hunt]))
     print("Build and tests passed. Files:", DIST)
     pet_project = ROOT / "integrations/TownyRebornPetShops"
     pet_version = ET.parse(pet_project / "pom.xml").getroot().findtext("{http://maven.apache.org/POM/4.0.0}version")
