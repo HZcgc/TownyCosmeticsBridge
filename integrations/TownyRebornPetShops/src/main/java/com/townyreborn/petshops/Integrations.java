@@ -80,6 +80,7 @@ final class Integrations {
     }
     static final class Models {
         record Handle(UUID uuid, Object entity, Object model) {}
+        record Playback(String animation, long durationMillis) {}
         private final Class<?> api, modeled, active, animations, base, data, blueprint, animation, property, loop;
         final Class<? extends Event> interaction;
         Models(Plugin plugin) throws ReflectiveOperationException {
@@ -159,18 +160,18 @@ final class Integrations {
             return clips.stream().filter(name->!movement.contains(name.toLowerCase(Locale.ROOT))).sorted().findFirst()
                 .orElse(clips.contains("spawn")?"spawn":null);
         }
-        long interact(Handle handle, String configured) throws ReflectiveOperationException {
+        Playback interact(Handle handle, String configured) throws ReflectiveOperationException {
             var clips=clips(handle);
             String selected=chooseInteraction(clips.keySet(),configured);
-            if (selected==null) return 0;
+            if (selected==null) return null;
             Object handler=active.getMethod("getAnimationHandler").invoke(handle.model());
             Object played=animations.getMethod("playAnimation",String.class,double.class,double.class,double.class,boolean.class)
                 .invoke(handler,selected,0.1,0.1,1.0,true);
-            if (played==null) return 0;
+            if (played==null) return null;
             Object once=Arrays.stream(loop.getEnumConstants()).filter(value->((Enum<?>)value).name().equals("ONCE")).findFirst().orElseThrow();
             property.getMethod("setForceLoopMode",loop).invoke(played,once);
             double length=((Number)animation.getMethod("getLength").invoke(clips.get(selected))).doubleValue();
-            return Math.clamp((long)Math.ceil((length+0.2)*1000),350,60000);
+            return new Playback(selected,Math.clamp((long)Math.ceil((length+0.2)*1000),350,60000));
         }
         void detach(Handle handle) throws ReflectiveOperationException {
             api.getMethod("removeModeledEntity",UUID.class).invoke(null,handle.uuid());

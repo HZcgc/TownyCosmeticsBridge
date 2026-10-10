@@ -94,7 +94,8 @@ class PedestalModelTest {
             var model=mock(ActiveModel.class); var handler=mock(AnimationHandler.class); var property=mock(IAnimationProperty.class);
             when(model.getBlueprint()).thenReturn(blueprint); when(model.getAnimationHandler()).thenReturn(handler);
             when(handler.playAnimation(selected,0.1,0.1,1.0,true)).thenReturn(property);
-            assertEquals(1950,adapter().interact(handle(null,model),"auto"),selected);
+            var playback=adapter().interact(handle(null,model),"auto");
+            assertEquals(selected,playback.animation()); assertEquals(1950,playback.durationMillis());
             verify(handler).playAnimation(selected,0.1,0.1,1.0,true);
             verify(property).setForceLoopMode(BlueprintAnimation.LoopMode.ONCE);
             verifyNoMoreInteractions(handler); // Never stop/remove the standing idle animation.

@@ -14,10 +14,12 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 final class PetCatalog {
-    record Definition(String id, String permission, String name, String model, String iconModel) {}
+    record Definition(String id, String permission, String name, String model, String iconModel,
+                      String mythicMob, Map<String,List<PetSounds.Cue>> sounds) {}
     record Pet(String id, String permission, String name, String model, String iconModel,
                boolean enabled, double price, double storePrice, String storeUrl,
-               double hologramHeight, float width, float height, String idle, String interaction) {
+               double hologramHeight, float width, float height, String idle, String interaction,
+               Map<String,List<PetSounds.Cue>> sounds) {
         Pet {
             validId(id);
             if (permission == null || !permission.matches("[A-Za-z0-9_.-]{1,200}") || permission.startsWith("ultracosmetics."))
@@ -25,6 +27,7 @@ final class PetCatalog {
             if (name == null || name.isBlank() || model == null || !model.matches("[A-Za-z0-9_:-]{1,128}"))
                 throw new IllegalArgumentException("Invalid pet name/model: " + id);
             PetCatalog.price(price); PetCatalog.price(storePrice); validUrl(storeUrl);
+            sounds=PetSounds.immutable(sounds);
             if (interaction == null || !interaction.matches("[A-Za-z0-9_.:-]{1,128}"))
                 throw new IllegalArgumentException("Invalid interaction animation: " + id);
             if (!Double.isFinite(hologramHeight) || Math.abs(hologramHeight)>32 || !Float.isFinite(width)
@@ -55,11 +58,15 @@ final class PetCatalog {
     // Reads/parses only source files. Safe to run away from the server thread.
     Map<String, Definition> scanDefinitions() throws IOException {
         var found=new TreeMap<String, Definition>();
+        var audio=PetSounds.read(definitionsFolder.toAbsolutePath().getParent().getParent().resolve("MythicMobs"));
         if (Files.isDirectory(definitionsFolder)) {
             try (var stream=Files.walk(definitionsFolder)) {
                 for (Path p:stream.filter(Files::isRegularFile).filter(p->p.toString().endsWith(".yml") || p.toString().endsWith(".yaml")).sorted().toList()) {
                     Definition d=parseDefinition(Files.readString(p));
-                    if (d!=null && found.putIfAbsent(d.id(),d)!=null) throw new IOException("Duplicate MCPets ID: "+d.id());
+                    if (d!=null) {
+                        d=new Definition(d.id(),d.permission(),d.name(),d.model(),d.iconModel(),d.mythicMob(),audio.forPet(d.mythicMob()));
+                        if (found.putIfAbsent(d.id(),d)!=null) throw new IOException("Duplicate MCPets ID: "+d.id());
+                    }
                 }
             } catch (RuntimeException e) { throw new IOException("Cannot read MCPets definitions", e); }
         }
@@ -124,7 +131,7 @@ final class PetCatalog {
                 s.getDouble("hologram-height",defaults.getDouble("hologram-height",2.5)),
                 (float)s.getDouble("hitbox-width",defaults.getDouble("hitbox-width",1.8)),
                 (float)s.getDouble("hitbox-height",defaults.getDouble("hitbox-height",2)),s.getString("idle-animation","idle"),
-                s.getString("interaction-animation", "auto"));
+                s.getString("interaction-animation", "auto"),PetSounds.configured(s.get("interaction-sounds"),d==null?Map.of():d.sounds()));
         } catch (RuntimeException e) { throw new IOException("Invalid shop entry: "+id,e); }
     }
     private static boolean generated(YamlConfiguration document, Pet pet) {
@@ -137,6 +144,7 @@ final class PetCatalog {
         if (!document.contains("interaction-animation")) {
             document.set("interaction-animation", pet.interaction()); changed=true;
         }
+        if (!document.contains("interaction-sounds")) { document.set("interaction-sounds","auto"); changed=true; }
         return changed;
     }
     Pet add(String id) throws IOException {
@@ -148,6 +156,7 @@ final class PetCatalog {
         var s=new YamlConfiguration();
         s.options().setHeader(List.of("Settings for this pet; /trpetshop reload applies manual edits.",
             "Set store-url to this pet's Tebex package; interaction-animation can be auto or a model animation.",
+            "interaction-sounds: auto reads the native MythicMobs sounds; use off or a custom animation map to override.",
             "The permission and tebex block are generated from the MCPets ID.",
             "Copy tebex.command into this pet's Tebex package as a server-console payment command."));
         s.set("offer-version",2); s.set("enabled",true); s.set("name",d.name()); s.set("permission",d.permission());
@@ -159,6 +168,7 @@ final class PetCatalog {
         s.set("hitbox-width",defaults.getDouble("hitbox-width",1.8));
         s.set("hitbox-height",defaults.getDouble("hitbox-height",2)); s.set("idle-animation","idle");
         s.set("interaction-animation", "auto");
+        s.set("interaction-sounds", "auto");
         Pet pet=parseShop(id,s,definitions); generated(s,pet);
         FilesIO.write(shopFile(id),s); reload(); return get(id);
     }
@@ -206,7 +216,7 @@ final class PetCatalog {
                 if (match.find()) name=match.group(1).replace("\\\"","\"");
             }
         }
-        return new Definition(id,perm,name,id,itemModel);
+        return new Definition(id,perm,name,id,itemModel,Objects.toString(d.get("MythicMob"),id),Map.of());
     }
     private static String unquote(String s) {
         return s.length()>1 && s.startsWith("\"") && s.endsWith("\"") ? s.substring(1,s.length()-1) : s;

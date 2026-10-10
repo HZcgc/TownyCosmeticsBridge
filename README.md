@@ -12,7 +12,7 @@ This update restores the five supplied Towny plugins and the key display addon o
 | TownyRebornBarrelShops | 1.0.1 | QuickShop 6.3.0.3 and BiggerBarrels runtime adapter |
 | ExcellentCratesAddon | 2.2-ec7 | EC7 key counters; legacy hologram placeholders and an unformatted virtual-key total |
 | TownyRebornCrateOffsets | 1.0.0 | Per-crate X/Y/Z displacement of the native opening animation |
-| TownyRebornPetShops | 1.2.0 | English 75k pet shops, extended visibility, player-facing models and separate animation/shop clicks |
+| TownyRebornPetShops | 1.2.1 | English 75k pet shops, player-facing models, extended visibility and native interaction sounds |
 
 The four recovered projects are under `integrations/`. Source was recovered from the exact supplied JARs using CFR 0.152; only API compatibility and compilation corrections were applied. Existing settings, model placements, hunt player files and loot profiles are retained. Hunt continues to respect the configured `max-finds` (the supplied JAR defaults to 44).
 
@@ -51,6 +51,8 @@ Private server configurations and player databases are deliberately excluded fro
 [Pet shop installation and commands](integrations/TownyRebornPetShops/README.md): place the animated model with `/trpetshop place <MCPets-ID>`. Right-click plays an interaction animation; left-click opens the English purchase menu. Defaults are 75,000 $ in-game and 10.99 € in Tebex. Customize them with `/trpetshop price <ID> 75000 10.99` and set its package link with `/trpetshop store <ID> https://shop.example.com/package/123`. Models use a configurable 64-block render distance and face nearby players. In-game purchases use Vault, ask for confirmation and save a single permanent MCPets permission through LuckPerms. Console-only `trpetshop grant {id} <MCPets-ID> {transaction}` supports offline Tebex delivery. UltraCosmetics and crate rewards are unchanged. Generic builds begin with an empty catalog; add or place the MCPets you wish to sell.
 
 New definitions are discovered asynchronously every 15 seconds and immediately on `add`, `place` or `bind`. Each offer gets `shops/<pet-id>.yml` with prices, link, model, interaction animation and exact `tebex.command`. Version 1.2 upgrades legacy 50k offers once to 75k while keeping other custom prices, links and purchase/NPC records. Replace only the addon JAR; example configs are outside `plugins` to preserve live data. Packages must still be created in Tebex; generated setup files do not publish products.
+
+Version 1.2.1 synchronizes right-click animations with their native MythicMobs sound sequences. Automatic sound lookup follows the MCPets `MythicMob` ID and its `~onInteract` skills, including the selected Clown animation's separate sound profile. `interaction-sounds` defaults to `auto`; custom animation maps or `off` can be set in each pet file. Delayed sounds stop when the pedestal is removed/reloaded or a newer interaction replaces the old one. Hologram height remains adjustable per pet with `/trpetshop height <ID> 2.8`.
 
 `tools/configure_pet_interactions.py` prepares a two-file overlay from current MCPets/MythicMobs config copies: right-click plays the existing animation; sneak-right-click opens the native MCPets interaction menu. It retains the other settings and animation mechanics and validates both inputs before writing. The pet shop README includes the command and the settings for future pet skills.
 

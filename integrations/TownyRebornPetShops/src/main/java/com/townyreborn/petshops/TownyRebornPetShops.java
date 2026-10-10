@@ -274,9 +274,14 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
         RuntimeNpc runtime=active.get(npc); PetCatalog.Pet pet=catalog.get(binding.pet());
         if (runtime==null || runtime.model()==null || pet==null) return;
         try {
-            long duration=models.interact(runtime.model(),pet.interaction());
-            if (duration>0) animationUntil.put(npc,now+Math.max(duration,(long)(Math.clamp(getConfig().getDouble("interaction.cooldown-seconds",3),0,60)*1000)));
-            else message(player,"&eThis pet has no interaction animation configured.");
+            var playback=models.interact(runtime.model(),pet.interaction());
+            if (playback!=null) {
+                var cues=PetSounds.forAnimation(pet.sounds(),playback.animation());
+                long duration=Math.max(playback.durationMillis(),PetSounds.duration(cues));
+                long until=now+Math.max(duration,(long)(Math.clamp(getConfig().getDouble("interaction.cooldown-seconds",3),0,60)*1000));
+                animationUntil.put(npc,until);
+                PetSounds.play(this,runtime.base(),cues,()->active.get(npc)==runtime && animationUntil.getOrDefault(npc,0L)==until);
+            } else message(player,"&eThis pet has no interaction animation configured.");
         } catch (ReflectiveOperationException e) { error(e); }
     }
     private void open(Player player, String id, boolean confirmation) {

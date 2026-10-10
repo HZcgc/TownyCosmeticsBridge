@@ -1,13 +1,13 @@
-# Towny Reborn pedestal pet shops — 1.2.0
+# Towny Reborn pedestal pet shops — 1.2.1
 
-Place the animated **3D pet model** on a pedestal with an English hologram. **Right-click** plays its interaction animation; **left-click** opens the choice between a permanent unlock for **75,000 $** and a **10.99 € Tebex package**. The in-game option asks for a second confirmation before payment. Models use a configurable **64-block render distance** and turn toward the nearest visible player within **8 blocks**.
+Place the animated **3D pet model** on a pedestal with an English hologram. **Right-click** plays its interaction animation and matching native sounds; **left-click** opens the choice between a permanent unlock for **75,000 $** and a **10.99 € Tebex package**. The in-game option asks for a second confirmation before payment. Models use a configurable **64-block render distance** and turn toward the nearest visible player within **8 blocks**.
 
 Only native MCPets permissions are unlocked. UltraCosmetics and cosmetic crate rewards are unchanged. The shop plays ModelEngine animation clips without running MythicMobs combat skills. Prices, package links, models, icons, hologram heights and interaction animations are configurable per pet.
 
 ## Install or update
 
 1. Use Paper 26.2 / Java 25, Citizens, LuckPerms and Vault. Models also require MCPets, MythicMobs, ModelEngine and the matching ItemsAdder resource pack. A Vault economy provider such as EssentialsX is needed for in-game payments. The model adapter is verified against ModelEngine R4.1.0.
-2. Stop the server and replace the old pet shop JAR with `plugins/TownyRebornPetShops-1.2.0.jar` from this ZIP. Keep only one pet shop JAR. **Keep the existing `plugins/TownyRebornPetShops` data folder**, especially `shops`, `npcs.yml` and `transactions.yml`. The `examples` folder is for reference; do not copy it over live data.
+2. Stop the server and replace the old pet shop JAR with `plugins/TownyRebornPetShops-1.2.1.jar` from this ZIP. Keep only one pet shop JAR. **Keep the existing `plugins/TownyRebornPetShops` data folder**, especially `shops`, `npcs.yml` and `transactions.yml`. The `examples` folder is for reference; do not copy it over live data. Native sound lookup reads the already installed MythicMobs mob/skill files; no extra sound assets are needed for the supplied pets.
 3. Start normally and check `/trpetshop status` and `/trpetshop list`. Existing pedestal bindings are reused. Legacy 50,000-dollar offers and the old default price migrate once to 75,000. Other custom prices, links, store prices, models, heights and payment records are retained. The shipped German click instruction becomes English; custom hologram lines remain available for editing.
 4. For a new pedestal, stand where its model should appear and run `/trpetshop place <MCPets-ID>`. The plugin creates a protected invisible Citizens carrier, adds the pet model and hologram, and prints the NPC ID, pet file path and Tebex console command.
 5. Set the matching package URL with `/trpetshop store <MCPets-ID> https://shop.example.com/package/123456`. The default link goes to the store homepage until a package link is configured. `off` disables the link.
@@ -35,6 +35,8 @@ The addon creates no pedestal blocks and places no models at unknown locations. 
 
 `auto` selects a native interaction clip. The supplied pets use Bone Dragon `flap`, Clown `honk`, Mummy `crush` and Witch Cat `cauldron`. Use `animation` to choose another loaded clip, such as the Clown's `honkshot`, or disable it with `off`. The same setting works for future pets.
 
+Hologram height is measured in blocks above the model's base. `/trpetshop height nm_widge_the_witch_cat 2.8` immediately moves the Witch Cat's hologram to that height. The setting applies to all shop pedestals displaying that pet and is also stored as `hologram-height` in its pet file.
+
 Admin permission: `townyreborn.petshops.admin` (op by default). Player access: `townyreborn.petshops.use` (allowed by default). `/trpetshop help` lists the English commands. Reload closes purchase menus; a confirmation cannot charge an outdated price.
 
 ## Individual pet files and future pets
@@ -60,6 +62,7 @@ hitbox-width: 1.8
 hitbox-height: 2.0
 idle-animation: idle
 interaction-animation: auto
+interaction-sounds: auto
 tebex:
   command: 'trpetshop grant {id} future_pet {transaction}'
   execution: SERVER_CONSOLE
@@ -67,6 +70,22 @@ tebex:
 ```
 
 Edit prices, `store-url` or `interaction-animation` here and run `/trpetshop reload`. Positive prices must have at most two decimal places. The displayed store price does not change Tebex's actual price. Retain both version fields so later manual prices are not re-migrated.
+
+`interaction-sounds: auto` reads the native mob identified by MCPets' `MythicMob`, follows its `~onInteract` skill references and matches their ModelEngine `state` to the animation that actually plays. Literal sound names, cumulative `delay` ticks, pitch, volume and sound category are preserved. Mob/skill YAML subfolders and both capitalized/lowercase `Mobs`/`Skills` directory names are supported. Spawn/timer skills do not become interaction sounds. Native file changes are picked up by discovery or reload. Existing shop files get the `auto` setting without resetting prices, links or hologram heights.
+
+Set `interaction-sounds: off` to mute one pet's interactions. For future packs using dynamic expressions or other complex skill mechanics, configure an explicit profile in the same pet file:
+
+```yaml
+interaction-sounds:
+  honk:
+    - sound: minecraft:block.note_block.trumpet_exposed
+      delay-ticks: 8
+      volume: 0.7
+      pitch: 1.85
+      category: MASTER
+```
+
+The profile key is the played animation name. Custom resource-pack sound keys are supported. `delay-ticks` is measured from the animation start (20 ticks per second at normal tick rate). Explicit sound profiles survive reloads; they are not replaced by automatic lookup. Only sound cues are copied: the addon never casts native combat/console skills. Sounds play at the pedestal for nearby players, and queued cues are suppressed after removal, reload or replacement by a newer animation. Click cooldowns also cover the sound sequence.
 
 The pet ID, native permission and Tebex block are generated from MCPets. Edited grant commands cannot execute arbitrary console commands. Wildcards and UltraCosmetics permissions are rejected. Icons are read from modern MCPets item components; purchases grant permanent access rather than an item. Invalid or duplicate definitions retain the last valid catalog. `discovery-interval-seconds` accepts 5–3600 seconds.
 
@@ -112,8 +131,8 @@ python3 tools/configure_pet_interactions.py \
   --output /tmp/pet-interactions
 ```
 
-The helper preserves comments, existing mechanics and unrelated settings. Use the same crouching condition for future pet skills. This 1.2.0 ZIP contains the shop addon and examples; it does not replace live MCPets/MythicMobs files.
+The helper preserves comments, existing mechanics and unrelated settings. Use the same crouching condition for future pet skills. This 1.2.1 ZIP contains the shop addon and examples; it does not replace live MCPets/MythicMobs files.
 
-Tests cover native ModelEngine events, render/culling setters, body/head rotation, one-shot clips, one-time 75k migration, custom links, generated commands, discovery, permanent purchases, duplicate charges and restart recovery. On the live server, also check model visibility at a distance, both clicks, a non-op player's 75k purchase, ownership after restart and Tebex test delivery.
+Tests cover native ModelEngine events, render/culling setters, body/head rotation, one-shot clips, sound names/timing/category, nested sound helpers, duplicate interactions, queued sound cleanup, one-time 75k migration, custom links, generated commands, discovery, permanent purchases and restart recovery. On the live server, also check the four models' sounds/visibility, both clicks, a non-op player's 75k purchase, ownership after restart and Tebex test delivery.
 
-API references: [ModelEngine animations](https://wiki.mythiccraft.io/modelengine/API/Basic/Play-Stop-Animation), [MCPets click settings](https://mcpets.gitbook.io/mcpets/tutorials/config-templates/config-file), [MCPets permissions](https://mcpets.gitbook.io/mcpets/tutorials/config-templates/pet-config), [Tebex command variables](https://docs.tebex.io/creators/command-management/an-introduction-to-commands).
+API references: [ModelEngine animations](https://wiki.mythiccraft.io/modelengine/API/Basic/Play-Stop-Animation), [MythicMobs sounds](https://wiki.mythiccraft.io/mythicmobs/skills/mechanics/Sound), [MCPets click settings](https://mcpets.gitbook.io/mcpets/tutorials/config-templates/config-file), [MCPets permissions](https://mcpets.gitbook.io/mcpets/tutorials/config-templates/pet-config), [Tebex command variables](https://docs.tebex.io/creators/command-management/an-introduction-to-commands).
