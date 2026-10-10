@@ -62,5 +62,9 @@
   "gson.jar": {
     "url": "https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar",
     "sha256": "dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0"
+  },
+  "joml.jar": {
+    "url": "https://repo.maven.apache.org/maven2/org/joml/joml/1.10.8/joml-1.10.8.jar",
+    "sha256": "bf19510145178df82cd3bd37edd514c13f411531ec5545299fd3abcbc98fe7c2"
   }
 }

@@ -1,0 +1,26 @@
+# Additional displacement in blocks for each crate's opening animation.
+# Positive Y moves it up; negative Y moves it down. Decimals are supported.
+# Each coordinate must be between -32 and 32. Zero retains the original position.
+# Changes apply to the next opening. Use /trcrateoffset reload after editing this file.
+# Example: /trcrateoffset set vote 0 0.5 0 moves the Vote animation half a block up.
+offsets:
+  daily:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  vote:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  patron:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  cosmetic:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  halloween2026:
+    x: 0.0
+    y: 0.0
+    z: 0.0

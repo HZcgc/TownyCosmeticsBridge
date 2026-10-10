@@ -1,0 +1,16 @@
+name: TownyRebornCrateOffsets
+version: '${project.version}'
+main: com.townyreborn.crateoffsets.TownyRebornCrateOffsets
+api-version: '1.21'
+author: Towny Reborn
+description: Per-crate X, Y and Z offsets for the native ExcellentCrates 7 opening animations.
+depend: [ExcellentCrates, nightcore]
+commands:
+  trcrateoffset:
+    description: Adjust the opening animation position for each crate.
+    usage: /trcrateoffset set <crate> <x> <y> <z> | reset <crate> | reload
+    permission: townyreborn.crateoffsets.admin
+permissions:
+  townyreborn.crateoffsets.admin:
+    description: Configure crate opening animation offsets.
+    default: op
