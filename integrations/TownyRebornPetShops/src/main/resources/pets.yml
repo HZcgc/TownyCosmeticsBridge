@@ -1,5 +1,4 @@
-# /trpetshop add <MCPets-ID> reads the existing MCPets definition.
-# /trpetshop place <MCPets-ID> can add it and place a modeled Citizens NPC.
-# Each entry can override ingame-price, store-price, store-url, model,
-# icon-item-model, idle-animation, hologram-height and hitbox dimensions.
+# New offers are stored in shops/<MCPets-ID>.yml, including their Tebex command.
+# Existing 1.0 pets.yml entries migrate once; keep this file for migration history.
+shops-migrated: true
 pets: {}

@@ -35,6 +35,9 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
     private Integrations.Citizens citizens;
     private Integrations.Models models;
     private NamespacedKey marker;
+    private boolean discoveryRunning;
+    private long lastDiscoveryFailure;
+    private org.bukkit.scheduler.BukkitTask discoveryTask;
     private final Map<UUID,RuntimeNpc> active=new HashMap<>();
     private final Map<UUID,UUID> entities=new ConcurrentHashMap<>();
     private final Map<UUID,Long> lastClick=new HashMap<>(), failures=new HashMap<>();
@@ -72,6 +75,7 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
                 if (unresolved>0) getLogger().warning(unresolved+" ambiguous purchases require bank verification: /trpetshop pending");
             });
             Bukkit.getScheduler().runTaskTimer(this,this::reconcile,40,60);
+            startDiscovery();
             getLogger().info("Ready: "+catalog.pets().size()+" shop pets, "+catalog.availableIds().size()+" MCPets definitions, "+bindings.all().size()+" NPCs. UltraCosmetics is not used.");
         } catch (Exception|LinkageError e) { error(e); Bukkit.getPluginManager().disablePlugin(this); }
     }
@@ -83,6 +87,41 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
     private PetCatalog loadCatalog() throws IOException {
         var defaults=Objects.requireNonNull(getConfig().getConfigurationSection("defaults"),"Missing defaults section");
         return new PetCatalog(getDataFolder().toPath().resolve("pets.yml"),getDataFolder().toPath().getParent().resolve("MCPets/Pets"),defaults);
+    }
+    private void startDiscovery() {
+        if (discoveryTask!=null) discoveryTask.cancel();
+        long period=Math.clamp(getConfig().getLong("discovery-interval-seconds",15),5,3600)*20;
+        discoveryTask=Bukkit.getScheduler().runTaskTimer(this,this::discover,20,period);
+    }
+    private void discover() {
+        if (discoveryRunning) return;
+        discoveryRunning=true; PetCatalog current=catalog; long revision=current.revision();
+        Bukkit.getScheduler().runTaskAsynchronously(this,()-> {
+            try {
+                var found=current.scanDefinitions();
+                runMain(()-> {
+                    discoveryRunning=false;
+                    if (catalog!=current || catalog.revision()!=revision) return; // An admin saved newer settings.
+                    try {
+                        Set<String> previous=new HashSet<>(current.availableIds());
+                        if (current.updateDefinitions(found)) { refresh(); recoverCharged(null); }
+                        var added=new TreeSet<>(current.availableIds()); added.removeAll(previous);
+                        if (!added.isEmpty()) getLogger().info("New MCPets detected: "+String.join(", ",added)+". Ready for /trpetshop place <pet-id>.");
+                    } catch (Exception e) { discoveryFailure(e); }
+                });
+            } catch (Exception e) { runMain(()-> { discoveryRunning=false; discoveryFailure(e); }); }
+        });
+    }
+    private void discoveryFailure(Exception e) {
+        long now=System.currentTimeMillis();
+        if (now-lastDiscoveryFailure>60000) {
+            lastDiscoveryFailure=now;
+            getLogger().log(Level.WARNING,"MCPets scan could not be applied; the previous valid catalog is retained.",e);
+        }
+    }
+    private void setupFile(CommandSender sender, PetCatalog.Pet pet) {
+        message(sender,"&7Pet-Datei: plugins/TownyRebornPetShops/shops/"+pet.id()+".yml");
+        message(sender,"&7Tebex-Konsolenbefehl: &a"+PetCatalog.tebexCommand(pet.id()));
     }
     private void registerCitizensEvents() throws ReflectiveOperationException {
         Bukkit.getPluginManager().registerEvent(citizens.event("NPCRightClickEvent"),this,EventPriority.HIGHEST,(listener,event)-> {
@@ -261,8 +300,14 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
         });
     }
     private void recoverCharged(UUID player) {
-        for (Entry entry:ledger.entries()) if (entry.phase()==Phase.CHARGED && (player==null || entry.key().player().equals(player)))
-            purchases.recover(entry).whenComplete((result,e)-> { if (e!=null) error(e); else getLogger().info("Pending pet delivery: "+entry.key()+" -> "+result); });
+        for (Entry entry:ledger.entries()) if (player==null || entry.key().player().equals(player)) {
+            PetCatalog.Pet pet=catalog.get(entry.key().pet());
+            CompletionStage<PurchaseService.Result> delivery=null;
+            if (entry.phase()==Phase.CHARGED) delivery=purchases.recover(entry);
+            else if (entry.phase()==Phase.DONE && pet!=null && catalog.existsInMCPets(pet) && !entry.permission().equals(pet.permission()))
+                delivery=purchases.grant(entry.key().player(),pet,entry.transaction());
+            if (delivery!=null) delivery.whenComplete((result,e)-> { if (e!=null) error(e); else getLogger().info("Pending pet delivery: "+entry.key()+" -> "+result); });
+        }
     }
     private void message(CommandSender sender, String text) { sender.sendMessage(ShopMenu.color(getConfig().getString("prefix","&dTowny&aReborn &8» &r")+text)); }
     private void error(Throwable e) { getLogger().log(Level.SEVERE,"Pet shop operation failed; pending purchases must not be charged twice.",e); }
@@ -285,7 +330,7 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
             }
             if (!sender.hasPermission(ADMIN)) { message(sender,"&cDafür hast du keine Berechtigung."); return true; }
             switch(sub) {
-                case "add" -> { require(args,2); var pet=catalog.add(args[1]); message(sender,"&aShop-Pet angelegt: "+pet.id()); }
+                case "add" -> { require(args,2); var pet=catalog.add(args[1]); message(sender,"&aShop-Pet angelegt: "+pet.id()); setupFile(sender,pet); }
                 case "place" -> {
                     require(args,2); if (!(sender instanceof Player player)) throw new IllegalArgumentException("Place requires an in-game player");
                     var pet=catalog.add(args[1]);
@@ -296,7 +341,7 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
                         if (!citizens.spawn(npc,player.getLocation())) throw new IllegalStateException("Citizens refused NPC spawn");
                         reconcile();
                         if (!active.containsKey(uuid)) throw new IllegalStateException("Could not attach pet model/hologram");
-                        citizens.save(); message(sender,"&aPetmodell mit Hologramm aufgestellt. Anzeige-ID: "+citizens.id(npc));
+                        citizens.save(); message(sender,"&aPetmodell mit Hologramm aufgestellt. Anzeige-ID: "+citizens.id(npc)); setupFile(sender,pet);
                     } catch (Exception e) { cleanup(uuid); bindings.remove(uuid); citizens.destroy(npc); throw e; }
                 }
                 case "bind" -> {
@@ -306,6 +351,7 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
                     UUID uuid=citizens.uuid(npc); if (bindings.get(uuid)!=null) throw new IllegalArgumentException("NPC already has a shop binding");
                     bindings.put(new Binding(uuid,citizens.id(npc),pet.id(),false)); reconcile();
                     message(sender,"&aNPC "+citizens.id(npc)+" mit "+pet.id()+" verknüpft. Vorhandenes NPC-Modell bleibt erhalten.");
+                    setupFile(sender,pet);
                 }
                 case "price" -> {
                     if (args.length<3 || args.length>4) throw new IllegalArgumentException("/trpetshop price <pet-id> <ingame-price> [store-price]");
@@ -331,7 +377,7 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
                     for (Binding b:bindings.all()) message(sender,"&7NPC "+b.id()+" → "+b.pet());
                 }
                 case "status" -> message(sender,"&7Shop-Pets: "+catalog.pets().size()+", MCPets: "+catalog.availableIds().size()+", NPCs: "+bindings.all().size()+", aktiv: "+active.size()+", ModelEngine: "+(models!=null));
-                case "reload" -> { reloadConfig(); PetCatalog replacement=loadCatalog(); catalog=replacement; refresh(); message(sender,"&aPetshop-Konfiguration neu geladen."); }
+                case "reload" -> { reloadConfig(); PetCatalog replacement=loadCatalog(); catalog=replacement; startDiscovery(); refresh(); recoverCharged(null); message(sender,"&aPetshop-Konfiguration neu geladen."); }
                 case "grant" -> {
                     if (sender instanceof Player || !(sender instanceof ConsoleCommandSender || sender instanceof RemoteConsoleCommandSender))
                         throw new IllegalArgumentException("Store grants are console-only");
@@ -342,11 +388,13 @@ public final class TownyRebornPetShops extends JavaPlugin implements Listener {
                     if (!transaction.matches("[A-Za-z0-9_.:-]{1,128}")) throw new IllegalArgumentException("Invalid transaction ID");
                     resolvePlayer(args[1]).whenComplete((uuid,error)->runMain(()-> {
                         if (error!=null || uuid==null) { message(sender,"&cSpieler nicht gefunden. Verwende die Minecraft-UUID."); return; }
-                        purchases.grant(uuid,pet,transaction).whenComplete((result,e)-> {
+                        PetCatalog.Pet current=catalog.get(pet.id());
+                        if (current==null || !catalog.existsInMCPets(current)) { message(sender,"&cDie MCPets-Definition ist momentan nicht verfügbar."); return; }
+                        purchases.grant(uuid,current,transaction).whenComplete((result,e)-> {
                             if (e!=null) { error(e); message(sender,"&cFreischaltung fehlgeschlagen; /trpetshop pending prüfen."); }
                             else {
-                                purchaseMessage(sender,result,pet);
-                                Player online=Bukkit.getPlayer(uuid); if (online!=null && result==PurchaseService.Result.GRANTED) purchaseMessage(online,result,pet);
+                                purchaseMessage(sender,result,current);
+                                Player online=Bukkit.getPlayer(uuid); if (online!=null && result==PurchaseService.Result.GRANTED) purchaseMessage(online,result,current);
                             }
                         });
                     }));

@@ -62,8 +62,10 @@ final class PurchaseService {
         if (existing!=null && existing.phase()!=Phase.DONE) return result(Result.PENDING);
         busy.add(key);
         // Retry saves the same permanent permission without an economy withdrawal.
-        Entry entry=existing!=null ? existing : new Entry(key,pet.permission(),0,Phase.CHARGED,"store",transaction);
-        try { if (existing==null) ledger.put(entry); }
+        Entry entry=existing==null ? new Entry(key,pet.permission(),0,Phase.CHARGED,"store",transaction)
+            : existing.permission().equals(pet.permission()) ? existing
+            : new Entry(key,pet.permission(),existing.price(),Phase.CHARGED,existing.source(),existing.transaction());
+        try { if (existing!=entry) ledger.put(entry); }
         catch (IOException e) { errors.accept(e); busy.remove(key); return result(Result.ERROR); }
         return completeGrant(entry,Result.GRANTED);
     }

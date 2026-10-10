@@ -9,6 +9,7 @@ final class FilesIO {
     private FilesIO() {}
     static YamlConfiguration read(Path path) throws IOException {
         var yaml = new YamlConfiguration();
+        yaml.options().parseComments(true);
         if (Files.exists(path)) {
             try { yaml.load(path.toFile()); }
             catch (org.bukkit.configuration.InvalidConfigurationException e) { throw new IOException("Invalid YAML: " + path, e); }

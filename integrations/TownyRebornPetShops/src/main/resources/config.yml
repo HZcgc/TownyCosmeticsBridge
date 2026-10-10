@@ -15,5 +15,7 @@ hologram:
     - '&fRechtsklick zum Freischalten'
   view-range: 2.5
 confirmation-timeout-seconds: 30
+# New definitions are scanned asynchronously; add/place/bind also scan immediately.
+discovery-interval-seconds: 15
 # Only catalog entries explicitly added/placed by an admin are sold.
 # MCPets, MythicMobs, ModelEngine and ItemsAdder files are never modified.

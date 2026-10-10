@@ -18,7 +18,7 @@ class PetPurchaseTest {
         return new PetCatalog.Pet("fox","pet.fox","Fox","fox","",true,50000,10.99,"https://shop.example.com/package/123?username={player}",2.5,1.8f,2,"idle");
     }
     private final class Bank implements PurchaseService.Gateway {
-        double balance=100000; int withdrawals,grants; boolean owns,ready=true,allowed=true,failWithdrawal,throwAfterWithdrawal;
+        double balance=100000; int withdrawals,grants; String lastPermission; boolean owns,ready=true,allowed=true,failWithdrawal,throwAfterWithdrawal;
         CompletableFuture<Void> grantResult=CompletableFuture.completedFuture(null);
         public boolean owns(UUID p,String permission) { return owns; }
         public boolean ready(UUID p) { return ready; }
@@ -31,7 +31,7 @@ class PetPurchaseTest {
             return true;
         }
         public CompletionStage<Void> grant(UUID p,String permission) {
-            grants++; return grantResult.thenRun(()->owns=true);
+            grants++; lastPermission=permission; return grantResult.thenRun(()->owns=true);
         }
     }
     private PurchaseLedger ledger() throws Exception { return new PurchaseLedger(folder.resolve("transactions.yml")); }
@@ -106,6 +106,30 @@ class PetPurchaseTest {
         assertEquals(0,bank.withdrawals); assertEquals(100000,bank.balance);
         assertEquals("tbx-1",ledger().get(new Key(PLAYER,"fox")).transaction());
         assertEquals(Result.ALREADY_OWNED,done(service(ledger(),bank).buy(PLAYER,pet())));
+    }
+    private PetCatalog.Pet updatedPermission() {
+        var p=pet(); return new PetCatalog.Pet(p.id(),"pet.fox_v2",p.name(),p.model(),p.iconModel(),p.enabled(),
+            p.price(),p.storePrice(),p.storeUrl(),p.hologramHeight(),p.width(),p.height(),p.idle());
+    }
+    @Test void anUpdatedNativePermissionKeepsThePaidEntitlementAndOriginalReceipt() throws Exception {
+        var bank=new Bank(); assertEquals(Result.BOUGHT,done(service(ledger(),bank).buy(PLAYER,pet())));
+        assertEquals(Result.GRANTED,done(service(ledger(),bank).grant(PLAYER,updatedPermission(),"repair")));
+        var receipt=ledger().get(new Key(PLAYER,"fox"));
+        assertEquals("pet.fox_v2",bank.lastPermission); assertEquals("pet.fox_v2",receipt.permission());
+        assertEquals(50000,receipt.price()); assertEquals("ingame",receipt.source());
+        assertEquals(1,bank.withdrawals); assertEquals(50000,bank.balance);
+        assertEquals(Result.ALREADY_OWNED,done(service(ledger(),bank).buy(PLAYER,updatedPermission())));
+    }
+    @Test void aFailedPermissionUpdateIsRecoverableWithoutChargingAgainOrReplacingTheStoreTransaction() throws Exception {
+        var bank=new Bank(); assertEquals(Result.GRANTED,done(service(ledger(),bank).grant(PLAYER,pet(),"tbx-original")));
+        bank.grantResult=CompletableFuture.failedFuture(new IllegalStateException("Storage offline"));
+        assertEquals(Result.PENDING,done(service(ledger(),bank).grant(PLAYER,updatedPermission(),"tbx-retry")));
+        var receipt=ledger().get(new Key(PLAYER,"fox"));
+        assertEquals(Phase.CHARGED,receipt.phase()); assertEquals("pet.fox_v2",receipt.permission());
+        assertEquals("tbx-original",receipt.transaction());
+        bank.grantResult=CompletableFuture.completedFuture(null);
+        assertEquals(Result.GRANTED,done(service(ledger(),bank).recover(receipt)));
+        assertEquals(0,bank.withdrawals); assertEquals("tbx-original",ledger().get(receipt.key()).transaction());
     }
     @Test void damagedTransactionFileFailsClosed() throws Exception {
         Files.writeString(folder.resolve("transactions.yml"),"version: 1\nplayers:\n  not-a-uuid:\n    fox:\n      permission: pet.fox\n      phase: CHARGED\n");

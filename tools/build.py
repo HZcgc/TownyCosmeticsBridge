@@ -62,6 +62,8 @@ def main():
         version = pom.findtext("m:version", namespaces=ns)
         if project.name == "quickshop-patch": continue
         jar_path = DIST / f"{artifact}-{version}.jar"
+        for previous in DIST.glob(f"{artifact}-*.jar"):
+            if previous != jar_path: previous.unlink()
         with zipfile.ZipFile(jar_path, "w", zipfile.ZIP_DEFLATED) as jar:
             for folder in [target, project / "src/main/resources"]:
                 for path in sorted(folder.rglob("*")):
@@ -99,8 +101,12 @@ def main():
             bundle.write(path, path.name)
     print("Build and tests passed. Files:", DIST)
     pet_project = ROOT / "integrations/TownyRebornPetShops"
-    with zipfile.ZipFile(DIST / "TownyReborn-Petshops-1.0.0.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
-        bundle.write(DIST / "TownyRebornPetShops-1.0.0.jar", "plugins/TownyRebornPetShops-1.0.0.jar")
+    pet_version = ET.parse(pet_project / "pom.xml").getroot().findtext("{http://maven.apache.org/POM/4.0.0}version")
+    pet_bundle = DIST / f"TownyReborn-Petshops-{pet_version}.zip"
+    for previous in DIST.glob("TownyReborn-Petshops-*.zip"):
+        if previous != pet_bundle: previous.unlink()
+    with zipfile.ZipFile(pet_bundle, "w", zipfile.ZIP_DEFLATED) as bundle:
+        bundle.write(DIST / f"TownyRebornPetShops-{pet_version}.jar", f"plugins/TownyRebornPetShops-{pet_version}.jar")
         for name in ["config.yml", "pets.yml"]:
             bundle.write(pet_project / "src/main/resources" / name, "plugins/TownyRebornPetShops/" + name)
         bundle.write(pet_project / "README.md", "INSTALLATION.md")
