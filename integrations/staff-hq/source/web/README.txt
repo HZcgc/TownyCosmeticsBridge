@@ -1,25 +1,22 @@
-TOWNY REBORN STAFF HQ 5.0.0 — UPDATE
-===================================
+TOWNY REBORN STAFF HQ 5.1.0 — INTERFACE UPDATE
+============================================
 
-Additive schema 9; API version 7; Paper connector 1.4.0.
-Existing API event types and configuration remain supported.
+Webspace-only update for HQ 5.0. Schema 9, API 7 and Paper connector 1.4.0
+remain compatible. No Minecraft restart is needed for this interface update.
 
-Player dossiers now support notes/watch instructions, permanent chat pins,
-profile attachments without cases, and source-linked case creation.
-Granular profile, private-message and statistics permissions are available.
-Only the Owner can create staff accounts and change role permissions.
+Crates, Dragon event, Voting, Piñata, Fishing, Player shops and MCPets now
+have direct sidebar links and dashboard cards with current summary values.
+The dashboard starts with player search, server status and staff priorities.
+Detailed rankings, catalogues and event evidence expand inside each topic.
+The Metric explorer retains the existing advanced filters and exports.
 
-New native event statistics cover crate batches/rewards/catalogs, votes,
-QuickShop, MCPets/pet shops, Dragon and available Fishing/Piñata APIs.
-A missing hook is reported as unavailable coverage.
+Cherry Blossom uses warm plum panels, rose accents and Sakura illustrations.
+Towny Dark, Clear Light and larger text remain selectable in Appearance.
+Phone layouts wrap messages and use compact cards and accessible navigation.
 
-Fresh dupe/exploit matches enter the existing Freddie notification outbox
-immediately; the shared one-message-per-minute limit still applies.
-Historic chat replay does not create new emergency notifications.
-
-Appearance offers Dark, Cherry Blossom, Clear Light and larger text.
-Mobile tables become labelled cards; repeated diagnostics are expandable.
-The built-in Staff field guide explains the workflow.
+Existing notes, pins, profile files, cases, statistics and role permissions
+remain available. Topic links and data respect the current role permissions.
+Missing data is labelled as missing rather than presented as zero activity.
 
 UPLOAD AS AN UPDATE: preserve config/config.php, config/notifications.php,
 all storage/ content and the database. No live deployment was performed.

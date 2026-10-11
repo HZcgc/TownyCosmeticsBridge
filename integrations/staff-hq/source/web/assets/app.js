@@ -760,7 +760,7 @@ function setupAnalysisCharts(root = document) {
       data.series.forEach((s,k)=>{if(!enabled[k])return;const row=document.createElement('span'),dot=document.createElement('i'),name=document.createElement('span'),value=document.createElement('b');dot.style.background=s.color;name.textContent=s.label;value.textContent=number(values[k][index],s.unit);row.append(dot,name,value);output.append(row);});
       output.hidden=false;output.classList.toggle('align-right',x(index)>viewWidth*.65);
       cursor.setAttribute('x1',x(index));cursor.setAttribute('x2',x(index));cursor.removeAttribute('hidden');markers.replaceChildren();
-      values.forEach((s,k)=>{if(enabled[k]&&s[index]!==null)markers.append(el('circle',{cx:x(index),cy:y(s[index]),r:5,fill:data.series[k].color,stroke:'#0b1018','stroke-width':2}));});
+      values.forEach((s,k)=>{if(enabled[k]&&s[index]!==null)markers.append(el('circle',{cx:x(index),cy:y(s[index]),r:5,fill:data.series[k].color,stroke:'var(--panel)','stroke-width':2}));});
     }
     const point = event => {const box=svg.getBoundingClientRect(),px=Math.max(plotLeft,Math.min(plotRight,(event.clientX-box.left)/box.width*viewWidth));return {px,i:valueAt(left+Math.round((px-plotLeft)/(plotRight-plotLeft)*(right-left)))};};
     svg.addEventListener('pointermove',event=>{const p=point(event);if(drag!==null&&pointerId===event.pointerId){const min=Math.min(drag.px,p.px);brush.setAttribute('x',min);brush.setAttribute('width',Math.abs(drag.px-p.px));brush.removeAttribute('hidden');hideTooltip();}else show(p.i);});

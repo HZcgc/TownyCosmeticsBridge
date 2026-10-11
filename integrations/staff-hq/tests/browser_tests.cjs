@@ -11,18 +11,34 @@ function check(name, value) { if (!value) throw new Error(name); checks.push(nam
  await context.route('**/*',route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
  const page=await context.newPage(); const errors=[]; page.on('pageerror',e=>errors.push(e.message));
  await page.goto(fixture.url+'index.php?page=dashboard');
+ await page.locator('.appearance-pane > summary').click();
  await page.locator('[data-theme-choice]').selectOption('light');
  check('Light theme changes and persists',await page.evaluate(()=>document.documentElement.dataset.theme==='light'&&localStorage.getItem('tr.hq.theme')==='light'));
  const out=path.join(__dirname,'../build/screenshots');fs.mkdirSync(out,{recursive:true});
  await page.screenshot({path:path.join(out,'desktop-light.png'),fullPage:true});
+ for (const key of ['crates','dragon','votes','pinata','fishing','shops','pets']) check('Visible direct destination: '+key,await page.locator('.sidebar-nav a[href="index.php?page='+key+'"]').isVisible());
  await page.locator('[data-theme-choice]').selectOption('cherry');
  await page.reload();
  check('Cherry theme survives reload',await page.evaluate(()=>document.documentElement.dataset.theme==='cherry'));
  await page.screenshot({path:path.join(out,'desktop-cherry.png'),fullPage:true});
+ const colour=await page.evaluate(()=>getComputedStyle(document.body).backgroundColor);
+ check('Cherry Blossom uses a plum background',colour==='rgb(41, 28, 44)');
+ check('Sakura illustration is present',await page.evaluate(()=>getComputedStyle(document.querySelector('.hq-hero'),'::after').backgroundImage.includes('sakura.svg')));
+ check('Cherry primary button has readable contrast',await page.evaluate(()=>{
+  const c=getComputedStyle(document.querySelector('.hq-player-search button'));
+  const lum=s=>s.match(/[\d.]+/g).slice(0,3).map(Number).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((a,v,i)=>a+v*[.2126,.7152,.0722][i],0);
+  const a=lum(c.color),b=lum(c.backgroundColor);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5;
+ }));
+ await page.goto(fixture.url+'index.php?page=metrics');
+ check('Metric toolbar follows the selected theme',await page.evaluate(()=>getComputedStyle(document.querySelector('.analysis-toolbar')).backgroundColor===getComputedStyle(document.documentElement).getPropertyValue('--panel-2').trim().replace('#422d41','rgb(66, 45, 65)')));
+ await page.screenshot({path:path.join(out,'desktop-metrics-cherry.png'),fullPage:true});
+ check('Chart follows Sakura palette',await page.locator('.chart-line').first().evaluate(e=>getComputedStyle(e).stroke==='rgb(255, 177, 209)'));
+ await page.goto(fixture.url+'index.php?page=dragon');await page.screenshot({path:path.join(out,'desktop-dragon-cherry.png'),fullPage:true});
+ await page.locator('.appearance-pane > summary').click();
  await page.locator('[data-large-text]').check();
  check('Larger text preference works',await page.evaluate(()=>document.documentElement.dataset.largeText==='1'));
  await page.setViewportSize({width:375,height:850});
- for(const view of ['messages','commands','player&uuid='+fixture.uuid,'crates','permissions','diagnostics','staff-guide']){
+ for(const view of ['dashboard','statistics','dragon','votes','pinata','fishing','shops','pets','metrics','messages','commands','player&uuid='+fixture.uuid,'crates','permissions','diagnostics','staff-guide']){
   await page.goto(fixture.url+'index.php?page='+view);
   await page.waitForTimeout(100);
   const width=await page.evaluate(()=>({body:document.documentElement.scrollWidth,screen:innerWidth,overflow:Array.from(document.querySelectorAll('main *')).filter(e=>e.getBoundingClientRect().right>innerWidth+1).slice(0,5).map(e=>e.className)}));
@@ -31,6 +47,11 @@ function check(name, value) { if (!value) throw new Error(name); checks.push(nam
   if(view==='messages')check('Mobile message cards keep column labels',await page.locator('.table-wrap td[data-label="Message"]').count()>0);
   if(view.startsWith('player'))await page.screenshot({path:path.join(out,'mobile-profile-cherry.png'),fullPage:true});
  }
+ await page.locator('[data-menu-toggle]').click();
+ check('Mobile navigation opens accessibly',await page.locator('[data-menu-toggle]').getAttribute('aria-expanded')==='true');
+ await page.keyboard.press('Escape');
+ check('Mobile navigation closes with Escape',await page.locator('[data-menu-toggle]').getAttribute('aria-expanded')==='false');
+ await page.goto(fixture.url+'index.php?page=dashboard');await page.screenshot({path:path.join(out,'mobile-dashboard-cherry.png'),fullPage:true});
  check('No browser JavaScript errors',errors.length===0);
  fs.writeFileSync(path.join(__dirname,'browser-results.json'),JSON.stringify({passed:checks.length,checks},null,2));
  await browser.close();

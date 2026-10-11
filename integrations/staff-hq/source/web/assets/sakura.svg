@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 240" fill="none">
+ <defs>
+  <g id="flower">
+   <path d="M0-2C-10-13-9-26 0-21 9-26 10-13 0-2Z" fill="#f5b1ce"/>
+   <path d="M0-2C-10-13-9-26 0-21 9-26 10-13 0-2Z" fill="#f5b1ce" transform="rotate(72)"/>
+   <path d="M0-2C-10-13-9-26 0-21 9-26 10-13 0-2Z" fill="#f5b1ce" transform="rotate(144)"/>
+   <path d="M0-2C-10-13-9-26 0-21 9-26 10-13 0-2Z" fill="#f5b1ce" transform="rotate(216)"/>
+   <path d="M0-2C-10-13-9-26 0-21 9-26 10-13 0-2Z" fill="#f5b1ce" transform="rotate(288)"/>
+   <circle r="4" fill="#d7639a"/><circle r="1.5" fill="#ffd7bb"/>
+  </g>
+ </defs>
+ <path d="M510 18C421 52 374 68 303 90S165 105 99 139M415 51C401 88 375 121 344 150M358 75C301 54 265 31 227 9M306 89C277 123 263 148 246 180M181 122C169 100 155 85 134 76" stroke="#b17d94" stroke-width="5" stroke-linecap="round"/>
+ <path d="m376 118-25-3m-62-61 8-26m-24 113 26 13m-72-48-18-34m-60 54-18 27" stroke="#b17d94" stroke-width="2.5" stroke-linecap="round"/>
+ <use href="#flower" transform="translate(441 43) scale(.85) rotate(20)"/><use href="#flower" transform="translate(407 57) scale(.72)"/>
+ <use href="#flower" transform="translate(374 74) scale(.9) rotate(18)"/><use href="#flower" transform="translate(340 73) scale(.55)"/>
+ <use href="#flower" transform="translate(312 85) scale(.9) rotate(40)"/><use href="#flower" transform="translate(280 91) scale(.62)"/>
+ <use href="#flower" transform="translate(243 108) scale(.87) rotate(15)"/><use href="#flower" transform="translate(213 111) scale(.65)"/>
+ <use href="#flower" transform="translate(179 122) scale(.72) rotate(30)"/><use href="#flower" transform="translate(144 126) scale(.6)"/>
+ <use href="#flower" transform="translate(103 140) scale(.65) rotate(-10)"/><use href="#flower" transform="translate(137 80) scale(.65)"/>
+ <use href="#flower" transform="translate(262 34) scale(.8) rotate(25)"/><use href="#flower" transform="translate(229 14) scale(.65)"/>
+ <use href="#flower" transform="translate(380 113) scale(.8) rotate(5)"/><use href="#flower" transform="translate(347 144) scale(.65)"/>
+ <use href="#flower" transform="translate(270 151) scale(.67) rotate(25)"/><use href="#flower" transform="translate(245 178) scale(.55)"/>
+ <path d="M93 179q14-4 10 9-8 4-10-9Zm282 7q13 1 5 11-10-1-5-11ZM211 213q14-4 10 9-8 4-10-9Zm239-88q13 1 5 11-10-1-5-11Z" fill="#eba1c2" opacity=".7"/>
+</svg>

@@ -514,11 +514,13 @@ function renderAuthPage(string $title, string $content): void
         <meta name="theme-color" content="#090c13">
         <title><?= e($title) ?> · Towny Reborn Staff</title>
         <link rel="icon" type="image/png" href="assets/favicon.png?v=4.1.0">
-        <script src="assets/preferences.js?v=5.0.0"></script>
-        <link rel="stylesheet" href="assets/app.css?v=5.0.0">
-        <link rel="stylesheet" href="assets/workspace.css?v=5.0.0">
-        <script src="assets/workspace.js?v=5.0.0" defer></script>
-        <script src="assets/app.js?v=5.0.0" defer></script>
+        <script src="assets/preferences.js?v=5.1.0"></script>
+        <link rel="stylesheet" href="assets/app.css?v=5.1.0">
+        <link rel="stylesheet" href="assets/workspace.css?v=5.1.0">
+        <link rel="stylesheet" href="assets/experience.css?v=5.1.0">
+        <script src="assets/workspace.js?v=5.1.0" defer></script>
+        <script src="assets/app.js?v=5.1.0" defer></script>
+        <script src="assets/experience.js?v=5.1.0" defer></script>
     </head>
     <body class="auth-body">
         <main class="auth-shell">
@@ -542,28 +544,9 @@ function renderAppPage(string $title, string $activePage, string $content): void
 {
     $user = requireAuth();
     $flashes = takeFlashes();
-    $nav = [
-        ['dashboard', 'Dashboard', 'dashboard.view'],
-        ['analytics', 'Analytics', 'analytics.view'],
-        ['statistics', 'Game Statistics', 'analytics.view'],
-        ['attention', 'Attention Centre', 'alerts.view'],
-        ['plugins', 'Plugins & Connections', 'plugins.view'],
-        ['diagnostics', 'Server Diagnostics', 'plugins.view'],
-        ['players', 'Players', 'players.view'],
-        ['alerts', 'Alerts', 'alerts.view'],
-        ['cases', 'Cases', 'cases.view'],
-        ['punishments', 'Punishments', 'punishments.view'],
-        ['documents', 'Documentation', 'documents.view'],
-        ['activity', 'Player Activity', 'activity.view'],
-        ['commands', 'Command Log', 'commands.view'],
-        ['messages', 'Message Log', 'messages.view'],
-        ['chat-review', 'Chat Review', 'messages.review'],
-        ['staff-guide', 'Staff field guide', 'documents.view'],
-        ['permissions', 'Permission view', 'team.view'],
-        ['team', 'Staff Team', 'team.view'],
-        ['audit', 'Staff Audit', 'audit.view'],
-        ['settings', 'System', 'api.manage'],
-    ];
+    $navigation = hqNavigation();
+    $section='Workspace';
+    foreach($navigation as $group=>$entries)foreach($entries as $entry)if($entry[0]===$activePage)$section=$group;
     ?>
     <!doctype html>
     <html lang="en">
@@ -574,27 +557,30 @@ function renderAppPage(string $title, string $activePage, string $content): void
         <meta name="theme-color" content="#090c13">
         <title><?= e($title) ?> · Towny Reborn Staff</title>
         <link rel="icon" type="image/png" href="assets/favicon.png?v=4.1.0">
-        <script src="assets/preferences.js?v=5.0.0"></script>
-        <link rel="stylesheet" href="assets/app.css?v=5.0.0">
-        <link rel="stylesheet" href="assets/workspace.css?v=5.0.0">
-        <script src="assets/workspace.js?v=5.0.0" defer></script>
-        <script src="assets/app.js?v=5.0.0" defer></script>
+        <script src="assets/preferences.js?v=5.1.0"></script>
+        <link rel="stylesheet" href="assets/app.css?v=5.1.0">
+        <link rel="stylesheet" href="assets/workspace.css?v=5.1.0">
+        <link rel="stylesheet" href="assets/experience.css?v=5.1.0">
+        <script src="assets/workspace.js?v=5.1.0" defer></script>
+        <script src="assets/app.js?v=5.1.0" defer></script>
+        <script src="assets/experience.js?v=5.1.0" defer></script>
     </head>
     <body class="app-body" data-session-timeout="3600" data-csrf-token="<?= e(csrfToken()) ?>">
-        <button class="mobile-menu" type="button" data-menu-toggle aria-label="Open navigation">Menu</button>
-        <aside class="sidebar" data-sidebar>
+        <button class="mobile-menu" type="button" data-menu-toggle aria-label="Open navigation" aria-controls="hq-navigation" aria-expanded="false">Menu</button>
+        <aside class="sidebar" id="hq-navigation" data-sidebar>
             <a class="sidebar-brand" href="index.php?page=dashboard">
                 <img class="sidebar-logo" src="assets/logo.png?v=4.1.0" alt="Towny Reborn">
                 <span class="sidebar-brand-label">Staff HQ</span>
             </a>
-            <div class="appearance-controls"><label for="theme-choice">Appearance</label><select id="theme-choice" data-theme-choice><option value="dark">Towny Dark</option><option value="cherry">Cherry Blossom</option><option value="light">Clear Light</option></select><label class="check-row"><input type="checkbox" data-large-text> Larger text</label></div>
             <nav class="sidebar-nav" aria-label="Staff navigation">
-                <?php $group=null; foreach ($nav as [$page, $label, $permission]): ?>
-                    <?php if (can($permission, $user)): $nextGroup=in_array($page,['dashboard','analytics','statistics','attention'])?'Overview':(in_array($page,['plugins','diagnostics'])?'Server':(in_array($page,['activity','chat-review','commands','messages'])?'Activity':(in_array($page,['team','permissions','audit','settings'])?'Administration':'Moderation'))); if($group!==$nextGroup){$group=$nextGroup;echo '<span class="nav-section">'.e($group).'</span>';} ?>
-                        <a href="index.php?page=<?= e($page) ?>" class="<?= $activePage === $page ? 'active' : '' ?>"><?= e($label) ?></a>
-                    <?php endif; ?>
+                <?php foreach($navigation as $group=>$entries): $visible=array_filter($entries,static fn($entry)=>can($entry[2],$user)&&($entry[0]!=='chat-review'||can('messages.view',$user)));if(!$visible)continue; ?>
+                    <div class="nav-group"><span class="nav-section"><?= e($group) ?></span>
+                    <?php foreach($visible as [$page,$label,$permission,$icon]): ?>
+                        <a href="index.php?page=<?= e($page) ?>" class="<?= $activePage===$page?'active':'' ?>" <?= $activePage===$page?'aria-current="page"':'' ?>><?= hqIcon($icon) ?><span><?= e($label) ?></span></a>
+                    <?php endforeach; ?></div>
                 <?php endforeach; ?>
             </nav>
+            <details class="appearance-pane"><summary>Appearance <span aria-hidden="true">✿</span></summary><div class="appearance-controls"><label for="theme-choice">Theme</label><select id="theme-choice" data-theme-choice><option value="dark">Towny Dark</option><option value="cherry">Cherry Blossom</option><option value="light">Clear Light</option></select><label class="check-row"><input type="checkbox" data-large-text> Larger text</label></div></details>
             <div class="sidebar-user">
                 <?php if (!empty($user['minecraft_username'])): ?><img class="avatar skin-avatar" src="<?= e(avatarUrl((string) ($user['minecraft_uuid'] ?? ''), (string) $user['minecraft_username'], 34)) ?>" data-player-avatar data-avatar-name="<?= e((string) $user['minecraft_username']) ?>" data-avatar-uuid="<?= e(normalizeUuid((string) ($user['minecraft_uuid'] ?? '')) ?? '') ?>" data-avatar-size="34" alt="<?= e((string) $user['minecraft_username']) ?> Minecraft skin"><?php else: ?><div class="avatar"><?= e(strtoupper(substr((string) $user['display_name'], 0, 1))) ?></div><?php endif; ?>
                 <div><strong><?= e($user['display_name']) ?></strong><span><?= e(roleLabel((string) $user['role'])) ?></span></div>
@@ -604,9 +590,10 @@ function renderAppPage(string $title, string $activePage, string $content): void
                 </form>
             </div>
         </aside>
-        <main class="main-content">
+        <button type="button" class="navigation-backdrop" data-nav-close aria-label="Close navigation" hidden></button>
+        <main class="main-content" id="main-content">
             <header class="page-header">
-                <div><span class="eyebrow">Towny Reborn · Internal</span><h1><?= e($title) ?></h1></div>
+                <div><span class="eyebrow">Towny Reborn · <?= e($section) ?></span><h1><?= e($title) ?></h1></div>
                 <div class="secure-pill"><span></span> Secure session</div>
             </header>
             <?php foreach ($flashes as $flash): ?>
@@ -639,4 +626,5 @@ require_once APP_ROOT . '/app/notifications.php';
 require_once APP_ROOT . '/app/notification-pages.php';
 require_once APP_ROOT . '/app/workspace.php';
 require_once APP_ROOT . '/app/game-insights.php';
+require_once APP_ROOT . '/app/experience.php';
 ensureSchemaCurrent(db());

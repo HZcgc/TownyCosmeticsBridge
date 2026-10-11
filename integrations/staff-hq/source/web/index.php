@@ -16,7 +16,12 @@ switch ($page) {
     case 'economy': showEconomyInsights(); break;
     case 'permissions': showPermissionView(); break;
     case 'staff-guide': showStaffGuide(); break;
-    case 'statistics': showGameStatistics(); break;
+    case 'dragon': case 'votes': case 'pinata': case 'fishing': case 'shops': case 'pets': showTopicInsights($page); break;
+    case 'metrics': showStatisticsWorkspace(); break;
+    case 'statistics':
+        if(isset($_GET['metric'])||isset($_GET['plugin'])||isset($_GET['section']))showStatisticsWorkspace();
+        else showGameOverview();
+        break;
     case 'plugins': showPluginOverview(); break;
     case 'activity': showGameplayActivity(); break;
     case 'chat-review': showChatReview(); break;
@@ -1075,50 +1080,7 @@ function showRecoveryCodes(): void
 
 function showDashboard(): void
 {
-    requirePermission('dashboard.view');
-    $stats = [
-        'online' => (int) db()->query('SELECT COUNT(*) FROM players WHERE online = 1')->fetchColumn(),
-        'players' => (int) db()->query('SELECT COUNT(*) FROM players')->fetchColumn(),
-        'alerts' => (int) db()->query("SELECT COUNT(*) FROM alerts WHERE status IN ('open','escalated')")->fetchColumn(),
-        'cases' => (int) db()->query("SELECT COUNT(*) FROM cases WHERE status NOT IN ('resolved','closed')")->fetchColumn(),
-        'new_7d' => (int) db()->query('SELECT COUNT(*) FROM players WHERE first_seen_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)')->fetchColumn(),
-        'active_7d' => (int) db()->query('SELECT COUNT(*) FROM players WHERE last_seen_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)')->fetchColumn(),
-    ];
-    $ret=obsRetentionSummary(90);$stats['online']=obsOnline();
-    $alerts = db()->query('SELECT * FROM alerts ORDER BY occurred_at DESC LIMIT 7')->fetchAll();
-    $cases = db()->query('SELECT c.*, u.display_name AS assigned_name FROM cases c LEFT JOIN users u ON u.id = c.assigned_user_id ORDER BY c.updated_at DESC LIMIT 6')->fetchAll();
-    $dashboardSubjects = casePlayersMap(array_map(static fn(array $case): int => (int) $case['id'], $cases));
-    foreach ($cases as &$dashboardCase) $dashboardCase['subjects'] = $dashboardSubjects[(int) $dashboardCase['id']] ?? [];
-    unset($dashboardCase);
-    $audit = can('audit.view') ? db()->query("SELECT * FROM audit_logs WHERE action <> 'command.pv' AND (action NOT LIKE 'command.%' OR actor_user_id IS NOT NULL) ORDER BY created_at DESC LIMIT 7")->fetchAll() : [];
-    ob_start();
-    ?>
-    <section class="stats-grid">
-        <article class="stat-card accent-lime"><span>Players online</span><strong><?= $stats['online'] ?></strong></article>
-        <article class="stat-card accent-blue"><span>Known players</span><strong><?= $stats['players'] ?></strong></article>
-        <article class="stat-card accent-pink"><span>Open alerts</span><strong><?= $stats['alerts'] ?></strong></article>
-        <article class="stat-card accent-amber"><span>Active cases</span><strong><?= $stats['cases'] ?></strong></article>
-    </section>
-    <section class="stats-grid secondary-stats">
-        <article class="stat-card"><span>New players · 7d</span><strong><?= $stats['new_7d'] ?></strong></article>
-        <article class="stat-card"><span>Active players · 7d</span><strong><?= $stats['active_7d'] ?></strong></article>
-    </section>
-    <section class="stats-grid retention-cards">
-        <?php foreach([1,3,7,30] as $d)renderRetentionCard($d,$ret[$d]); ?>
-
-    </section>
-    <div class="dashboard-analytics-link"><span>Need the full picture? Explore sessions, economy, moderation, platforms and player risk.</span><a class="button secondary small" href="index.php?page=analytics">Open Analytics</a></div>
-    <section class="content-grid">
-        <div>
-            <article class="panel"><div class="panel-header"><h2>Latest anti-cheat alerts</h2><a class="button secondary small" href="index.php?page=alerts">View all</a></div><div class="panel-body flush"><?php renderAlertsTable($alerts, false); ?></div></article>
-            <article class="panel"><div class="panel-header"><h2>Recently updated cases</h2><a class="button secondary small" href="index.php?page=cases">View all</a></div><div class="panel-body flush"><?php renderCasesTable($cases); ?></div></article>
-        </div>
-        <aside>
-            <article class="panel"><div class="panel-header"><h2>Activity</h2></div><div class="panel-body"><?php if ($audit === []): ?><div class="empty-state"><strong>No activity yet</strong><p>Staff actions will appear here.</p></div><?php else: ?><div class="timeline"><?php foreach ($audit as $entry): ?><div class="timeline-item"><strong><?= e(str_replace('.', ' · ', (string) $entry['action'])) ?></strong><time><?= e(displayDate($entry['created_at'])) ?></time></div><?php endforeach; ?></div><?php endif; ?></div></article>
-        </aside>
-    </section>
-    <?php
-    renderAppPage('Dashboard', 'dashboard', (string) ob_get_clean());
+    showHqDashboard();
 }
 
 function showPlayers(): void

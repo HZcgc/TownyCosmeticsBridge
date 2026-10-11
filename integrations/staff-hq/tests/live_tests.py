@@ -137,6 +137,7 @@ try:
  post(event('player.join',uuid=cohort,username='DayThree'))
  post(event('player.join',uuid=cohort,username='DayThree',server='hub'))
  exec(compile((w/'tests/analytics_tests.py').read_text(),str(w/'tests/analytics_tests.py'),'exec'),globals())
+ exec(compile((w/'tests/experience_checks.py').read_text(),str(w/'tests/experience_checks.py'),'exec'),globals())
  check('D3 cohort return is counted once across servers',scalar("SELECT d3 FROM retention_cohorts WHERE day_utc=DATE_SUB(UTC_DATE(),INTERVAL 3 DAY)")=='1')
  sid55=session(3300);h55={'Cookie':'tr_staff_session='+sid55,'X-TR-Background':'1'}
  check('Still authenticated after 55 minutes',req('index.php?page=plugins',headers=h55)[0]==200)
