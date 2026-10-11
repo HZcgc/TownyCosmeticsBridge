@@ -1,5 +1,7 @@
 # Staff field guide
 
+The live guide is editable under Documents → Staff field guide → Edit by Admin or Owner. The Staff guide menu reads that same document. Its ID stays linked after renaming; later updates do not replace staff edits.
+
 The Dashboard shows player search, current staff priorities and game summaries. Open Crates, Dragon event, Voting, Piñata, Fishing, Player shops or MCPets directly from the sidebar or their cards. Each system starts with a few useful figures; expand rankings, event rows or catalogue entries for the complete evidence. Use Metric explorer for other measurements and exports.
 
 1. Find the player by username or UUID. Check the server and timestamp before acting.

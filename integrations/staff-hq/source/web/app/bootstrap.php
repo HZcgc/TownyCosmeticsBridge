@@ -348,17 +348,22 @@ function permissionCatalog(): array
 
 function defaultRolePermissions(string $role): array
 {
+    $helper = [
+        'dashboard.view','analytics.view','plugins.view','activity.view','players.view',
+        'alerts.view','cases.view','cases.create','cases.manage','punishments.view',
+        'documents.view','team.view','messages.view',
+        'profile.notes.view','profile.notes.create','profile.notes.manage',
+        'profile.pins.view','profile.pins.create','profile.files.view','profile.files.create',
+        'statistics.crates','statistics.economy','statistics.leaderboards',
+    ];
     return match ($role) {
-        'admin' => array_keys(permissionCatalog()),
-        'moderator' => [
-            'dashboard.view', 'analytics.view', 'players.view', 'alerts.view', 'alerts.manage',
-            'cases.view', 'cases.create', 'cases.manage', 'punishments.view', 'punishments.create',
-            'punishments.execute', 'documents.view', 'commands.view', 'messages.view',
-        ],
-        default => [
-            'dashboard.view', 'analytics.view', 'players.view', 'alerts.view', 'cases.view',
-            'cases.create', 'documents.view',
-        ],
+        'owner' => ['*'],
+        'admin' => array_values(array_diff(array_keys(permissionCatalog()), ['team.manage'])),
+        'moderator' => array_values(array_unique([...$helper,
+            'alerts.manage','messages.review','commands.view','messages.private','audit.view',
+            'punishments.create','punishments.execute','profile.pins.manage','profile.files.manage',
+        ])),
+        default => $helper,
     };
 }
 
@@ -368,6 +373,7 @@ function can(string $permission, ?array $user = null): bool
     if (!$user) {
         return false;
     }
+    if ($permission === 'team.manage' && (string) $user['role'] !== 'owner') return false;
     $permissions = permissionsForRole((string) $user['role']);
     return in_array('*', $permissions, true) || in_array($permission, $permissions, true);
 }
@@ -514,13 +520,13 @@ function renderAuthPage(string $title, string $content): void
         <meta name="theme-color" content="#090c13">
         <title><?= e($title) ?> · Towny Reborn Staff</title>
         <link rel="icon" type="image/png" href="assets/favicon.png?v=4.1.0">
-        <script src="assets/preferences.js?v=5.1.0"></script>
-        <link rel="stylesheet" href="assets/app.css?v=5.1.0">
-        <link rel="stylesheet" href="assets/workspace.css?v=5.1.0">
-        <link rel="stylesheet" href="assets/experience.css?v=5.1.0">
-        <script src="assets/workspace.js?v=5.1.0" defer></script>
-        <script src="assets/app.js?v=5.1.0" defer></script>
-        <script src="assets/experience.js?v=5.1.0" defer></script>
+        <script src="assets/preferences.js?v=5.1.1"></script>
+        <link rel="stylesheet" href="assets/app.css?v=5.1.1">
+        <link rel="stylesheet" href="assets/workspace.css?v=5.1.1">
+        <link rel="stylesheet" href="assets/experience.css?v=5.1.1">
+        <script src="assets/workspace.js?v=5.1.1" defer></script>
+        <script src="assets/app.js?v=5.1.1" defer></script>
+        <script src="assets/experience.js?v=5.1.1" defer></script>
     </head>
     <body class="auth-body">
         <main class="auth-shell">
@@ -557,13 +563,13 @@ function renderAppPage(string $title, string $activePage, string $content): void
         <meta name="theme-color" content="#090c13">
         <title><?= e($title) ?> · Towny Reborn Staff</title>
         <link rel="icon" type="image/png" href="assets/favicon.png?v=4.1.0">
-        <script src="assets/preferences.js?v=5.1.0"></script>
-        <link rel="stylesheet" href="assets/app.css?v=5.1.0">
-        <link rel="stylesheet" href="assets/workspace.css?v=5.1.0">
-        <link rel="stylesheet" href="assets/experience.css?v=5.1.0">
-        <script src="assets/workspace.js?v=5.1.0" defer></script>
-        <script src="assets/app.js?v=5.1.0" defer></script>
-        <script src="assets/experience.js?v=5.1.0" defer></script>
+        <script src="assets/preferences.js?v=5.1.1"></script>
+        <link rel="stylesheet" href="assets/app.css?v=5.1.1">
+        <link rel="stylesheet" href="assets/workspace.css?v=5.1.1">
+        <link rel="stylesheet" href="assets/experience.css?v=5.1.1">
+        <script src="assets/workspace.js?v=5.1.1" defer></script>
+        <script src="assets/app.js?v=5.1.1" defer></script>
+        <script src="assets/experience.js?v=5.1.1" defer></script>
     </head>
     <body class="app-body" data-session-timeout="3600" data-csrf-token="<?= e(csrfToken()) ?>">
         <button class="mobile-menu" type="button" data-menu-toggle aria-label="Open navigation" aria-controls="hq-navigation" aria-expanded="false">Menu</button>
@@ -627,4 +633,5 @@ require_once APP_ROOT . '/app/notification-pages.php';
 require_once APP_ROOT . '/app/workspace.php';
 require_once APP_ROOT . '/app/game-insights.php';
 require_once APP_ROOT . '/app/experience.php';
+require_once APP_ROOT . '/app/guide-documents.php';
 ensureSchemaCurrent(db());

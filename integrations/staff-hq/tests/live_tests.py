@@ -70,7 +70,7 @@ try:
   try:
    status,body,h=req('api.php');break
   except Exception:time.sleep(.1)
- check('Real API health / schema migration',status==200 and json.loads(body)['version']==7 and scalar("SELECT setting_value FROM settings WHERE setting_key='schema.version'")=='9')
+ check('Real API health / schema migration',status==200 and json.loads(body)['version']==7 and scalar("SELECT setting_value FROM settings WHERE setting_key='schema.version'")=='10')
  check('Unknown bearer rejected',post(event('player.join',uuid=u,username='Tester'),'tr_live_invalid')[0]==401)
  check('Join accepted',post(event('player.join',uuid=u,username='Tester',platform='java'))[0]==202)
  check('Hub join accepted',post(event('player.join',uuid=u,username='Tester',server='hub'))[0]==202)
@@ -114,7 +114,7 @@ try:
  status,body,h=req('index.php?page=stats-export',headers=cookie)
  check('CSV contains only anonymous dimensions',status==200 and 'mob_kills' in body and u not in body and 'Tester' not in body)
  helper={'Cookie':'tr_staff_session='+session(role='helper')}
- check('Role denies private activity',req('index.php?page=activity',headers=helper)[0]==403)
+ check('Helper can view player activity',req('index.php?page=activity',headers=helper)[0]==200)
  check('Role denies chat review',req('index.php?page=chat-review',headers=helper)[0]==403)
  check('Review CSRF enforced',req('index.php?page=chat-review','action=review-chat-dismiss-all',cookie)[0]==419)
  signal=scalar("SELECT id FROM chat_signals WHERE server_name='smp' AND channel_name='global' LIMIT 1")
@@ -138,6 +138,7 @@ try:
  post(event('player.join',uuid=cohort,username='DayThree',server='hub'))
  exec(compile((w/'tests/analytics_tests.py').read_text(),str(w/'tests/analytics_tests.py'),'exec'),globals())
  exec(compile((w/'tests/experience_checks.py').read_text(),str(w/'tests/experience_checks.py'),'exec'),globals())
+ exec(compile((w/'tests/guide_role_checks.py').read_text(),str(w/'tests/guide_role_checks.py'),'exec'),globals())
  check('D3 cohort return is counted once across servers',scalar("SELECT d3 FROM retention_cohorts WHERE day_utc=DATE_SUB(UTC_DATE(),INTERVAL 3 DAY)")=='1')
  sid55=session(3300);h55={'Cookie':'tr_staff_session='+sid55,'X-TR-Background':'1'}
  check('Still authenticated after 55 minutes',req('index.php?page=plugins',headers=h55)[0]==200)

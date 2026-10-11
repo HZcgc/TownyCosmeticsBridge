@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the public HQ 5.1 webspace update, excluding user configuration/data."""
+"""Build the public HQ 5.1.1 webspace update, excluding user configuration/data."""
 from __future__ import annotations
 
 import argparse
@@ -8,7 +8,7 @@ from pathlib import Path
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-NAME = "TownyReborn-StaffHQ-5.1.0-Intuitive-UI.zip"
+NAME = "TownyReborn-StaffHQ-5.1.1-Intuitive-UI.zip"
 EXCLUDED = {"config/config.php", "config/notifications.php"}
 
 
@@ -23,10 +23,11 @@ def build(destination: Path) -> tuple[int, str]:
             continue
         entries["WEBSPACE-UPDATE/" + relative] = path.read_bytes()
     for archive_name, source in {
-        "INSTALL-DE.md": "docs/INSTALL-5.1-DE.md",
-        "UI-CHANGES.md": "docs/UI-CHANGES-5.1.md",
-        "VALIDATION.md": "docs/VALIDATION-5.1.md",
+        "INSTALL-DE.md": "docs/INSTALL-5.1.1-DE.md",
+        "UI-CHANGES.md": "docs/UI-CHANGES-5.1.1.md",
+        "VALIDATION.md": "docs/VALIDATION-5.1.1.md",
         "STAFF-GUIDE.md": "docs/STAFF-GUIDE.md",
+        "ROLE-PERMISSIONS.md": "docs/ROLE-PERMISSIONS.md",
     }.items():
         entries[archive_name] = (ROOT / source).read_bytes()
     entries["SHA256SUMS.txt"] = "".join(

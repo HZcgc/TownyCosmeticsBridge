@@ -30,13 +30,13 @@ jobs:
           python3 tests/history_tests.py
       - name: Verify and build connector
         run: mvn -B -f integrations/staff-hq/source/connector/pom.xml clean verify
-      - name: Package HQ 5.1 webspace update
+      - name: Package HQ 5.1.1 webspace update
         working-directory: integrations/staff-hq
         run: python3 tools/package_web.py
       - uses: actions/upload-artifact@v4
         with:
-          name: TownyReborn-StaffHQ-5.1.0-Intuitive-UI
-          path: integrations/staff-hq/output/TownyReborn-StaffHQ-5.1.0-Intuitive-UI.zip
+          name: TownyReborn-StaffHQ-5.1.1-Intuitive-UI
+          path: integrations/staff-hq/output/TownyReborn-StaffHQ-5.1.1-Intuitive-UI.zip
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:

@@ -1336,6 +1336,7 @@ function showPunishments(): void
 function showDocuments(): void
 {
     requirePermission('documents.view');
+    hqStaffGuideId();
     $query = trim((string) ($_GET['q'] ?? ''));
     if ($query !== '') {
         $statement = db()->prepare('SELECT d.*, u.display_name FROM documents d JOIN users u ON u.id = d.updated_by WHERE d.title LIKE ? OR d.category LIKE ? OR d.body LIKE ? ORDER BY d.updated_at DESC');
@@ -1379,7 +1380,7 @@ function showDocuments(): void
         <div class="document-card-grid"><?php if ($documents === []): ?><article class="panel"><div class="empty-state"><strong><?= $query !== '' ? 'No matching documents' : 'No documentation yet' ?></strong><p><?= $query !== '' ? 'Try another search.' : 'Create or import the first staff guide.' ?></p></div></article><?php endif; ?><?php foreach ($documents as $document): ?><a class="document-card" href="index.php?page=documents&document_id=<?= (int) $document['id'] ?>"><span class="badge"><?= e($document['category']) ?></span><h2><?= e($document['title']) ?></h2><p><?= e(mb_substr(trim(preg_replace('/\s+/', ' ', (string) $document['body']) ?? ''), 0, 170)) ?><?= mb_strlen((string) $document['body']) > 170 ? '…' : '' ?></p><small>Updated by <?= e($document['display_name']) ?> · <?= e(displayDate($document['updated_at'])) ?></small></a><?php endforeach; ?></div>
     <?php endif; ?>
     <?php
-    renderAppPage('Documentation', 'documents', (string) ob_get_clean());
+    renderAppPage('Documentation', ($_GET['page'] ?? '') === 'staff-guide' ? 'staff-guide' : 'documents', (string) ob_get_clean());
 }
 
 function showTeam(): void

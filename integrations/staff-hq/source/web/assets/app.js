@@ -751,21 +751,33 @@ function setupAnalysisCharts(root = document) {
       hideTooltip();
     }
     function hideTooltip(){output.hidden=true;cursor.setAttribute('hidden','');markers.replaceChildren();}
-    function show(i) {
+    function show(i, event = null) {
       index=valueAt(i);const label=data.labels[index];if(!label)return;
       const date=new Date(label.replace(' ','T')+(label.length<=10?'T00:00:00Z':'Z'));
       const end=new Date(date);if(data.group==='hour')end.setUTCHours(end.getUTCHours()+1);else if(data.group==='week')end.setUTCDate(end.getUTCDate()+7);else if(data.group==='month')end.setUTCMonth(end.getUTCMonth()+1);else end.setUTCDate(end.getUTCDate()+1);
       const partial=end.getTime()>Date.now();
       output.replaceChildren();const heading=document.createElement('strong');heading.textContent=`${label} UTC${!data.categories&&partial?' · in progress':''}`;output.append(heading);
       data.series.forEach((s,k)=>{if(!enabled[k])return;const row=document.createElement('span'),dot=document.createElement('i'),name=document.createElement('span'),value=document.createElement('b');dot.style.background=s.color;name.textContent=s.label;value.textContent=number(values[k][index],s.unit);row.append(dot,name,value);output.append(row);});
-      output.hidden=false;output.classList.toggle('align-right',x(index)>viewWidth*.65);
+      output.hidden=false;output.classList.remove('align-right');
+      const surface=chart.querySelector('.chart-surface').getBoundingClientRect(), box=svg.getBoundingClientRect();
+      const anchorX=event?event.clientX-surface.left:box.left-surface.left+x(index)/viewWidth*box.width;
+      const anchorY=event?event.clientY-surface.top:box.top-surface.top+box.height/2;
+      const width=output.offsetWidth, height=output.offsetHeight, gap=14;
+      let tipX=anchorX+gap,tipY=anchorY+gap;
+      const maxX=Math.min(surface.width,innerWidth-surface.left)-width-4;
+      const maxY=Math.min(surface.height,innerHeight-surface.top)-height-4;
+      if(tipX>maxX)tipX=anchorX-width-gap;
+      if(tipY>maxY)tipY=anchorY-height-gap;
+      output.style.right='auto';
+      output.style.left=`${Math.max(4,Math.min(maxX,tipX))}px`;
+      output.style.top=`${Math.max(4,Math.min(maxY,tipY))}px`;
       cursor.setAttribute('x1',x(index));cursor.setAttribute('x2',x(index));cursor.removeAttribute('hidden');markers.replaceChildren();
       values.forEach((s,k)=>{if(enabled[k]&&s[index]!==null)markers.append(el('circle',{cx:x(index),cy:y(s[index]),r:5,fill:data.series[k].color,stroke:'var(--panel)','stroke-width':2}));});
     }
     const point = event => {const box=svg.getBoundingClientRect(),px=Math.max(plotLeft,Math.min(plotRight,(event.clientX-box.left)/box.width*viewWidth));return {px,i:valueAt(left+Math.round((px-plotLeft)/(plotRight-plotLeft)*(right-left)))};};
-    svg.addEventListener('pointermove',event=>{const p=point(event);if(drag!==null&&pointerId===event.pointerId){const min=Math.min(drag.px,p.px);brush.setAttribute('x',min);brush.setAttribute('width',Math.abs(drag.px-p.px));brush.removeAttribute('hidden');hideTooltip();}else show(p.i);});
-    svg.addEventListener('pointerdown',event=>{if(event.button!==0)return;const p=point(event);if(event.pointerType==='touch'){show(p.i);return;}drag=p;pointerId=event.pointerId;svg.setPointerCapture(event.pointerId);});
-    svg.addEventListener('pointerup',event=>{if(drag===null||event.pointerId!==pointerId)return;const p=point(event),start=drag;drag=null;pointerId=null;brush.setAttribute('hidden','');if(Math.abs(start.px-p.px)>12&&Math.abs(start.i-p.i)>=2){left=Math.min(start.i,p.i);right=Math.max(start.i,p.i);index=left;draw();}else show(p.i);});
+    svg.addEventListener('pointermove',event=>{const p=point(event);if(drag!==null&&pointerId===event.pointerId){const min=Math.min(drag.px,p.px);brush.setAttribute('x',min);brush.setAttribute('width',Math.abs(drag.px-p.px));brush.removeAttribute('hidden');hideTooltip();}else show(p.i,event);});
+    svg.addEventListener('pointerdown',event=>{if(event.button!==0)return;const p=point(event);if(event.pointerType==='touch'){show(p.i,event);return;}drag=p;pointerId=event.pointerId;svg.setPointerCapture(event.pointerId);});
+    svg.addEventListener('pointerup',event=>{if(drag===null||event.pointerId!==pointerId)return;const p=point(event),start=drag;drag=null;pointerId=null;brush.setAttribute('hidden','');if(Math.abs(start.px-p.px)>12&&Math.abs(start.i-p.i)>=2){left=Math.min(start.i,p.i);right=Math.max(start.i,p.i);index=left;draw();}else show(p.i,event);});
     svg.addEventListener('pointercancel',()=>{drag=null;pointerId=null;brush.setAttribute('hidden','');});
     svg.addEventListener('pointerleave',()=>{if(drag===null&&document.activeElement!==svg)hideTooltip();});
     svg.addEventListener('focus',()=>show(index));svg.addEventListener('blur',hideTooltip);

@@ -19,7 +19,7 @@ for label,offset,closed in [('Overnight',-15,True),('MissingQuit',-14,False)]:
  scalar("INSERT INTO player_sessions(player_uuid,player_name,server_name,joined_at,left_at,created_at) VALUES('"+identity+"','"+label+"','smp','"+localstamp(born)+"',"+end+",NOW());")
 oldcohort=utcday(-365);scalar("INSERT INTO retention_cohorts(day_utc,new_players,d1,d3,d7,d30) VALUES('"+oldcohort+"',100,65,55,45,25);")
 scalar("DELETE FROM settings WHERE setting_key='analytics.cohorts.repaired';UPDATE settings SET setting_value='6' WHERE setting_key='schema.version';")
-check('Version-6 retention repair migrates automatically',req('api.php')[0]==200 and scalar("SELECT setting_value FROM settings WHERE setting_key='schema.version'")=='9')
+check('Version-6 retention repair migrates automatically',req('api.php')[0]==200 and scalar("SELECT setting_value FROM settings WHERE setting_key='schema.version'")=='10')
 check('Existing sessions restore D1/D3/D7',scalar("SELECT CONCAT(new_players,',',d1,',',d3,',',d7) FROM retention_cohorts WHERE day_utc='"+utcday(-20)+"'")=='1,1,1,1')
 check('UTC first-visit date survives local timezone conversion',scalar("SELECT cohort_day FROM retention_members WHERE player_uuid='"+historic+"'")==utcday(-20))
 check('Confirmed midnight session restores D1',scalar("SELECT d1 FROM retention_cohorts WHERE day_utc='"+utcday(-15)+"'")=='1')

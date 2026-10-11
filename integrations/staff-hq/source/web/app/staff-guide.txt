@@ -1,0 +1,50 @@
+STAFF FIELD GUIDE
+
+Open games directly from the sidebar or Dashboard cards. Expand rankings, event rows and catalogue entries for detailed evidence. Metric explorer contains other measurements and exports.
+
+
+1 · Check the player
+
+Find their profile in Players. Read active watch instructions before acting. Notes describe context; they do not prove misconduct.
+
+Save a short factual note when the next staff member should know something. Choose “Watch instruction” for a specific thing to observe, then archive it when it no longer applies.
+
+2 · Preserve useful evidence
+
+Use “Pin to profile” on a chat message to keep a permanent copy. Raw chat and commands expire after 30 days. Screenshots and supporting files can be attached to the profile without a case.
+
+Include the time, place and what happened. Avoid irrelevant personal information. Private chat is visible only to staff with the additional permission.
+
+3 · Open a case when needed
+
+Open a case directly from a message to preserve its exact wording and context, or use “Open a case” on the profile. Give it a clear title, add evidence and record what was checked.
+
+A repeated click on the same source message opens the existing case. Use the general profile form for a separate investigation.
+
+4 · Review flags carefully
+
+Chat Review flags dupe and exploit phrases across public, staff and captured private channels. The Discord alert is a request to inspect the conversation, never an automatic punishment.
+
+Use conversation context, CoreProtect and the server logs to check what happened. Dismiss harmless reports; preserve evidence and open a case for a real incident.
+
+5 · Understand the statistics
+
+Crates shows confirmed rewards and opening batches. Seven openings in one batch count as seven. Configured reward weights and observed frequencies answer different questions.
+
+Shop value comes from successful QuickShop transactions. Pet summons are separate from purchases. Native event rankings start when the updated connector is installed; supplied history is marked “Imported”. A missing hook means missing coverage, not zero activity.
+
+6 · Diagnose and hand over
+
+Diagnostics groups the same error across timestamps. Expand a group for individual occurrences and review actions. Attention shows delivery problems and server health.
+
+Explain what you checked and the next step in the player note or case. Only the Owner can add staff and change group permissions. Website roles and Minecraft LuckPerms groups are configured independently.
+
+Dragon event quick reference
+
+/dragon status shows the phase. The five-minute lobby displays a countdown and live boards near the arena portal. /dragon stop evacuates players, unloads the runtime world and removes only a marked event clone.
+
+If cleanup reports an unowned old folder, the plugin preserves it and selects a separate managed clone for the next event. Never delete the template or Earth to solve a runtime problem. Stop and start the server to replace plugin JARs; avoid PlugMan reloads for world events.
+
+APPEARANCE
+
+Choose Cherry Blossom for plum and rose Sakura colours or Clear Light for a light background. Larger text is also available. On phones, open the menu for all direct destinations.

@@ -1,15 +1,20 @@
-TOWNY REBORN STAFF HQ 5.1.0 — WEBSPACE UPDATE
+TOWNY REBORN STAFF HQ 5.1.1 — WEBSPACE UPDATE
 
-Use INSTALL-DE.md in the update package. This updates an existing HQ 5.0.
+Use INSTALL-DE.md in the update package. This updates an existing HQ 5.0 or 5.1.
 
 Back up the existing HQ database and webspace. Upload WEBSPACE-UPDATE/ into
 the existing Staff HQ root, merging directories and replacing program files.
 Keep config/config.php, config/notifications.php and the entire storage/
 directory. Do not run a fresh installer or remove the existing database.
 
-Schema 9, API 7 and Paper connector 1.4.0 stay compatible. This package
+Schema 10, API 7 and Paper connector 1.4.0 stay compatible. This package
 contains no plugin JARs or private history import. No server restart is needed.
 
 Reload the HQ with Ctrl+F5 after upload. Games are now direct sidebar entries
 and dashboard cards. Appearance is at the bottom of the sidebar. Choose
 Cherry Blossom for the plum-and-rose Sakura theme, or Clear Light for white.
+
+Graph tooltips follow the pointer. Edit the live Staff field guide in Documents.
+Helper, Moderator and Admin presets are applied once at schema 10; subsequent
+Owner changes remain saved. See ROLE-PERMISSIONS.md in the update package.
+Only the Owner manages staff accounts and role rules.

@@ -1,7 +1,7 @@
-TOWNY REBORN STAFF HQ 5.1.0 — INTERFACE UPDATE
+TOWNY REBORN STAFF HQ 5.1.1 — INTERFACE UPDATE
 ============================================
 
-Webspace-only update for HQ 5.0. Schema 9, API 7 and Paper connector 1.4.0
+Webspace update for HQ 5.0 or 5.1. Schema 10, API 7 and Paper connector 1.4.0
 remain compatible. No Minecraft restart is needed for this interface update.
 
 Crates, Dragon event, Voting, Piñata, Fishing, Player shops and MCPets now
@@ -21,3 +21,8 @@ Missing data is labelled as missing rather than presented as zero activity.
 UPLOAD AS AN UPDATE: preserve config/config.php, config/notifications.php,
 all storage/ content and the database. No live deployment was performed.
 Full installation steps are in INSTALL-DE.md supplied with the update.
+
+Graph tooltips follow the pointer. Edit the live Staff field guide in Documents.
+Helper, Moderator and Admin presets are applied once at schema 10; subsequent
+Owner changes remain saved. See ROLE-PERMISSIONS.md in the update package.
+Only the Owner manages staff accounts and role rules.

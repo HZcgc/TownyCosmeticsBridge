@@ -4,7 +4,7 @@ declare(strict_types=1);
 function ensureSchemaCurrent(PDO $pdo): void
 {
     $version=(int)($pdo->query("SELECT setting_value FROM settings WHERE setting_key='schema.version'")->fetchColumn()?:0);
-    if($version>=9)return;
+    if($version>=10)return;
     if((int)$pdo->query("SELECT GET_LOCK('townyreborn.hq.schema',30)")->fetchColumn()!==1)throw new RuntimeException('Schema upgrade is busy; retry shortly.');
     try {
         $version=(int)($pdo->query("SELECT setting_value FROM settings WHERE setting_key='schema.version'")->fetchColumn()?:0);
@@ -13,6 +13,7 @@ function ensureSchemaCurrent(PDO $pdo): void
         if($version<7){analyticsSchema($pdo);$pdo->prepare("INSERT INTO settings(setting_key,setting_value,updated_at) VALUES('schema.version','7',?) ON DUPLICATE KEY UPDATE setting_value='7',updated_at=VALUES(updated_at)")->execute([now()]);}
         if($version<8){notificationSchema($pdo);$pdo->prepare("INSERT INTO settings(setting_key,setting_value,updated_at) VALUES('schema.version','8',?) ON DUPLICATE KEY UPDATE setting_value='8',updated_at=VALUES(updated_at)")->execute([now()]);}
         if($version<9){workspaceSchema($pdo);$pdo->prepare("INSERT INTO settings(setting_key,setting_value,updated_at) VALUES('schema.version','9',?) ON DUPLICATE KEY UPDATE setting_value='9',updated_at=VALUES(updated_at)")->execute([now()]);}
+        if($version<10)hqRolePresetMigration($pdo);
     } finally { $pdo->query("SELECT RELEASE_LOCK('townyreborn.hq.schema')"); }
 }
 
