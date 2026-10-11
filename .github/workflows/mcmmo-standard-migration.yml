@@ -1,0 +1,35 @@
+name: Verify mcMMO offline migration
+
+on:
+  push:
+    paths:
+      - 'tools/mcmmo-standard-migration/**'
+      - '.github/workflows/mcmmo-standard-migration.yml'
+  pull_request:
+    paths:
+      - 'tools/mcmmo-standard-migration/**'
+      - '.github/workflows/mcmmo-standard-migration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  migration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Build converter and run migration safety tests
+        run: sh tools/mcmmo-standard-migration/build.sh
+      - name: Upload standalone converter
+        uses: actions/upload-artifact@v4
+        with:
+          name: TownyReborn-mcMMO-Standard-Converter
+          path: tools/mcmmo-standard-migration/build/TownyReborn-mcMMO-Standard-Converter.jar
+          if-no-files-found: error
