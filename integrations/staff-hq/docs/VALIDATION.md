@@ -17,6 +17,9 @@ The PHP integration suite covers authentication, CSRF, explicit role denials, Ow
 
 Dragon tests use actual Paper interfaces with isolated world, scheduler and display doubles. They verify four cardinal displays at 5.5 blocks beyond a 3-block portal edge, configurable height/distance, lobby countdown, marked-only deletion, unmarked legacy recovery to IDLE, template protection and symlink guards. This is not a completed live fight on the Minecraft server.
 
-The server/client plugins and hosting were not deployed or modified live. The uploaded Paper 133 bootstrap requires a separate Mojang server download; a full Paper instance was not launched here. Verify a start/stop/start cycle and native optional-plugin coverage after installation. Public CI builds validate reproducibility separately.
+The server/client plugins and hosting were not deployed or modified live. The uploaded Paper 133 bootstrap requires a separate Mojang server download; a full Paper instance was not launched here. Verify a start/stop/start cycle and native optional-plugin coverage after installation. Both GitHub Actions builds completed successfully for the pushed commits. The install package uses their Maven-built JARs; artifact ZIP digests were verified before extraction.
+
+- Staff HQ / Connector: https://github.com/HZcgc/TownyCosmeticsBridge/actions/runs/38135757311 — commit `5a56e0bc474f87962f5f1b7e1265050c64be3d2e`.
+- Dragon: https://github.com/HZcgc/TownyDragonEvent/actions/runs/38135804671 — commit `635527d3382dea2ed3d9742a77047f161fc592b5`.
 
 Detailed synthetic checks: `tests/live_tests.py`, `tests/workspace_checks.py`, `tests/analytics_tests.py`, `tests/browser_tests.cjs`, `tests/history_tests.py` and each Java module's `src/test/java`. The local live harness expects the supplied isolated runtime paths; it never uses production credentials.
