@@ -1,0 +1,83 @@
+# Towny Reborn Staff Portal connector
+# Rotate the token in the Staff Portal first, then paste the NEW token below.
+# Never post this token in chat, Discord, screenshots or a public repository.
+portal:
+  endpoint: "https://staff.townyreborn.com/api.php"
+  api-token: "PASTE_NEW_ROTATED_TOKEN_HERE"
+  server-name: "smp"
+  connect-timeout-seconds: 5
+  request-timeout-seconds: 10
+  # One web request carries up to 20 events. Keep this at 10 seconds or higher
+  # so a small shared Plesk webspace cannot be flooded by the SMP.
+  flush-interval-seconds: 15
+  batch-size: 20
+  maximum-queued-events: 5000
+
+tracking:
+  # Permanent crate, voting, shop, pet, Dragon and fishing analytics (read only).
+  game-insights: true
+  players: true
+  vulcan: true
+  litebans: true
+  premiumvanish: true
+  staff-commands: true
+  # Every player command is retained by Staff HQ for 30 days. Password/login,
+  # account-link and 2FA arguments are always replaced with [REDACTED].
+  player-commands: true
+  # Global/local/Towny channels and private messages are retained for 30 days.
+  messages: true
+
+# Refreshes balance, town, playtime and platform for online players.
+player-sync-interval-seconds: 300
+
+# Sends TPS, memory, uptime and the installed plugin inventory to Analytics.
+server-snapshot-interval-seconds: 60
+
+# Allows authorized Staff HQ users to queue only the five supported LiteBans
+# actions. This is not a remote console and arbitrary commands are impossible.
+remote-actions:
+  enabled: true
+  poll-interval-seconds: 10
+
+# TownyAdvanced placeholder used when PlaceholderAPI is available.
+town-placeholder: "%townyadvanced_town%"
+
+# Console commands and legacy staff-audit highlighting use this list. Player
+# commands are collected separately when tracking.player-commands is enabled.
+staff-command-audit:
+  include-arguments: true
+  commands:
+    - ban
+    - tempban
+    - unban
+    - ipban
+    - banip
+    - mute
+    - tempmute
+    - unmute
+    - warn
+    - unwarn
+    - kick
+    - history
+    - staffhistory
+    - staffrollback
+    - vanish
+    - pva
+    - invsee
+    - openinv
+    - socialspy
+    - tp
+    - tpo
+    - teleport
+    - gamemode
+    - coreprotect
+    - co
+    - rollback
+    - restore
+
+# Prevent duplicate portal rows when both a LiteBans event and its command are seen.
+deduplication-window-seconds: 10
+
+# Vulcan can emit the same check many times per second. Store at most one alert
+# per player/check during this window; punishments are never suppressed.
+vulcan-alert-cooldown-seconds: 5

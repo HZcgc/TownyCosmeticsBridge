@@ -1,0 +1,13 @@
+/build/
+/output/
+/private/
+/library-helper/
+**/target/
+**/__pycache__/
+*.pyc
+/tests/browser-session.json
+/tests/browser-results.json
+/tests/live-results.json
+/source/web/config/config.php
+/source/web/config/notifications.php
+/source/web/storage/

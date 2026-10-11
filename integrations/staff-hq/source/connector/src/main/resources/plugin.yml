@@ -1,0 +1,46 @@
+name: TownyRebornStaffConnector
+version: 1.4.0
+main: com.townyreborn.staffconnector.TownyRebornStaffConnector
+api-version: '1.21'
+author: Towny Reborn
+description: Secure SMP and Hub event connector for the Towny Reborn Staff Portal.
+softdepend:
+  - Vulcan
+  - LiteBans
+  - PremiumVanish
+  - Vault
+  - PlaceholderAPI
+  - floodgate
+  - TownyChat
+  - Essentials
+  - Jobs
+  - mcMMO
+  - PyroFishingPro
+  - Quests
+  - ExcellentCrates
+  - AxAuctions
+  - QuickShop-Hikari
+  - Towny
+  - Votifier
+  - Citizens
+  - GSit
+  - PinataParty
+  - ArtMap
+  - MythicMobs
+  - MCPets
+  - TownyRebornPetShops
+  - TownyDragonEvent
+  - LuckPerms
+  - PyroLib
+commands:
+  trstaff:
+    description: Shows and manages the Towny Reborn Staff Connector.
+    usage: /trstaff <status|test|reload|updates>
+    permission: townyreborn.staffconnector.admin
+permissions:
+  townyreborn.staffconnector.admin:
+    description: Allows connector status, test, reload and update-check commands.
+    default: op
+  townyreborn.staffconnector.audit:
+    description: Marks a staff member whose moderation commands are audited.
+    default: op

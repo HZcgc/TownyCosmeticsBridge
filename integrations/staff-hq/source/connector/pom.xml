@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+ <modelVersion>4.0.0</modelVersion><groupId>com.townyreborn</groupId><artifactId>TownyRebornStaffConnector</artifactId><version>1.4.0</version>
+ <properties><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding><maven.compiler.release>17</maven.compiler.release></properties>
+ <repositories><repository><id>papermc</id><url>https://repo.papermc.io/repository/maven-public/</url></repository></repositories>
+ <dependencies>
+  <dependency><groupId>io.papermc.paper</groupId><artifactId>paper-api</artifactId><version>26.2.build.123-stable</version><scope>provided</scope></dependency>
+  <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.11.4</version><scope>test</scope></dependency>
+ </dependencies>
+ <build><finalName>TownyRebornStaffConnector-${project.version}</finalName><plugins>
+  <plugin><groupId>org.codehaus.mojo</groupId><artifactId>build-helper-maven-plugin</artifactId><version>3.6.0</version><executions><execution><id>compile-only-litebans</id><phase>generate-sources</phase><goals><goal>add-source</goal></goals><configuration><sources><source>stubs</source></sources></configuration></execution></executions></plugin>
+  <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.13.0</version><configuration><release>17</release><testRelease>25</testRelease></configuration></plugin>
+  <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.4.2</version><configuration><excludes><exclude>litebans/**</exclude></excludes></configuration></plugin>
+  <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.5.2</version></plugin>
+ </plugins></build>
+</project>

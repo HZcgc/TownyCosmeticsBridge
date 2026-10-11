@@ -1,0 +1,15 @@
+TOWNY REBORN STAFF HQ 5.0.0 — UPDATE
+
+Use the installation guide INSTALL-DE.md in the update package.
+
+Back up the existing HQ database and webspace. Upload WEBSPACE-UPDATE/ into
+the existing Staff HQ root, merging directories and replacing program files.
+Keep config/config.php, config/notifications.php and the entire storage/
+directory. Do not run a fresh installer or remove the existing database.
+
+The next authenticated request applies additive schema 9 migrations. Update
+the webspace before installing StaffConnector 1.4.0 on the stopped Paper
+server. Keep the connector's existing configuration and queue files.
+
+The package also contains Dragon Event Build 33 and a private, repeat-safe
+crate statistics import. Follow INSTALL-DE.md for those separate steps.

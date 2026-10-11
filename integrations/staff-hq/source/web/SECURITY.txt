@@ -1,0 +1,38 @@
+SECURITY CHECKLIST
+==================
+
+After installation
+------------------
+1. Save the three one-time passwords privately.
+2. Save the network API token in the server's protected configuration.
+3. Delete install.php from the webspace.
+4. Confirm that /config/, /app/ and /storage/ return 403 or 404 publicly.
+5. Sign in to every account, choose a unique password and enroll TOTP 2FA.
+6. Save recovery codes outside the webserver.
+7. Make config/config.php read-only if Plesk permits it.
+8. Enable regular database backups and test one restore.
+9. Keep storage writable by PHP but blocked from direct web access.
+10. Review and remove obsolete case/document uploads periodically.
+
+Account recovery
+----------------
+An Owner can reset another staff account under Staff Team. Resetting generates a
+new one-time password, removes the old TOTP enrollment and invalidates existing
+sessions. The user must change the password and enroll 2FA again.
+
+Important
+---------
+- Never reuse a Minecraft, email, Discord or hosting password here.
+- Never expose config/config.php or the API token.
+- Use HTTPS only.
+- Keep PHP and Plesk security updates current.
+- Remove inactive staff accounts promptly.
+- Treat uploaded evidence as confidential; access is routed through media.php
+  and requires an authenticated staff permission.
+
+External scheduler access
+-------------------------
+The notification-cron.php endpoint is disabled until an administrator enables it.
+Use HTTPS POST and keep the X-TR-Cron-Key header value private. Never place it in a URL.
+Only administrators can view, rotate or disable the encrypted scheduler credential.
+The endpoint cannot query staff data or send arbitrary message content.
