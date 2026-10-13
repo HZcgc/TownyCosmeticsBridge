@@ -1,0 +1,43 @@
+name: TownyRebornProgression
+version: 2.0.0-beta.1
+main: net.townyreborn.journey.RebornPlugin
+api-version: '1.21'
+authors:
+- TownyReborn
+description: Standalone Reborn levels, native journey menu and optional permanent
+  perks.
+depend:
+- PlaceholderAPI
+- Vault
+- LuckPerms
+softdepend:
+- Jobs
+- mcMMO
+loadbefore:
+- Quests
+- DeluxeMenus
+- LyttleNametag
+- TAB
+commands:
+  reborn:
+    description: Open the Reborn journey.
+    aliases:
+    - ranks
+    - perks
+    - progress
+    - journey
+    - fortschritt
+    permission: townyreborn.progression.access
+    permission-message: You do not have access to Reborn progression yet.
+  rebornadmin:
+    description: Review Reborn progress and durable receipts.
+    aliases:
+    - trprogress
+    permission: townyreborn.progression.admin
+permissions:
+  townyreborn.progression.access:
+    description: Access to Reborn menus and earning Journey Points.
+    default: false
+  townyreborn.progression.admin:
+    description: Owner controls for Reborn progression and receipt review.
+    default: op

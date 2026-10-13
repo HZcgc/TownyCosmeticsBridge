@@ -1,0 +1,60 @@
+Local verification: 41 named Java checks and 12 dependency/catalogue checks passed.
+
+PASS 116 levels, four pages, early flight and all paid features by page three
+PASS monotonic curve and exact level boundaries
+PASS 29-slot snake is unique, below controls, adjacent and fits native inventory
+PASS level advancement never depends on money or bought perks
+PASS invalid curves and cyclic or late prerequisites fail before players spend money
+PASS higher permanent tier implies lower purchase tiers without paying again
+PASS new profile reads are side-effect free until explicit activation
+Verified 36 original profiles; preserved 48 old claimed-level records.
+PASS all 36 uploaded profiles migrate deterministically and old files remain byte-for-byte intact
+PASS malformed native and malformed legacy profiles fail closed and are never replaced
+PASS schema, UUID and malformed receipt are rejected
+PASS high-water baselines prevent mcMMO regain and job leave/rejoin farming
+PASS daily source limits reset at a day boundary without replaying old high-water gains
+PASS paid purchase saves PREPARED then DEBITED before LP; duplicate click cannot debit
+PASS insufficient funds and missing predecessor never ask Vault for payment
+PASS declined Vault payment creates no ownership and can retry only after closed receipt
+PASS unknown wallet result is a manual PREPARED receipt and is never automatically charged again
+PASS failure to save PREPARED prevents any debit
+PASS failure to record a successful debit leaves PREPARED for review, not an automatic retry
+PASS DEBITED recovery and repeated recovery grant permission idempotently without another payment
+PASS LP save failure retains a paid receipt and safe retry never debits again
+PASS final profile save failure preserves a DEBITED recovery receipt
+PASS owner-reviewed ambiguous receipt can grant or close without another debit
+PASS free key reward has durable marker before command and repeated claim/restart never delivers again
+PASS free reward storage failure requests neither LP grant nor item command
+PASS failed reward command retains its original command receipt and cannot replay automatically
+PASS partial multi-command rewards stay locked for manual review instead of duplicating the first command
+PASS free rewards and purchases serialize on the same player receipt
+PASS town rewards can be deferred and record their original town before LP save
+PASS reward final save failure never replays a delivered item after restart
+PASS player names cannot inject console command arguments
+PASS old paused or original config becomes standalone settings with an exact rollback backup
+PASS cleanup archives only Reborn quests/menus and preserves all normal quests and player files
+PASS malformed legacy menu configuration stops cleanup before moving any original content
+PASS cleanup rolls back config edits and all moved paths if a later write fails
+PASS permission gate blocks every command alias; access permission unlocks only native menu
+PASS earning gate excludes missing permission, NPCs, creative mode, AFK worlds and test bots
+PASS native permanent LP migration ignores paid inheritance, wildcards, temporary and foreign-context nodes
+PASS placeholder requests show migrated title without creating native player files or awarding points
+PASS native menu renders all four snake pages with 29 milestone actions each
+PASS native GUI confirmation, duplicate clicks and bottom-inventory clicks never move items or repeat payment
+PASS revoked permission cancels the current action and closes the native menu
+RESULT 41 named Java checks passed
+
+PASS Quests/DeluxeMenus are not dependencies and no old Quests API or paused class is bundled
+PASS access defaults false for every public alias
+PASS startup archives legacy menus before Quests and DeluxeMenus enable
+PASS no global pause setting and Quests point source disabled
+PASS all 116 default levels have free rewards and no wallet or money condition
+PASS only new standalone classes in shipped JAR
+PASS no runtime class references to Quests API
+PASS every functional paid-rank permission from the actual LP export has an ingame permanent perk
+PASS catalogue never sells a Default Player Warp or basic sign/anvil colouring
+PASS no rank group, wildcard, paid prefix or subscription is granted by permanent perks
+PASS cosmetic rewards use exact installed UltraCosmetics permissions and leave pet catalogue alone
+PASS all free keys use existing virtual-key crate IDs and never Halloween
+
+GUI, wallet and permission effects used controlled backends/mocks; no live server/client deployment was performed.

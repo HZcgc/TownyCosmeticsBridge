@@ -1,0 +1,1165 @@
+# Towny Reborn standalone journey. Access is controlled only by
+# townyreborn.progression.access (default false); there is no global pause.
+# Each page has 29 milestones. Increase journey.steps and add stable IDs to extend.
+# Rank levels depend only on Journey Points; purchases and claims are optional.
+# Keep existing perk/gift IDs when editing: receipts and ownership use these IDs.
+# Costs are game money; keys use existing ExcellentCrates IDs (patron = Supporter).
+# Text colours on signs/anvils and one Player Warp are already free in Default.
+# Rewards are FREE and claimed once. Never delete journeydata to retry a reward.
+# Town bonuses belong to the town at claim time, not to an individual plot.
+# mcMMO/Jobs count new personal high-water gains; first valid value is a baseline.
+# Quests integration is optional and disabled; Reborn has no Quests dependency.
+
+permission-context-server: smp
+legacy-cleanup:
+  enabled: true
+journey:
+  steps: 116
+  points-first: 30
+  points-increase: 15
+  titles:
+    1: Newcomer
+    4: Settler
+    8: Resident
+    12: Citizen
+    18: Adventurer
+    24: Explorer
+    29: Merchant
+    36: Pioneer
+    45: Artisan
+    58: Veteran
+    70: Champion
+    87: Mythic
+    100: Ascendant
+    116: Reborn Legend
+sources:
+  active-timeout-seconds: 90
+  ignored-worlds:
+  - afk
+  - hub
+  ignored-name-prefixes:
+  - StressBot_
+  - FakePlayer_
+  - Bot_
+  mcmmo:
+    enabled: true
+    points-per-level: 5
+    daily-cap: 500
+  jobs:
+    enabled: true
+    points-per-level: 12
+    daily-cap: 500
+  fishing:
+    enabled: true
+    points-per-catch: 3
+    daily-cap: 300
+  exploration:
+    enabled: true
+    points-per-biome: 8
+    daily-cap: 200
+  advancements:
+    enabled: true
+    points-per-advancement: 15
+    daily-cap: 300
+  quests:
+    enabled: false
+    points-per-completion: 10
+    daily-cap: 300
+perks:
+  homes8:
+    name: 8 homes
+    level: 2
+    price: 10000
+    permissions:
+    - essentials.sethome.multiple.skeleton
+    - townysmp.subscriptions.homes.8
+    - townyreborn.perk.homes.8
+    legacy-markers:
+    - townyreborn.perk.homes.8
+    help-commands:
+    - /sethome <name>
+    - /home <name>
+  vaults4:
+    name: 4 writable player vaults
+    level: 3
+    price: 10000
+    permissions:
+    - axvaults.vault.4
+    - townysmp.subscriptions.vaults.write.4
+    - townyreborn.perk.vaults.4
+    legacy-markers:
+    - townyreborn.perk.vaults.4
+    help-commands:
+    - /pv
+  shops50:
+    name: +30 shop slots (50 base slots)
+    level: 4
+    price: 10000
+    permissions:
+    - townyreborn.perk.shops.30
+    - quickshop.limit.skeleton
+    legacy-markers:
+    - townyreborn.perk.shops.30
+    help-commands:
+    - /shops
+  jobs2:
+    name: 2 active jobs
+    level: 6
+    price: 25000
+    permissions:
+    - jobs.max.2
+    - townyreborn.perk.jobs.2
+    legacy-markers:
+    - townyreborn.perk.jobs.2
+    help-commands:
+    - /jobs browse
+  trash:
+    name: Trash menu
+    level: 7
+    price: 10000
+    permissions:
+    - essentials.disposal
+    - townyreborn.perk.trash
+    legacy-markers:
+    - townyreborn.perk.trash
+    help-commands:
+    - /trash
+  seeds:
+    name: Seeds kit every 72 hours
+    level: 8
+    price: 25000
+    permissions:
+    - essentials.kits.seeds
+    - townyreborn.perk.kit.seeds
+    legacy-markers:
+    - townyreborn.perk.kit.seeds
+    help-commands:
+    - /kit seeds
+  ptime:
+    name: Personal time
+    level: 9
+    price: 10000
+    permissions:
+    - essentials.ptime
+    legacy-markers:
+    - essentials.ptime
+    help-commands:
+    - /ptime day
+    - /ptime night
+    - /ptime reset
+  pweather:
+    name: Personal weather
+    level: 10
+    price: 10000
+    permissions:
+    - essentials.pweather
+    legacy-markers:
+    - essentials.pweather
+    help-commands:
+    - /pweather sun
+    - /pweather storm
+    - /pweather reset
+  craft:
+    name: Portable crafting table
+    level: 11
+    price: 25000
+    permissions:
+    - essentials.workbench
+    legacy-markers:
+    - essentials.workbench
+    help-commands:
+    - /craft
+  tfly:
+    name: Town flight
+    level: 12
+    price: 200000
+    permissions:
+    - townyflight.command.tfly
+    - townyreborn.perk.tfly
+    legacy-markers:
+    - townyreborn.perk.tfly
+    help-commands:
+    - /tfly
+  frames_invisible:
+    name: Invisible item frames
+    level: 14
+    price: 15000
+    permissions:
+    - invisibleitemframes.command.toggle.visibility
+    - invisibleitemframes.command.togglemode.visibility
+    legacy-markers:
+    - invisibleitemframes.command.toggle.visibility
+    help-commands:
+    - /itf toggle visibility
+  fly:
+    name: Personal flight
+    level: 18
+    price: 200000
+    permissions:
+    - essentials.fly
+    - townyreborn.perk.fly
+    legacy-markers:
+    - townyreborn.perk.fly
+    help-commands:
+    - /fly
+  daily_supporter:
+    name: Daily Supporter Crate Key
+    level: 22
+    price: 75000
+    permissions:
+    - townysmp.supporter.dailycrate
+    legacy-markers:
+    - townysmp.supporter.dailycrate
+    help-commands:
+    - One key every 24 hours while online
+  homes12:
+    name: 12 homes
+    level: 24
+    price: 25000
+    permissions:
+    - essentials.sethome.multiple.creeper
+    - townysmp.subscriptions.homes.12
+    - townyreborn.perk.homes.12
+    legacy-markers:
+    - townyreborn.perk.homes.12
+    requires: homes8
+    help-commands:
+    - /sethome <name>
+    - /home <name>
+  vaults6:
+    name: 6 writable player vaults
+    level: 26
+    price: 25000
+    permissions:
+    - axvaults.vault.6
+    - townysmp.subscriptions.vaults.write.6
+    - townyreborn.perk.vaults.6
+    legacy-markers:
+    - townyreborn.perk.vaults.6
+    requires: vaults4
+    help-commands:
+    - /pv
+  shops100:
+    name: 100 base shop slots
+    level: 28
+    price: 25000
+    permissions:
+    - townyreborn.perk.shops.50
+    - quickshop.limit.creeper
+    legacy-markers:
+    - townyreborn.perk.shops.50
+    requires: shops50
+    help-commands:
+    - /shops
+  warps2:
+    name: 2 player warps
+    level: 30
+    price: 50000
+    permissions:
+    - axplayerwarps.warps.2
+    - townyreborn.perk.warps.2
+    legacy-markers:
+    - townyreborn.perk.warps.2
+    help-commands:
+    - /pwarp
+    - /shops
+  loom:
+    name: Portable loom
+    level: 32
+    price: 15000
+    permissions:
+    - essentials.loom
+    legacy-markers:
+    - essentials.loom
+    help-commands:
+    - /loom
+  cartography:
+    name: Portable cartography table
+    level: 34
+    price: 15000
+    permissions:
+    - essentials.cartographytable
+    legacy-markers:
+    - essentials.cartographytable
+    help-commands:
+    - /cartographytable
+  grindstone:
+    name: Portable grindstone
+    level: 36
+    price: 25000
+    permissions:
+    - essentials.grindstone
+    legacy-markers:
+    - essentials.grindstone
+    help-commands:
+    - /grindstone
+  stonecutter:
+    name: Portable stonecutter
+    level: 38
+    price: 25000
+    permissions:
+    - essentials.stonecutter
+    legacy-markers:
+    - essentials.stonecutter
+    help-commands:
+    - /stonecutter
+  homes16:
+    name: 16 homes
+    level: 40
+    price: 50000
+    permissions:
+    - essentials.sethome.multiple.blaze
+    - townysmp.subscriptions.homes.16
+    - townyreborn.perk.homes.16
+    legacy-markers:
+    - townyreborn.perk.homes.16
+    requires: homes12
+    help-commands:
+    - /sethome <name>
+    - /home <name>
+  vaults8:
+    name: 8 writable player vaults
+    level: 42
+    price: 50000
+    permissions:
+    - axvaults.vault.8
+    - townysmp.subscriptions.vaults.write.8
+    - townyreborn.perk.vaults.8
+    legacy-markers:
+    - townyreborn.perk.vaults.8
+    requires: vaults6
+    help-commands:
+    - /pv
+  shops150:
+    name: 150 base shop slots
+    level: 44
+    price: 50000
+    permissions:
+    - townyreborn.perk.shops.80
+    - quickshop.limit.blaze
+    legacy-markers:
+    - townyreborn.perk.shops.80
+    requires: shops100
+    help-commands:
+    - /shops
+  jobs3:
+    name: 3 active jobs
+    level: 46
+    price: 50000
+    permissions:
+    - jobs.max.3
+    - townyreborn.perk.jobs.3
+    legacy-markers:
+    - townyreborn.perk.jobs.3
+    requires: jobs2
+    help-commands:
+    - /jobs browse
+  lights:
+    name: Lights kit every 72 hours
+    level: 48
+    price: 50000
+    permissions:
+    - essentials.kits.lights
+    - townyreborn.perk.kit.lights
+    legacy-markers:
+    - townyreborn.perk.kit.lights
+    help-commands:
+    - /kit lights
+  name_color:
+    name: Nickname colours
+    level: 50
+    price: 50000
+    permissions:
+    - namecolor.set
+    - townyreborn.perk.namecolor.color
+    legacy-markers:
+    - townyreborn.perk.namecolor.color
+    help-commands:
+    - /namecolor
+    - /nickname <name>
+  headdb:
+    name: Decorative Head Database
+    level: 52
+    price: 50000
+    permissions:
+    - headdb.basic
+    legacy-markers:
+    - headdb.basic
+    help-commands:
+    - /hdb
+  frames_glow:
+    name: Glowing item frames
+    level: 54
+    price: 25000
+    permissions:
+    - invisibleitemframes.command.toggle.glow
+    - invisibleitemframes.command.togglemode.glow
+    legacy-markers:
+    - invisibleitemframes.command.toggle.glow
+    help-commands:
+    - /itf toggle glow
+  homes22:
+    name: 22 homes
+    level: 58
+    price: 75000
+    permissions:
+    - essentials.sethome.multiple.dragon
+    - townysmp.subscriptions.homes.22
+    - townyreborn.perk.homes.22
+    legacy-markers:
+    - townyreborn.perk.homes.22
+    requires: homes16
+    help-commands:
+    - /sethome <name>
+    - /home <name>
+  vaults12:
+    name: 12 writable player vaults
+    level: 60
+    price: 75000
+    permissions:
+    - axvaults.vault.12
+    - townysmp.subscriptions.vaults.write.12
+    - townyreborn.perk.vaults.12
+    legacy-markers:
+    - townyreborn.perk.vaults.12
+    requires: vaults8
+    help-commands:
+    - /pv
+  shops200:
+    name: 200 base shop slots
+    level: 62
+    price: 75000
+    permissions:
+    - townyreborn.perk.shops.120
+    - quickshop.limit.dragon
+    legacy-markers:
+    - townyreborn.perk.shops.120
+    requires: shops150
+    help-commands:
+    - /shops
+  warps3:
+    name: 3 player warps
+    level: 64
+    price: 75000
+    permissions:
+    - axplayerwarps.warps.3
+    - townyreborn.perk.warps.3
+    legacy-markers:
+    - townyreborn.perk.warps.3
+    requires: warps2
+    help-commands:
+    - /pwarp
+    - /shops
+  name_gradient:
+    name: Nickname RGB gradients
+    level: 66
+    price: 75000
+    permissions:
+    - namecolor.gradient
+    - townyreborn.perk.namecolor.gradient
+    legacy-markers:
+    - townyreborn.perk.namecolor.gradient
+    requires: name_color
+    help-commands:
+    - /namecolor
+    - /nickname <RGB text>
+  anvil:
+    name: Portable anvil
+    level: 68
+    price: 35000
+    permissions:
+    - essentials.anvil
+    legacy-markers:
+    - essentials.anvil
+    help-commands:
+    - /anvil
+  smithing:
+    name: Portable smithing table
+    level: 70
+    price: 35000
+    permissions:
+    - essentials.smithingtable
+    legacy-markers:
+    - essentials.smithingtable
+    help-commands:
+    - /smithingtable
+  name_style:
+    name: Nickname text styles
+    level: 72
+    price: 100000
+    permissions:
+    - namecolor.set.style
+    - townyreborn.perk.namecolor.style
+    legacy-markers:
+    - townyreborn.perk.namecolor.style
+    requires: name_gradient
+    help-commands:
+    - /namecolor
+  homes30:
+    name: 30 homes
+    level: 74
+    price: 100000
+    permissions:
+    - essentials.sethome.multiple.wither
+    - townysmp.subscriptions.homes.30
+    - townyreborn.perk.homes.30
+    legacy-markers:
+    - townyreborn.perk.homes.30
+    requires: homes22
+    help-commands:
+    - /sethome <name>
+    - /home <name>
+  vaults16:
+    name: 16 writable player vaults
+    level: 76
+    price: 100000
+    permissions:
+    - axvaults.vault.16
+    - townysmp.subscriptions.vaults.write.16
+    - townyreborn.perk.vaults.16
+    legacy-markers:
+    - townyreborn.perk.vaults.16
+    requires: vaults12
+    help-commands:
+    - /pv
+  shops240:
+    name: 240 base shop slots
+    level: 78
+    price: 100000
+    permissions:
+    - townyreborn.perk.shops.160
+    - quickshop.limit.wither
+    legacy-markers:
+    - townyreborn.perk.shops.160
+    requires: shops200
+    help-commands:
+    - /shops
+  jobs4:
+    name: 4 active jobs
+    level: 80
+    price: 75000
+    permissions:
+    - jobs.max.4
+    - townyreborn.perk.jobs.4
+    legacy-markers:
+    - townyreborn.perk.jobs.4
+    requires: jobs3
+    help-commands:
+    - /jobs browse
+  redstone:
+    name: Redstone kit every 72 hours
+    level: 82
+    price: 75000
+    permissions:
+    - essentials.kits.redstone
+    - townyreborn.perk.kit.redstone
+    legacy-markers:
+    - townyreborn.perk.kit.redstone
+    help-commands:
+    - /kit redstone
+  enderchest:
+    name: Portable ender chest
+    level: 84
+    price: 75000
+    permissions:
+    - essentials.enderchest
+    legacy-markers:
+    - essentials.enderchest
+    help-commands:
+    - /enderchest
+  town_flight_bypass:
+    name: Expanded town flight access
+    level: 86
+    price: 150000
+    permissions:
+    - townyflight.bypass
+    legacy-markers:
+    - townyflight.bypass
+    requires: tfly
+    help-commands:
+    - /tfly
+gifts:
+  vanilla_xp_1:
+    name: 55 Minecraft XP
+    level: 1
+    commands:
+    - minecraft:experience add %player% 55 points
+  vanilla_xp_2:
+    name: 60 Minecraft XP
+    level: 2
+    commands:
+    - minecraft:experience add %player% 60 points
+  vanilla_xp_3:
+    name: 65 Minecraft XP
+    level: 3
+    commands:
+    - minecraft:experience add %player% 65 points
+  cosmetic_hats_chicken:
+    name: Chicken Hat
+    level: 4
+    permissions:
+    - ultracosmetics.hats.chicken
+  daily_key_5:
+    name: 1 Daily Crate Key
+    level: 5
+    commands:
+    - cratekey give %player% daily 1
+  vanilla_xp_6:
+    name: 80 Minecraft XP
+    level: 6
+    commands:
+    - minecraft:experience add %player% 80 points
+  vanilla_xp_7:
+    name: 85 Minecraft XP
+    level: 7
+    commands:
+    - minecraft:experience add %player% 85 points
+  cosmetic_hats_sheep:
+    name: Sheep Hat
+    level: 8
+    permissions:
+    - ultracosmetics.hats.sheep
+  vanilla_xp_9:
+    name: 95 Minecraft XP
+    level: 9
+    commands:
+    - minecraft:experience add %player% 95 points
+  vote_key_10:
+    name: 1 Vote Crate Key
+    level: 10
+    commands:
+    - cratekey give %player% vote 1
+  vanilla_xp_11:
+    name: 105 Minecraft XP
+    level: 11
+    commands:
+    - minecraft:experience add %player% 105 points
+  cosmetic_emotes_happy:
+    name: Happy Emote
+    level: 12
+    permissions:
+    - ultracosmetics.emotes.happy
+  vanilla_xp_13:
+    name: 115 Minecraft XP
+    level: 13
+    commands:
+    - minecraft:experience add %player% 115 points
+  vanilla_xp_14:
+    name: 120 Minecraft XP
+    level: 14
+    commands:
+    - minecraft:experience add %player% 120 points
+  daily_key_15:
+    name: 1 Daily Crate Key
+    level: 15
+    commands:
+    - cratekey give %player% daily 1
+  cosmetic_hats_squid:
+    name: Squid Hat
+    level: 16
+    permissions:
+    - ultracosmetics.hats.squid
+  vanilla_xp_17:
+    name: 135 Minecraft XP
+    level: 17
+    commands:
+    - minecraft:experience add %player% 135 points
+  vanilla_xp_18:
+    name: 140 Minecraft XP
+    level: 18
+    commands:
+    - minecraft:experience add %player% 140 points
+  vanilla_xp_19:
+    name: 145 Minecraft XP
+    level: 19
+    commands:
+    - minecraft:experience add %player% 145 points
+  supporter_key_20:
+    name: 1 Supporter Crate Key
+    level: 20
+    commands:
+    - cratekey give %player% patron 1
+  vanilla_xp_21:
+    name: 155 Minecraft XP
+    level: 21
+    commands:
+    - minecraft:experience add %player% 155 points
+  vanilla_xp_22:
+    name: 160 Minecraft XP
+    level: 22
+    commands:
+    - minecraft:experience add %player% 160 points
+  vanilla_xp_23:
+    name: 165 Minecraft XP
+    level: 23
+    commands:
+    - minecraft:experience add %player% 165 points
+  cosmetic_hats_cool:
+    name: Cool Hat
+    level: 24
+    permissions:
+    - ultracosmetics.hats.cool
+  town_claims_25:
+    name: 2 extra claims for your town
+    level: 25
+    town-required: true
+    town-blocks: 2
+  vanilla_xp_26:
+    name: 180 Minecraft XP
+    level: 26
+    commands:
+    - minecraft:experience add %player% 180 points
+  vanilla_xp_27:
+    name: 185 Minecraft XP
+    level: 27
+    commands:
+    - minecraft:experience add %player% 185 points
+  cosmetic_emotes_wink:
+    name: Wink Emote
+    level: 28
+    permissions:
+    - ultracosmetics.emotes.wink
+  cosmetic_key_29:
+    name: 1 Cosmetic Crate Key
+    level: 29
+    commands:
+    - cratekey give %player% cosmetic 1
+  vanilla_xp_30:
+    name: 200 Minecraft XP
+    level: 30
+    commands:
+    - minecraft:experience add %player% 200 points
+  vanilla_xp_31:
+    name: 205 Minecraft XP
+    level: 31
+    commands:
+    - minecraft:experience add %player% 205 points
+  cosmetic_hats_bee:
+    name: Bee Hat
+    level: 32
+    permissions:
+    - ultracosmetics.hats.bee
+  vanilla_xp_33:
+    name: 215 Minecraft XP
+    level: 33
+    commands:
+    - minecraft:experience add %player% 215 points
+  vanilla_xp_34:
+    name: 220 Minecraft XP
+    level: 34
+    commands:
+    - minecraft:experience add %player% 220 points
+  daily_keys_35:
+    name: 2 Daily Crate Keys
+    level: 35
+    commands:
+    - cratekey give %player% daily 2
+  cosmetic_particleeffects_notes:
+    name: Notes Particles
+    level: 36
+    permissions:
+    - ultracosmetics.particleeffects.notes
+  vanilla_xp_37:
+    name: 235 Minecraft XP
+    level: 37
+    commands:
+    - minecraft:experience add %player% 235 points
+  vanilla_xp_38:
+    name: 240 Minecraft XP
+    level: 38
+    commands:
+    - minecraft:experience add %player% 240 points
+  vanilla_xp_39:
+    name: 245 Minecraft XP
+    level: 39
+    commands:
+    - minecraft:experience add %player% 245 points
+  cosmetic_hats_fox:
+    name: Fox Hat
+    level: 40
+    permissions:
+    - ultracosmetics.hats.fox
+  vanilla_xp_41:
+    name: 255 Minecraft XP
+    level: 41
+    commands:
+    - minecraft:experience add %player% 255 points
+  vanilla_xp_42:
+    name: 260 Minecraft XP
+    level: 42
+    commands:
+    - minecraft:experience add %player% 260 points
+  vanilla_xp_43:
+    name: 265 Minecraft XP
+    level: 43
+    commands:
+    - minecraft:experience add %player% 265 points
+  cosmetic_emotes_love:
+    name: Love Emote
+    level: 44
+    permissions:
+    - ultracosmetics.emotes.love
+  vote_keys_45:
+    name: 2 Vote Crate Keys
+    level: 45
+    commands:
+    - cratekey give %player% vote 2
+  vanilla_xp_46:
+    name: 280 Minecraft XP
+    level: 46
+    commands:
+    - minecraft:experience add %player% 280 points
+  vanilla_xp_47:
+    name: 285 Minecraft XP
+    level: 47
+    commands:
+    - minecraft:experience add %player% 285 points
+  cosmetic_hats_turtle:
+    name: Turtle Hat
+    level: 48
+    permissions:
+    - ultracosmetics.hats.turtle
+  vanilla_xp_49:
+    name: 295 Minecraft XP
+    level: 49
+    commands:
+    - minecraft:experience add %player% 295 points
+  vanilla_xp_50:
+    name: 300 Minecraft XP
+    level: 50
+    commands:
+    - minecraft:experience add %player% 300 points
+  vanilla_xp_51:
+    name: 305 Minecraft XP
+    level: 51
+    commands:
+    - minecraft:experience add %player% 305 points
+  cosmetic_particleeffects_greensparks:
+    name: Green Sparks Particles
+    level: 52
+    permissions:
+    - ultracosmetics.particleeffects.greensparks
+  vanilla_xp_53:
+    name: 315 Minecraft XP
+    level: 53
+    commands:
+    - minecraft:experience add %player% 315 points
+  vanilla_xp_54:
+    name: 320 Minecraft XP
+    level: 54
+    commands:
+    - minecraft:experience add %player% 320 points
+  town_claims_55:
+    name: 3 extra claims for your town
+    level: 55
+    town-required: true
+    town-blocks: 3
+  cosmetic_hats_axolotlpink:
+    name: Pink Axolotl Hat
+    level: 56
+    permissions:
+    - ultracosmetics.hats.axolotlpink
+  vanilla_xp_57:
+    name: 335 Minecraft XP
+    level: 57
+    commands:
+    - minecraft:experience add %player% 335 points
+  supporter_key_58:
+    name: 1 Supporter Crate Key
+    level: 58
+    commands:
+    - cratekey give %player% patron 1
+  vanilla_xp_59:
+    name: 345 Minecraft XP
+    level: 59
+    commands:
+    - minecraft:experience add %player% 345 points
+  cosmetic_hats_diamond:
+    name: Diamond Hat
+    level: 60
+    permissions:
+    - ultracosmetics.hats.diamond
+  vanilla_xp_61:
+    name: 355 Minecraft XP
+    level: 61
+    commands:
+    - minecraft:experience add %player% 355 points
+  vanilla_xp_62:
+    name: 360 Minecraft XP
+    level: 62
+    commands:
+    - minecraft:experience add %player% 360 points
+  vanilla_xp_63:
+    name: 365 Minecraft XP
+    level: 63
+    commands:
+    - minecraft:experience add %player% 365 points
+  cosmetic_emotes_dealwithit:
+    name: Deal With It Emote
+    level: 64
+    permissions:
+    - ultracosmetics.emotes.dealwithit
+  daily_keys_65:
+    name: 2 Daily Crate Keys
+    level: 65
+    commands:
+    - cratekey give %player% daily 2
+  vanilla_xp_66:
+    name: 380 Minecraft XP
+    level: 66
+    commands:
+    - minecraft:experience add %player% 380 points
+  vanilla_xp_67:
+    name: 385 Minecraft XP
+    level: 67
+    commands:
+    - minecraft:experience add %player% 385 points
+  cosmetic_hats_allay:
+    name: Allay Hat
+    level: 68
+    permissions:
+    - ultracosmetics.hats.allay
+  vanilla_xp_69:
+    name: 395 Minecraft XP
+    level: 69
+    commands:
+    - minecraft:experience add %player% 395 points
+  vanilla_xp_70:
+    name: 400 Minecraft XP
+    level: 70
+    commands:
+    - minecraft:experience add %player% 400 points
+  vanilla_xp_71:
+    name: 405 Minecraft XP
+    level: 71
+    commands:
+    - minecraft:experience add %player% 405 points
+  cosmetic_particleeffects_enchanted:
+    name: Enchanted Particles
+    level: 72
+    permissions:
+    - ultracosmetics.particleeffects.enchanted
+  vanilla_xp_73:
+    name: 415 Minecraft XP
+    level: 73
+    commands:
+    - minecraft:experience add %player% 415 points
+  vanilla_xp_74:
+    name: 420 Minecraft XP
+    level: 74
+    commands:
+    - minecraft:experience add %player% 420 points
+  cosmetic_key_75:
+    name: 1 Cosmetic Crate Key
+    level: 75
+    commands:
+    - cratekey give %player% cosmetic 1
+  cosmetic_hats_enderman:
+    name: Enderman Hat
+    level: 76
+    permissions:
+    - ultracosmetics.hats.enderman
+  vanilla_xp_77:
+    name: 435 Minecraft XP
+    level: 77
+    commands:
+    - minecraft:experience add %player% 435 points
+  vanilla_xp_78:
+    name: 440 Minecraft XP
+    level: 78
+    commands:
+    - minecraft:experience add %player% 440 points
+  vanilla_xp_79:
+    name: 445 Minecraft XP
+    level: 79
+    commands:
+    - minecraft:experience add %player% 445 points
+  cosmetic_emotes_cool:
+    name: Cool Emote
+    level: 80
+    permissions:
+    - ultracosmetics.emotes.cool
+  vanilla_xp_81:
+    name: 455 Minecraft XP
+    level: 81
+    commands:
+    - minecraft:experience add %player% 455 points
+  vanilla_xp_82:
+    name: 460 Minecraft XP
+    level: 82
+    commands:
+    - minecraft:experience add %player% 460 points
+  vanilla_xp_83:
+    name: 465 Minecraft XP
+    level: 83
+    commands:
+    - minecraft:experience add %player% 465 points
+  cosmetic_hats_blaze:
+    name: Blaze Hat
+    level: 84
+    permissions:
+    - ultracosmetics.hats.blaze
+  town_claims_85:
+    name: 4 extra claims for your town
+    level: 85
+    town-required: true
+    town-blocks: 4
+  vanilla_xp_86:
+    name: 480 Minecraft XP
+    level: 86
+    commands:
+    - minecraft:experience add %player% 480 points
+  supporter_keys_87:
+    name: 2 Supporter Crate Keys
+    level: 87
+    commands:
+    - cratekey give %player% patron 2
+  cosmetic_particleeffects_enderfootprints:
+    name: Ender Footprints
+    level: 88
+    permissions:
+    - ultracosmetics.particleeffects.enderfootprints
+  vanilla_xp_89:
+    name: 495 Minecraft XP
+    level: 89
+    commands:
+    - minecraft:experience add %player% 495 points
+  vanilla_xp_90:
+    name: 500 Minecraft XP
+    level: 90
+    commands:
+    - minecraft:experience add %player% 500 points
+  vanilla_xp_91:
+    name: 505 Minecraft XP
+    level: 91
+    commands:
+    - minecraft:experience add %player% 505 points
+  cosmetic_hats_coppergolem:
+    name: Copper Golem Hat
+    level: 92
+    permissions:
+    - ultracosmetics.hats.coppergolem
+  vanilla_xp_93:
+    name: 515 Minecraft XP
+    level: 93
+    commands:
+    - minecraft:experience add %player% 515 points
+  vanilla_xp_94:
+    name: 520 Minecraft XP
+    level: 94
+    commands:
+    - minecraft:experience add %player% 520 points
+  cosmetic_keys_95:
+    name: 2 Cosmetic Crate Keys
+    level: 95
+    commands:
+    - cratekey give %player% cosmetic 2
+  cosmetic_particleeffects_inlove:
+    name: Hearts Particles
+    level: 96
+    permissions:
+    - ultracosmetics.particleeffects.inlove
+  vanilla_xp_97:
+    name: 535 Minecraft XP
+    level: 97
+    commands:
+    - minecraft:experience add %player% 535 points
+  vanilla_xp_98:
+    name: 540 Minecraft XP
+    level: 98
+    commands:
+    - minecraft:experience add %player% 540 points
+  vanilla_xp_99:
+    name: 545 Minecraft XP
+    level: 99
+    commands:
+    - minecraft:experience add %player% 545 points
+  cosmetic_hats_unicorn:
+    name: Unicorn Hat
+    level: 100
+    permissions:
+    - ultracosmetics.hats.unicorn
+  vanilla_xp_101:
+    name: 555 Minecraft XP
+    level: 101
+    commands:
+    - minecraft:experience add %player% 555 points
+  vanilla_xp_102:
+    name: 560 Minecraft XP
+    level: 102
+    commands:
+    - minecraft:experience add %player% 560 points
+  vanilla_xp_103:
+    name: 565 Minecraft XP
+    level: 103
+    commands:
+    - minecraft:experience add %player% 565 points
+  cosmetic_particleeffects_angelwings:
+    name: Angel Wings
+    level: 104
+    permissions:
+    - ultracosmetics.particleeffects.angelwings
+  town_claims_105:
+    name: 5 extra claims for your town
+    level: 105
+    town-required: true
+    town-blocks: 5
+  vanilla_xp_106:
+    name: 580 Minecraft XP
+    level: 106
+    commands:
+    - minecraft:experience add %player% 580 points
+  vanilla_xp_107:
+    name: 585 Minecraft XP
+    level: 107
+    commands:
+    - minecraft:experience add %player% 585 points
+  cosmetic_hats_kitsunemask:
+    name: Kitsune Mask
+    level: 108
+    permissions:
+    - ultracosmetics.hats.kitsunemask
+  vanilla_xp_109:
+    name: 595 Minecraft XP
+    level: 109
+    commands:
+    - minecraft:experience add %player% 595 points
+  vanilla_xp_110:
+    name: 600 Minecraft XP
+    level: 110
+    commands:
+    - minecraft:experience add %player% 600 points
+  vanilla_xp_111:
+    name: 605 Minecraft XP
+    level: 111
+    commands:
+    - minecraft:experience add %player% 605 points
+  cosmetic_particleeffects_rainbowwings:
+    name: Rainbow Wings
+    level: 112
+    permissions:
+    - ultracosmetics.particleeffects.rainbowwings
+  vanilla_xp_113:
+    name: 615 Minecraft XP
+    level: 113
+    commands:
+    - minecraft:experience add %player% 615 points
+  vanilla_xp_114:
+    name: 620 Minecraft XP
+    level: 114
+    commands:
+    - minecraft:experience add %player% 620 points
+  vanilla_xp_115:
+    name: 625 Minecraft XP
+    level: 115
+    commands:
+    - minecraft:experience add %player% 625 points
+  legend_bundle:
+    name: Reborn Legend reward bundle
+    level: 116
+    permissions:
+    - ultracosmetics.particleeffects.cherryfairy
+    - ultracosmetics.hats.greendragon
+    commands:
+    - cratekey give %player% patron 3
+    - cratekey give %player% cosmetic 3

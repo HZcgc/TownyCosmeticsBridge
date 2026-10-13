@@ -1,0 +1,76 @@
+# Every rank image already has the same font advance in the ItemsAdder pack.
+# Therefore every group uses exactly one separator after the Reborn level: the
+# player names stay in one column without the previous oversized rank padding.
+# The AFK marker stays in the suffix so it cannot shift the name column.
+
+Owner:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%essentials_afk%'
+  tagsuffix: ''
+Admin:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%essentials_afk%'
+  tagsuffix: ''
+Moderator:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%essentials_afk%'
+  tagsuffix: ''
+Helper:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%essentials_afk%'
+  tagsuffix: ''
+Wither:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%essentials_afk%'
+  tagsuffix: ''
+Dragon:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%essentials_afk%'
+  tagsuffix: ''
+Blaze:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%essentials_afk%'
+  tagsuffix: ''
+Creeper:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%essentials_afk%'
+  tagsuffix: ''
+Skeleton:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%essentials_afk%'
+  tagsuffix: ''
+Member:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%essentials_afk%'
+  tagsuffix: ''
+default:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%essentials_afk%'
+  tagsuffix: ''
+_DEFAULT_:
+  tabprefix: "\u0020%luckperms_prefix%&f%string_replaceCharacters_small-numbers_{reborn_level}%\u0020&r"
+  tagprefix: ''
+  customtabname: '%player_displayname%'
+  tabsuffix: '%luckperms-suffix%%essentials_afk%'
