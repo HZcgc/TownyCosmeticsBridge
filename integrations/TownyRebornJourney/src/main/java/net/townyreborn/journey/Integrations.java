@@ -45,6 +45,10 @@ final class Integrations implements Purchases.Backend {
       return this.economy.withdrawPlayer(Bukkit.getOfflinePlayer(var1), var2).transactionSuccess();
    }
 
+   public boolean deposit(UUID id, double amount) {
+      return this.economy.depositPlayer(Bukkit.getOfflinePlayer(id), amount).transactionSuccess();
+   }
+
    @Override
    public void main(Runnable var1) {
       if (this.plugin.isEnabled()) {
@@ -103,11 +107,7 @@ final class Integrations implements Purchases.Backend {
          }
       }
 
-      for (Journey.Gift var9 : this.plugin.journey.gifts.values()) {
-         if (var2.contains(Journey.giftMarker(var9.id())) && !var1.pendingGift.equals(var9.id())) {
-            var1.claimed.add(var9.id());
-         }
-      }
+      this.plugin.journey.importGiftMarkers(var1, var2);
 
       this.plugin.journey.inheritLowerPerks(var1.owned);
       LinkedHashSet var8 = new LinkedHashSet();

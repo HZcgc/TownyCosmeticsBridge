@@ -24,6 +24,11 @@ final class Gifts {
          }
 
          @Override
+         public boolean deposit(UUID id, double amount) {
+            return var1.integrations.deposit(id, amount);
+         }
+
+         @Override
          public void townBonus(String var1x, int var2) throws Exception {
             var1.integrations.townBonus(var1x, var2);
          }

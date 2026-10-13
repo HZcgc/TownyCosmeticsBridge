@@ -1,29 +1,11 @@
-# ###################################################
-#            Lyttle Nametag - config.yml            #
-# ###################################################
-# This file contains the configuration for the Lyttle Nametag plugin.
-# You can customize the nametag format and other settings.
-#
-# ⚠️ Do NOT remove any keys — the plugin depends on them.
-# You are free to customize the text and formatting.
-# ###################################################
+# Town/Nation, then LuckPerms rank and Journey title, then display name.
+nametag: '<light_purple>%townyadvanced_town_unformatted%</light_purple> <green>%townyadvanced_nation_unformatted%</green>
 
-# Three-line TownyReborn layout:
-# 1. Town and nation
-# 2. LuckPerms rank prefix, Reborn title and small Reborn level
-# 3. Formatted player display name
-# <displayname> preserves the RGB formatting without exposing legacy §x codes.
-nametag: |-
-  <light_purple>%townyadvanced_town_unformatted%</light_purple> <green>%townyadvanced_nation_unformatted%</green>
-  <luckperms_prefix><light_purple>%reborn_title%</light_purple> <gray>%string_replaceCharacters_small-numbers_{reborn_level}%</gray>
-  <displayname>
-# Interval in seconds for checking updates.
+  <luckperms_prefix> <light_purple>%reborn_title%</light_purple>
+
+  <displayname>'
 interval: 0.5
-
-# The maximum distance at which the nametag will be visible. (In blocks) (default: 64)
 view_distance: 64
-
-# ⚠️ Do not change this value.
 config_version: 5
 line_spacing: 0.275
 hide_vanilla_nametag: true

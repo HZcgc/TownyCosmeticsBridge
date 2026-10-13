@@ -59,6 +59,9 @@ public final class Store {
          var4.pendingGiftTown = var6.getString("pending-gift-town", "");
          var4.pendingGiftCommands = List.copyOf(var6.getStringList("pending-gift-commands"));
          var4.pendingGiftTownBlocks = var6.getInt("pending-gift-town-blocks", 0);
+         var4.pendingGiftMoney = var6.getDouble("pending-gift-money", 0);
+         if (!Double.isFinite(var4.pendingGiftMoney) || var4.pendingGiftMoney < 0 || var4.pendingGiftMoney > 1000000)
+            throw new IOException("Invalid money reward receipt " + var1);
          if (var6.isConfigurationSection("pending-purchase")) {
             var4.pending = new State.Purchase(
                var6.getString("pending-purchase.perk"),
@@ -83,6 +86,7 @@ public final class Store {
          var4.points = this.journey.legacyPoints(var7.getInt("level", 1), var4.minutes, var7.getInt("quest-points", 0));
       }
 
+      this.journey.migrateGiftReceipts(var4);
       this.journey.inheritLowerPerks(var4.owned);
       this.cache.put(var1, var4);
       return var4;
@@ -123,6 +127,7 @@ public final class Store {
          var2.set("pending-gift-town", var1.pendingGiftTown);
          var2.set("pending-gift-commands", var1.pendingGiftCommands);
          var2.set("pending-gift-town-blocks", var1.pendingGiftTownBlocks);
+         var2.set("pending-gift-money", var1.pendingGiftMoney);
       }
 
       if (var1.pending != null) {

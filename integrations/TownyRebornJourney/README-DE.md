@@ -1,15 +1,56 @@
-# Towny Reborn – eigenständige Reborn Journey
-
-Version: 2.0.0-beta.1. Das ist das neue Testpaket zum vollständigen Ausbau aus Quests.
+# Towny Reborn Journey – Update 2.0.0-beta.2
 
 ## Einfügen
 
 1. Server vollständig stoppen und die bisherigen Plugin-/LuckPerms-Daten sichern.
-2. Alle bisherigen `TownyRebornProgression*.jar` aus `plugins/` entfernen – auch die Pause-Version.
-3. Den Inhalt dieses Pakets unter `plugins/` in deinen Server-Ordner kopieren.
-4. **Den vorhandenen Ordner `plugins/TownyRebornProgression/` behalten.** Keine Spielerdateien ersetzen oder löschen.
-5. Server vollständig starten. Das neue Plugin archiviert die alten Reborn-Quests/-Menüs selbst, bevor Quests/DeluxeMenus laden. Normale Quests bleiben bestehen.
-6. Erst deinem Account Zugriff geben und `/reborn` testen. Für Spieler erst danach die Berechtigung freigeben.
+2. Die alte TownyRebornProgression-JAR aus `plugins/` entfernen. Es darf nur eine Version dort liegen.
+3. Die neue JAR aus dem `plugins/`-Ordner dieses Pakets hineinkopieren.
+4. **Den vorhandenen Ordner `TownyRebornProgression/` samt `config.yml`, `playerdata/` und `journeydata/` behalten.**
+5. Vollständig starten. Das Plugin aktualisiert die Beta-Config und die vorhandenen TAB-, TownyChat- und LyttleNametag-Anzeigeformate automatisch und sichert die alten Dateien.
+6. Mit deinem Account `/reborn` prüfen. Die öffentliche Zugriffsberechtigung bleibt weiterhin standardmäßig aus.
+
+Die Referenzdateien im Paket sind zum Nachschauen. Sie werden nicht über deine Server-Config kopiert. Eine neue Quests-Config ist nicht nötig: Der bereits eingebaute Ausbau der alten Reborn-Menüpunkte läuft weiterhin automatisch; normale Quests bleiben erhalten.
+
+## Was jetzt sichtbar ist
+
+- Beim nächsten Level steht exakt, wie viele **Journey Points** fehlen und welche Aktivitäten sie bringen.
+- Die XP-Flasche zeigt **erledigte und verbleibende Prozent**, fehlende Punkte, aktive Zeit, mcMMO-, Jobs- und Angelwerte. Anklicken öffnet die Anleitung mit tatsächlichen Punktraten, Tageslimits und einem Server-Snapshot.
+- **Grün:** Level erreicht. **Gelb:** nächstes Levelziel. **Rot:** spätere, gesperrte Level.
+- Die Schlange geht zwischen den Seiten auf derselben Höhe weiter: oben → oben, unten → unten.
+- 116 kostenlose, einmalige Belohnungen: Geld, Baumaterialien, Essen, einzelne Keys und Town-Claims. Minecraft-XP nur bei Level 12, 52 und 104.
+- Keine UltraCosmetics-Freischaltungen und kein täglicher Supporter-Key-Perk im Journey-Katalog. Supporter-Keys gibt es nur bei vier einzelnen Meilensteinen.
+- 43 separat angebotene, optionale permanente Perks. Geldkäufe und Belohnungsabholungen blockieren keinen Levelaufstieg. `/fly` bleibt ab Level 18 und `/tfly` ab Level 12 erhältlich.
+
+**200 QuickShop-Shops sind Handels-Shops an Kisten/Fässern.** Player Warps sind eigene Reiseziele und bleiben bei maximal **drei**. Der irreführende `/shops`-Verweis wurde bei QuickShop entfernt. Die höheren Trading-Shop-Stufen sichern die vorhandenen Bridge-Mindestlimits; Add-ons und das 300-Shop-Maximum berechnet weiterhin die SubscriptionBridge.
+
+Die vollständigen Belohnungen stehen in `REWARDS.md`, alle optionalen Käufe mit Preis und Voraussetzungen in `PERKS.md`.
+
+## Anzeigen
+
+| Anzeige | Reihenfolge |
+| --- | --- |
+| Nametag, Zeile 1 | Town · Nation |
+| Nametag, Zeile 2 | LP-Rang · voller Journey-Titel |
+| Nametag, Zeile 3 | Displayname |
+| TAB | LP-Rang · Journey-Kürzel · Displayname · bisherige kleine mcMMO-Zahl |
+| Chat | LP-Rang · voller Journey-Titel · Displayname · mcMMO |
+
+RGB-Displaynames, Kanal-Tags, Town-/Nation-Kanäle und AFK-Marker bleiben erhalten. Das Plugin passt vorhandene Formatfelder an, statt eine fremde komplette Chat-Config einzuspielen. Die Kürzel stehen in `journey.short-titles`.
+
+## Punkte verdienen
+
+| Aktivität | Journey Points | Tageslimit |
+| --- | ---: | ---: |
+| Aktiv spielen | 1 je aktiver Minute | – |
+| Neues persönliches mcMMO-Powerlevel | 5 | 500 |
+| Neues persönliches Level in einem Job | 12 | 500 |
+| Fisch mit der Angel fangen | 3 | 300 |
+| Neues Biom besuchen | 8 | 200 |
+| Neues Advancement ohne Rezept | 15 | 300 |
+
+Mehrere Aktivitäten kombinieren oder nach eigenen Vorlieben spielen. Der Aufstieg erfolgt automatisch, sobald die angezeigte Punktzahl erreicht ist. Vorhandene mcMMO-/Jobs-Level setzen den Startwert; Jobwechsel oder Relogs geben alte Punkte nicht erneut. Tageslimits setzen sich um Mitternacht deutscher Zeit zurück. Die Anleitung liest deine tatsächlichen Einstellungen, wenn du die Raten änderst.
+
+## Zugriff
 
 Aus der Konsole:
 
@@ -18,40 +59,21 @@ lp user HZcgc_No2 permission set townyreborn.progression.access true server=smp
 lp user HZcgc_No2 permission set townyreborn.progression.admin true server=smp
 ```
 
-Später für die öffentliche Freigabe:
+Erst bei öffentlicher Freigabe:
 
 ```text
 lp group default permission set townyreborn.progression.access true server=smp
 ```
 
-Ohne `townyreborn.progression.access` gibt es keinen Command-/Menüzugriff und keine neuen Journey Points. Es gibt keinen globalen Pause-Schalter. Staff mit Wildcard-Permissions können die Berechtigung bereits besitzen.
+Ohne Access-Permission kein Command-/Menüzugriff und keine neuen Punkte. Wildcard-Staff-Permissions können Zugriff bereits enthalten.
 
-## Inhalt
+## Übernahme und Belege
 
-- Eigenes `/reborn` mit einem Schlangenmenü: zunächst **116 Level, vier Seiten**.
-- **44 optionale permanente Perks**, die funktionalen Vorteile aller fünf bezahlten Ränge bis Level 86.
-- `/tfly` ab Level 12; `/fly` ab Level 18 – beide auf der ersten Seite.
-- Auf jedem Level eine **kostenlose** Belohnung: Minecraft-XP, Keys, Cosmetics oder zusätzliche Town-Claims.
-- Level steigen über aktive Spielzeit, neue mcMMO-/Jobs-Level, Angeln, Erkundung und Advancements. Kein verpflichtender Quest-Grind.
-- Geldkäufe und Belohnungsabholungen sind freiwillig und blockieren den weiteren Level-Aufstieg nicht.
-- Frühere Level/Spielzeit/Questpunkte und dauerhaft gekaufte Perks werden übernommen. Monatsrang-Gruppen werden nicht als permanente Käufe übernommen.
-- Reborn-Titel und -Level im Nametag; Reborn-Level anstelle der bisherigen mcMMO-Zahl im TAB.
+Punkte, aktive Zeit, dauerhaft gekaufte Perks und bereits abgeholte Beta-Belohnungen bleiben erhalten. Alte Belohnungs-IDs und LP-Marker werden dem jeweiligen Meilenstein zugeordnet: Eine frühere XP-/Cosmetic-Belohnung löst beim Austausch **keine zusätzliche neue Auszahlung** aus. Offene Belege behalten ihre ursprünglichen Commands, Town und Geldbeträge.
 
-## Was passiert mit den alten Dateien?
+Die alte Beta-Config liegt anschließend unter `legacy-backup/config-before-catalogue-v3.yml`; frühere Anzeigeformate unter `legacy-backup/display-v3/`. Kurve, Punktquellen, bestehende Perk-Preise und Zugriffseinstellungen bleiben erhalten. Der bisherige Belohnungskatalog wird ersetzt. Bestehende Monatsränge verwaltet weiterhin ihre eigene Bridge.
 
-Die alten Reborn-Questdefinitionen, die Reborn-Kategorie und die alten `reborn_*.yml`-Menüs werden archiviert. Sie liegen danach unter:
-
-```text
-plugins/TownyRebornProgression/legacy-backup/<Zeitstempel>/
-```
-
-Die vorherige Progression-Config liegt unter `legacy-backup/config-pre-standalone.yml`. Alte Spielerdateien bleiben unter `playerdata/`; neue Profile/Belege liegen in `journeydata/`. Alte Profile werden einmal deterministisch eingelesen. Ein Placeholder-Aufruf allein schreibt keine neue Spielerdatei.
-
-Die neue bearbeitbare Config entsteht automatisch unter `plugins/TownyRebornProgression/config.yml`. Preise, Titel, Punktkurve, Quellen und Belohnungen sind dort einstellbar. `REFERENCE-default-config.yml` ist nur eine Referenz und wird nicht automatisch über deine Einstellungen kopiert. Zum Verlängern `journey.steps` erhöhen und neue Belohnungen mit neuen IDs hinzufügen; vorhandene IDs beibehalten. Danach vollständig neu starten.
-
-## Schutz vor doppelten Käufen und Belohnungen
-
-Belege werden vor Geldabbuchung bzw. Belohnung gespeichert. Doppelklicks, parallele Aktionen und Rejoins lösen keine weitere Abbuchung aus. Sicher bezahlte Perks können nach einem Neustart ihre Permission-Zuteilung fertigstellen. Unklare Zahlungen und teilweise ausgelieferte Belohnungen werden **nicht automatisch erneut bezahlt/ausgegeben**; diese benötigen eine Prüfung durch den Owner.
+Geld-/Key-Ausgaben werden vorab gespeichert. Bei einem unklaren oder teilweise ausgeführten Vorgang gibt es keinen automatischen zweiten Versuch. Nach Prüfung durch den Owner:
 
 ```text
 rebornadmin status <Spieler>
@@ -60,65 +82,8 @@ rebornadmin receipt <Spieler> cancel
 rebornadmin gift <Spieler> delivered
 ```
 
-`grant` nur nach bestätigter Zahlung, `delivered` nur nach geprüfter/nachgereichter Belohnung. `cancel` schließt den Beleg ohne weitere Abbuchung oder Erstattung. **Keine Journey-Dateien oder Reward-Marker löschen, um eine Ausgabe zu wiederholen.** Genauere Angaben stehen in `TECHNICAL-README.md`.
+`delivered` nur nach geprüfter/nachgereichter Belohnung. Keine Spielerdateien, Claims oder LP-Marker löschen, um eine Belohnung erneut auszulösen.
 
-## Kurzer Test auf deinem Server
+## Teststand
 
-Mit deinem Account: `/reborn` öffnen, Seiten durchgehen, einen Perk ansehen/kaufen, eine kostenlose Belohnung holen und reloggen. Mit einem Alt ohne Berechtigung prüfen, dass der Command nicht zugänglich ist. Einmal die neuen Anzeigen und eine Town-/Cosmetic-Belohnung prüfen. Erst danach Default freigeben.
-
-Lokal bestanden: **41 Java-Prüfungen + 12 Katalog-/Abhängigkeitsprüfungen**. Alle **36 vorhandenen Profile** und deren **48 alte Level-Claims** wurden geprüft; die alten Dateien bleiben bytegenau erhalten. Ein Live-Test auf deinem Server ist noch offen.
-
-## Perks
-
-Geld ist die vorhandene Ingame-Währung. Ein freigeschalteter Perk kann später gekauft werden; kein Kauf wird für den nächsten Level benötigt. Vorherige Upgrades sind nur innerhalb derselben Feature-Reihe erforderlich.
-
-| Level | Permanenter Perk | Preis | Vorheriger Kauf |
-| --- | --- | ---: | --- |
-| 2 | 8 homes | 10,000 | – |
-| 3 | 4 writable player vaults | 10,000 | – |
-| 4 | +30 shop slots (50 base slots) | 10,000 | – |
-| 6 | 2 active jobs | 25,000 | – |
-| 7 | Trash menu | 10,000 | – |
-| 8 | Seeds kit every 72 hours | 25,000 | – |
-| 9 | Personal time | 10,000 | – |
-| 10 | Personal weather | 10,000 | – |
-| 11 | Portable crafting table | 25,000 | – |
-| 12 | Town flight | 200,000 | – |
-| 14 | Invisible item frames | 15,000 | – |
-| 18 | Personal flight | 200,000 | – |
-| 22 | Daily Supporter Crate Key | 75,000 | – |
-| 24 | 12 homes | 25,000 | 8 homes |
-| 26 | 6 writable player vaults | 25,000 | 4 writable player vaults |
-| 28 | 100 base shop slots | 25,000 | +30 shop slots (50 base slots) |
-| 30 | 2 player warps | 50,000 | – |
-| 32 | Portable loom | 15,000 | – |
-| 34 | Portable cartography table | 15,000 | – |
-| 36 | Portable grindstone | 25,000 | – |
-| 38 | Portable stonecutter | 25,000 | – |
-| 40 | 16 homes | 50,000 | 12 homes |
-| 42 | 8 writable player vaults | 50,000 | 6 writable player vaults |
-| 44 | 150 base shop slots | 50,000 | 100 base shop slots |
-| 46 | 3 active jobs | 50,000 | 2 active jobs |
-| 48 | Lights kit every 72 hours | 50,000 | – |
-| 50 | Nickname colours | 50,000 | – |
-| 52 | Decorative Head Database | 50,000 | – |
-| 54 | Glowing item frames | 25,000 | – |
-| 58 | 22 homes | 75,000 | 16 homes |
-| 60 | 12 writable player vaults | 75,000 | 8 writable player vaults |
-| 62 | 200 base shop slots | 75,000 | 150 base shop slots |
-| 64 | 3 player warps | 75,000 | 2 player warps |
-| 66 | Nickname RGB gradients | 75,000 | Nickname colours |
-| 68 | Portable anvil | 35,000 | – |
-| 70 | Portable smithing table | 35,000 | – |
-| 72 | Nickname text styles | 100,000 | Nickname RGB gradients |
-| 74 | 30 homes | 100,000 | 22 homes |
-| 76 | 16 writable player vaults | 100,000 | 12 writable player vaults |
-| 78 | 240 base shop slots | 100,000 | 200 base shop slots |
-| 80 | 4 active jobs | 75,000 | 3 active jobs |
-| 82 | Redstone kit every 72 hours | 75,000 | – |
-| 84 | Portable ender chest | 75,000 | – |
-| 86 | Expanded town flight access | 150,000 | Town flight |
-
-Shop-Stufen nutzen deine vorhandene SubscriptionBridge: Der erste Shop-Perk gibt +30 zum aktiven Grundlimit. Spätere Stufen sichern Mindest-Gesamtlimits von 100/150/200/240; Add-ons und das 300-Shop-Maximum laufen über die vorhandene Bridge. Die kostenlose Default-Ausstattung (ein Player Warp, einfache Nicknames sowie Schilder-/Ambossfarben) wird nicht erneut verkauft.
-
-Die Keys nutzen die bereits vorhandenen digitalen Key-IDs `daily`, `vote`, `cosmetic` und `patron` (= Supporter). Halloween und die bestehenden Pet-Shops werden dabei nicht verändert. Town-Belohnungen geben der Town zum Zeitpunkt der Abholung mehr verfügbare Claim-Chunks und können später abgeholt werden, wenn man noch keine Town hat.
+Die 24 bestehenden Wiederherstellungstests laufen gegen alte und neue JAR. Zusätzlich prüft das Update Config-/Claim-Übernahme, Geldzahlungen bei Fehlern und Neustarts, durchgehende Seiten, Prozentwerte und die tatsächlichen Inventar-Anzeigen. Details in `VERIFICATION.txt`. Die Prüfung im laufenden Minecraft-Server steht noch aus.

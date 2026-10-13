@@ -21,9 +21,16 @@ for name,jar in [('original',ROOT/'releases/TownyRebornProgression-2.0.0-beta.1.
   meta=yaml.safe_load(z.read('plugin.yml'));assert meta['permissions']['townyreborn.progression.access']['default'] is False
   assert 'Quests' not in meta['depend'] and 'Quests' not in meta['softdepend']
   assert not any(b'com/leonardobishop/quests' in z.read(n) for n in z.namelist() if n.endswith('.class'))
- r=subprocess.run([str(a.jdk/'java'),'-Xverify:all','-cp',str(classes)+':'+str(jar)+':'+cp,'net.townyreborn.journey.RecoveryChecks',str(folder),str(ROOT/'src/main/resources/config.yml')],capture_output=True,text=True)
+  folder.mkdir(parents=True);(folder/'config.yml').write_bytes(z.read('config.yml'))
+ r=subprocess.run([str(a.jdk/'java'),'-Xverify:all','-cp',str(classes)+':'+str(jar)+':'+cp,'net.townyreborn.journey.RecoveryChecks',str(folder/'data'),str(folder/'config.yml')],capture_output=True,text=True)
  (a.output/(name+'.log')).write_text(r.stdout+r.stderr)
  if r.returncode:print(r.stdout+r.stderr);raise SystemExit(r.returncode)
  print(name, r.stdout.splitlines()[-1]);outputs.append(r.stdout)
 assert outputs[0]==outputs[1], 'Release and source rebuild disagree'
-print('Original and recovered source pass the identical 24 core scenarios.')
+print('Original beta and updated source pass the same 24 core recovery scenarios.')
+subprocess.run([str(a.jdk/'javac'),'--release','21','-cp',str(a.jar)+':'+cp,'-d',str(classes),str(ROOT/'src/test/java/net/townyreborn/journey/JourneyUpdateChecks.java')],check=True)
+jar_arg='-javaagent:'+str((a.deps/'mockito-core.jar').resolve())
+r=subprocess.run([str(a.jdk/'java'),'-Xverify:all',jar_arg,'-Dnet.bytebuddy.experimental=true','-cp',str(classes)+':'+str(a.jar)+':'+cp,'net.townyreborn.journey.JourneyUpdateChecks',str(a.output/'update-data'),str(a.jar),str(ROOT/'releases/TownyRebornProgression-2.0.0-beta.1.jar'),str(ROOT/'ui/TAB-groups.yml')],capture_output=True,text=True)
+(a.output/'update.log').write_text(r.stdout+r.stderr)
+print(r.stdout)
+if r.returncode:print(r.stderr);raise SystemExit(r.returncode)

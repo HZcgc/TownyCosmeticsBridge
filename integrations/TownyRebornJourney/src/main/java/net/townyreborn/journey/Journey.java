@@ -1,224 +1,145 @@
 package net.townyreborn.journey;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.Map.Entry;
+import java.util.*;
 import org.bukkit.configuration.ConfigurationSection;
 
 public final class Journey {
-   public static final int[] PATH = new int[]{
-      9, 18, 27, 36, 45, 46, 47, 38, 29, 20, 11, 12, 13, 22, 31, 40, 49, 50, 51, 42, 33, 24, 15, 16, 17, 26, 35, 44, 53
-   };
-   public final int steps;
-   public final long base;
-   public final long increase;
-   public final Map<String, Journey.Perk> perks = new LinkedHashMap<>();
-   public final Map<String, Journey.Gift> gifts = new LinkedHashMap<>();
-   public final NavigableMap<Integer, String> titles = new TreeMap<>();
+    public static final int[] PATH = {9,18,27,36,45,46,47,38,29,20,11,12,13,22,31,40,49,50,51,42,33,24,15,16,17,26,35,44,53};
+    public final int steps;
+    public final long base, increase;
+    public final Map<String, Perk> perks = new LinkedHashMap<>();
+    public final Map<String, Gift> gifts = new LinkedHashMap<>();
+    public final NavigableMap<Integer, String> titles = new TreeMap<>();
+    public final NavigableMap<Integer, String> abbreviations = new TreeMap<>();
+    private final Map<String, String> giftAliases = new HashMap<>();
 
-   public Journey(ConfigurationSection var1) {
-      this.steps = var1.getInt("journey.steps", 116);
-      this.base = var1.getLong("journey.points-first", 30L);
-      this.increase = var1.getLong("journey.points-increase", 15L);
-      if (this.steps >= 2
-         && this.steps <= 10000
-         && this.base >= 1L
-         && this.base <= 1000000L
-         && this.increase >= 0L
-         && this.increase <= 100000L
-         && this.threshold(this.steps) <= 1000000000000L) {
-         ConfigurationSection var2 = var1.getConfigurationSection("journey.titles");
-         if (var2 != null) {
-            for (String var4 : var2.getKeys(false)) {
-               int var5 = Integer.parseInt(var4);
-               String var6 = var2.getString(var4);
-               if (var5 < 1 || var5 > this.steps || var6 == null || var6.isBlank()) {
-                  throw new IllegalArgumentException("Invalid rank title " + var4);
-               }
+    public Journey(ConfigurationSection config) {
+        steps = config.getInt("journey.steps", 116);
+        base = config.getLong("journey.points-first", 30);
+        increase = config.getLong("journey.points-increase", 15);
+        if (steps < 2 || steps > 10000 || base < 1 || base > 1000000 || increase < 0 || increase > 100000 || threshold(steps) > 1000000000000L)
+            throw new IllegalArgumentException("Invalid progression curve");
+        ConfigurationSection names = config.getConfigurationSection("journey.titles");
+        if (names != null) for (String key : names.getKeys(false)) {
+            int level = Integer.parseInt(key);
+            String title = names.getString(key);
+            if (level < 1 || level > steps || title == null || title.isBlank()) throw new IllegalArgumentException("Invalid rank title " + key);
+            titles.put(level, title);
+        }
+        titles.putIfAbsent(1, "Newcomer");
+        for (var entry : titles.entrySet()) {
+            String fallback = entry.getValue().replaceAll("[^A-Za-z0-9]", "").toUpperCase(Locale.ROOT);
+            fallback = fallback.substring(0, Math.min(3, fallback.length()));
+            String abbreviation = config.getString("journey.short-titles." + entry.getKey(), fallback);
+            if (!abbreviation.matches("[A-Za-z0-9]{1,8}")) throw new IllegalArgumentException("Invalid short title " + entry.getKey());
+            abbreviations.put(entry.getKey(), abbreviation);
+        }
+        ConfigurationSection paid = config.getConfigurationSection("perks");
+        if (paid != null) for (String id : paid.getKeys(false)) {
+            validateId(id);
+            ConfigurationSection p = paid.getConfigurationSection(id);
+            if (p == null) throw new IllegalArgumentException("Invalid perk " + id);
+            int level = p.getInt("level"); double price = p.getDouble("price");
+            if (level < 1 || level > steps || !Double.isFinite(price) || price <= 0 || p.getStringList("permissions").isEmpty())
+                throw new IllegalArgumentException("Invalid perk " + id);
+            perks.put(id, new Perk(id, p.getString("name", id), level, price, List.copyOf(p.getStringList("permissions")),
+                List.copyOf(p.getStringList("legacy-markers")), p.getString("requires", ""), List.copyOf(p.getStringList("help-commands"))));
+        }
+        for (Perk perk : perks.values()) {
+            if (!perk.requires().isEmpty() && (!perks.containsKey(perk.requires()) || perks.get(perk.requires()).level() > perk.level()))
+                throw new IllegalArgumentException("Invalid predecessor for " + perk.id());
+            Set<String> visited = new HashSet<>();
+            for (Perk p = perk; p != null && !p.requires().isEmpty(); p = perks.get(p.requires()))
+                if (!visited.add(p.id())) throw new IllegalArgumentException("Cyclic perk chain");
+        }
+        ConfigurationSection rewards = config.getConfigurationSection("gifts");
+        if (rewards != null) for (String id : rewards.getKeys(false)) {
+            validateId(id);
+            ConfigurationSection g = rewards.getConfigurationSection(id);
+            if (g == null) throw new IllegalArgumentException("Invalid gift " + id);
+            int level = g.getInt("level"), blocks = g.getInt("town-blocks", 0);
+            double money = g.getDouble("money", 0);
+            if (level < 1 || level > steps || blocks < 0 || blocks > 100 || !Double.isFinite(money) || money < 0 || money > 1000000)
+                throw new IllegalArgumentException("Invalid gift " + id);
+            gifts.put(id, new Gift(id, g.getString("name", id), level, List.copyOf(g.getStringList("permissions")),
+                List.copyOf(g.getStringList("commands")), g.getBoolean("town-required", false) || blocks > 0, blocks,
+                money, g.getString("icon", "CHEST"), List.copyOf(g.getStringList("legacy-ids"))));
+        }
+        for (Gift gift : gifts.values()) for (String alias : gift.legacy()) {
+            validateId(alias);
+            if (gifts.containsKey(alias) && !alias.equals(gift.id())) throw new IllegalArgumentException("Reward alias shadows another gift: " + alias);
+            String previous = giftAliases.putIfAbsent(alias, gift.id());
+            if (previous != null && !previous.equals(gift.id())) throw new IllegalArgumentException("Duplicate reward alias: " + alias);
+        }
+        for (int level = 1; level <= steps; level++) {
+            int target = level;
+            long count = perks.values().stream().filter(p -> p.level() == target).count() + gifts.values().stream().filter(g -> g.level() == target).count();
+            if (count > 28) throw new IllegalArgumentException("Too many rewards at level " + level);
+        }
+    }
 
-               this.titles.put(var5, var6);
-            }
-         }
+    private static void validateId(String id) {
+        if (!id.matches("[a-z0-9_]+")) throw new IllegalArgumentException("Invalid stable ID: " + id);
+    }
+    public long threshold(int level) {
+        long n = Math.max(0L, Math.min(steps, level) - 1L);
+        return base * n + increase * n * (n - 1L) / 2L;
+    }
+    public int level(long points) {
+        int low = 1, high = steps;
+        while (low < high) { int mid = (low + high + 1) / 2; if (threshold(mid) <= points) low = mid; else high = mid - 1; }
+        return low;
+    }
+    public String title(int level) { var e = titles.floorEntry(level); return e == null ? "Newcomer" : e.getValue(); }
+    public String abbreviation(int level) { var e = abbreviations.floorEntry(level); return e == null ? "NEW" : e.getValue(); }
+    public int pages() { return (steps + PATH.length - 1) / PATH.length; }
+    public int page(int level) { return (Math.max(1, level) - 1) / PATH.length; }
+    /** Mirror the five path rows on alternate pages, preserving the header. */
+    public static int slot(int page, int index) {
+        int slot = PATH[index];
+        return page % 2 == 0 ? slot : (6 - slot / 9) * 9 + slot % 9;
+    }
+    public int percent(long points) {
+        int level = level(points);
+        return level >= steps ? 100 : (int) Math.max(0, Math.min(100, (points - threshold(level)) * 100 / (threshold(level + 1) - threshold(level))));
+    }
+    public int remainingPercent(long points) { return 100 - percent(points); }
+    public long remaining(long points, int target) { return Math.max(0, threshold(target) - points); }
+    public String canonicalGift(String id) { return giftAliases.getOrDefault(id, id); }
+    public boolean migrateGiftReceipts(State state) {
+        Set<String> claimed = new HashSet<>();
+        for (String id : state.claimed) claimed.add(canonicalGift(id));
+        String pending = canonicalGift(state.pendingGift);
+        boolean changed = !claimed.equals(state.claimed) || !pending.equals(state.pendingGift);
+        state.claimed.clear(); state.claimed.addAll(claimed); state.pendingGift = pending;
+        if (changed) state.dirty = true;
+        return changed;
+    }
+    /** Import old LP markers without executing any replacement reward. */
+    public void importGiftMarkers(State state, Set<String> nodes) {
+        for (Gift gift : gifts.values()) {
+            boolean marked = nodes.contains(giftMarker(gift.id())) || gift.legacy().stream().anyMatch(id -> nodes.contains(giftMarker(id)));
+            if (marked && !state.pendingGift.equals(gift.id())) state.claimed.add(gift.id());
+        }
+    }
+    public long legacyPoints(int oldLevel, long minutes, int questPoints) {
+        int level = oldLevel <= 1 ? 1 : Math.min(steps, (oldLevel - 1) * 12);
+        return Math.max(threshold(level), Math.max(0, minutes) + Math.max(0, questPoints) * 25L);
+    }
+    public void inheritLowerPerks(Set<String> owned) {
+        for (String id : new ArrayList<>(owned)) for (Perk p = perks.get(id); p != null && !p.requires().isEmpty(); p = perks.get(p.requires())) owned.add(p.requires());
+    }
+    public boolean purchasable(State state, Perk perk) {
+        return perk != null && level(state.points) >= perk.level() && !state.owned.contains(perk.id()) && (perk.requires().isEmpty() || state.owned.contains(perk.requires()));
+    }
+    public static String perkMarker(String id) { return "townyreborn.journey.perk." + id; }
+    public static String giftMarker(String id) { return "townyreborn.journey.reward." + id; }
 
-         this.titles.putIfAbsent(1, "Newcomer");
-         ConfigurationSection var10 = var1.getConfigurationSection("perks");
-         if (var10 != null) {
-            for (String var16 : var10.getKeys(false)) {
-               validateId(var16);
-               ConfigurationSection var22 = var10.getConfigurationSection(var16);
-               int var7 = var22.getInt("level");
-               double var8 = var22.getDouble("price");
-               if (var7 < 1 || var7 > this.steps || !Double.isFinite(var8) || var8 <= 0.0) {
-                  throw new IllegalArgumentException("Invalid perk " + var16);
-               }
-
-               if (var22.getStringList("permissions").isEmpty()) {
-                  throw new IllegalArgumentException("Perk has no permissions: " + var16);
-               }
-
-               this.perks
-                  .put(
-                     var16,
-                     new Journey.Perk(
-                        var16,
-                        var22.getString("name", var16),
-                        var7,
-                        var8,
-                        List.copyOf(var22.getStringList("permissions")),
-                        List.copyOf(var22.getStringList("legacy-markers")),
-                        var22.getString("requires", ""),
-                        List.copyOf(var22.getStringList("help-commands"))
-                     )
-                  );
-            }
-         }
-
-         for (Journey.Perk var17 : this.perks.values()) {
-            if (!var17.requires().isEmpty() && !this.perks.containsKey(var17.requires())) {
-               throw new IllegalArgumentException("Unknown predecessor for " + var17.id());
-            }
-         }
-
-         for (Journey.Perk var18 : this.perks.values()) {
-            if (!var18.requires().isEmpty() && this.perks.get(var18.requires()).level() > var18.level()) {
-               throw new IllegalArgumentException("Predecessor unlocks too late for " + var18.id());
-            }
-         }
-
-         for (Journey.Perk var19 : this.perks.values()) {
-            HashSet var23 = new HashSet();
-
-            for (Journey.Perk var26 = var19; var26 != null && !var26.requires().isEmpty(); var26 = this.perks.get(var26.requires())) {
-               if (!var23.add(var26.id())) {
-                  throw new IllegalArgumentException("Cyclic perk chain");
-               }
-            }
-         }
-
-         ConfigurationSection var15 = var1.getConfigurationSection("gifts");
-         if (var15 != null) {
-            for (String var24 : var15.getKeys(false)) {
-               validateId(var24);
-               ConfigurationSection var27 = var15.getConfigurationSection(var24);
-               int var29 = var27.getInt("level");
-               int var9 = var27.getInt("town-blocks", 0);
-               if (var29 < 1 || var29 > this.steps || var9 < 0 || var9 > 100) {
-                  throw new IllegalArgumentException("Invalid gift " + var24);
-               }
-
-               this.gifts
-                  .put(
-                     var24,
-                     new Journey.Gift(
-                        var24,
-                        var27.getString("name", var24),
-                        var29,
-                        List.copyOf(var27.getStringList("permissions")),
-                        List.copyOf(var27.getStringList("commands")),
-                        var27.getBoolean("town-required", false) || var9 > 0,
-                        var9
-                     )
-                  );
-            }
-         }
-
-         for (int var21 = 1; var21 <= this.steps; var21++) {
-            int var25 = var21;
-            long var28 = this.perks.values().stream().filter(var1x -> var1x.level() == var25).count()
-               + this.gifts.values().stream().filter(var1x -> var1x.level() == var25).count();
-            if (var28 > 28L) {
-               throw new IllegalArgumentException("Too many rewards at level " + var21);
-            }
-         }
-      } else {
-         throw new IllegalArgumentException("Invalid progression curve");
-      }
-   }
-
-   private static void validateId(String var0) {
-      if (!var0.matches("[a-z0-9_]+")) {
-         throw new IllegalArgumentException("Invalid stable ID: " + var0);
-      }
-   }
-
-   public long threshold(int var1) {
-      long var2 = Math.max(0L, Math.min(this.steps, var1) - 1L);
-      return this.base * var2 + this.increase * var2 * (var2 - 1L) / 2L;
-   }
-
-   public int level(long var1) {
-      int var3 = 1;
-      int var4 = this.steps;
-
-      while (var3 < var4) {
-         int var5 = (var3 + var4 + 1) / 2;
-         if (this.threshold(var5) <= var1) {
-            var3 = var5;
-         } else {
-            var4 = var5 - 1;
-         }
-      }
-
-      return var3;
-   }
-
-   public String title(int var1) {
-      Entry var2 = this.titles.floorEntry(var1);
-      return var2 == null ? "Newcomer" : (String)var2.getValue();
-   }
-
-   public int pages() {
-      return (this.steps + PATH.length - 1) / PATH.length;
-   }
-
-   public int page(int var1) {
-      return (Math.max(1, var1) - 1) / PATH.length;
-   }
-
-   public int percent(long var1) {
-      int var3 = this.level(var1);
-      return var3 >= this.steps
-         ? 100
-         : (int)Math.max(0L, Math.min(100L, (var1 - this.threshold(var3)) * 100L / (this.threshold(var3 + 1) - this.threshold(var3))));
-   }
-
-   public long legacyPoints(int var1, long var2, int var4) {
-      int var5 = var1 <= 1 ? 1 : Math.min(this.steps, (var1 - 1) * 12);
-      return Math.max(this.threshold(var5), Math.max(0L, var2) + Math.max(0L, var4) * 25L);
-   }
-
-   public void inheritLowerPerks(Set<String> var1) {
-      for (String var3 : new ArrayList<>(var1)) {
-         for (Journey.Perk var4 = this.perks.get(var3); var4 != null && !var4.requires().isEmpty(); var4 = this.perks.get(var4.requires())) {
-            var1.add(var4.requires());
-         }
-      }
-   }
-
-   public boolean purchasable(State var1, Journey.Perk var2) {
-      return var2 != null
-         && this.level(var1.points) >= var2.level()
-         && !var1.owned.contains(var2.id())
-         && (var2.requires().isEmpty() || var1.owned.contains(var2.requires()));
-   }
-
-   public static String perkMarker(String var0) {
-      return "townyreborn.journey.perk." + var0;
-   }
-
-   public static String giftMarker(String var0) {
-      return "townyreborn.journey.reward." + var0;
-   }
-
-   public record Gift(String id, String name, int level, List<String> permissions, List<String> commands, boolean townRequired, int townBlocks) {
-   }
-
-   public record Perk(String id, String name, int level, double price, List<String> permissions, List<String> legacy, String requires, List<String> commands) {
-   }
+    public record Gift(String id, String name, int level, List<String> permissions, List<String> commands, boolean townRequired, int townBlocks,
+                       double money, String icon, List<String> legacy) {
+        public Gift(String id, String name, int level, List<String> permissions, List<String> commands, boolean townRequired, int townBlocks) {
+            this(id, name, level, permissions, commands, townRequired, townBlocks, 0, "CHEST", List.of());
+        }
+    }
+    public record Perk(String id, String name, int level, double price, List<String> permissions, List<String> legacy, String requires, List<String> commands) {}
 }

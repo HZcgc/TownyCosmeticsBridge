@@ -46,6 +46,9 @@ final class RebornExpansion extends PlaceholderExpansion {
             return switch (var2.toLowerCase(Locale.ROOT)) {
                case "level" -> Integer.toString(var4);
                case "title" -> this.plugin.journey.title(var4);
+               case "short_title", "abbreviation" -> this.plugin.journey.abbreviation(var4);
+               case "tab_prefix" -> RebornPlugin.color("&d[" + this.plugin.journey.abbreviation(var4) + "] &r");
+               case "chat_prefix" -> RebornPlugin.color("&d[" + this.plugin.journey.title(var4) + "] &r");
                case "points", "quest_points" -> Long.toString(var3.points);
                case "playtime_minutes" -> Long.toString(var3.minutes);
                case "playtime_hours" -> String.format(Locale.US, "%.1f", var3.minutes / 60.0);
@@ -53,6 +56,8 @@ final class RebornExpansion extends PlaceholderExpansion {
                case "next_title" -> this.plugin.journey.title(Math.min(this.plugin.journey.steps, var4 + 1));
                case "next_required" -> Long.toString(this.plugin.journey.threshold(Math.min(this.plugin.journey.steps, var4 + 1)));
                case "percent" -> Integer.toString(this.plugin.journey.percent(var3.points));
+               case "remaining_percent" -> Integer.toString(this.plugin.journey.remainingPercent(var3.points));
+               case "remaining_points" -> Long.toString(this.plugin.journey.remaining(var3.points, Math.min(this.plugin.journey.steps, var4 + 1)));
                default -> null;
             };
          } catch (Exception var7) {

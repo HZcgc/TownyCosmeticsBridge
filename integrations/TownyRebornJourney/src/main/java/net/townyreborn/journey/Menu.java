@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -75,11 +76,14 @@ final class Menu implements Listener {
          var2 = Math.max(0, Math.min(this.plugin.journey.pages() - 1, var2));
          Menu.View var5 = this.create("journey", var2, 0, "", "&d&lTOWNY&a&lREBORN &8| &fJourney " + (var2 + 1) + "/" + this.plugin.journey.pages());
          if (var2 > 0) {
-            this.button(var5, 0, Material.ARROW, "&dPrevious page", List.of(), new Menu.Action("journey", "", var2 - 1, 0));
+            this.button(var5, 0, Material.ARROW, "&dPrevious page", List.of("&7The same path continues across pages."), new Menu.Action("journey", "", var2 - 1, 0));
          }
 
          if (var2 + 1 < this.plugin.journey.pages()) {
-            this.button(var5, 8, Material.ARROW, "&aNext page", List.of(), new Menu.Action("journey", "", var2 + 1, 0));
+            this.button(var5, 8, Material.ARROW, "&aNext page",
+               List.of("&7Continues at Level " + ((var2 + 1) * Journey.PATH.length + 1),
+                  "&7Start on the " + (Journey.slot(var2 + 1, 0) / 9 == 1 ? "top" : "bottom") + " row of the next page."),
+               new Menu.Action("journey", "", var2 + 1, 0));
          }
 
          this.button(
@@ -87,18 +91,13 @@ final class Menu implements Listener {
             2,
             Material.EXPERIENCE_BOTTLE,
             "&dYour progress",
-            List.of(
-               "&7Level: &a" + var4,
-               "&7Title: &f" + this.plugin.journey.title(var4),
-               "&7Journey Points: &d" + var3.points,
-               "&7Next level: &f" + this.plugin.journey.percent(var3.points) + "%",
-               "",
-               "&7Earn points through active play, mcMMO,",
-               "&7Jobs, fishing, exploration and advancements.",
-               "&7Perk purchases never block your next level."
-            ),
-            null
+            this.progressLore(var1, var3),
+            new Menu.Action("guide", "", var2, 0)
          );
+         this.button(var5, 1, Material.BOOK, "&eHow to reach the next level",
+            List.of("&7Choose an activity to earn Journey Points.", "&7Click for exact rates and your progress."),
+            new Menu.Action("guide", "", var2, 0));
+         this.button(var5, 7, Material.LIME_DYE, "&fPath colour legend", ProgressInfo.legend(), null);
          ItemStack var6 = this.item(
             Material.PLAYER_HEAD,
             "&f" + var1.getName(),
@@ -125,8 +124,8 @@ final class Menu implements Listener {
                break;
             }
 
-            ArrayList var9 = new ArrayList();
-            var9.add("&7Journey Points: &d" + Math.min(var3.points, this.plugin.journey.threshold(var13)) + "&8/&f" + this.plugin.journey.threshold(var13));
+            ArrayList<String> var9 = new ArrayList<>(ProgressInfo.requirement(this.plugin.journey, var3, var13));
+            var9.add(var13 <= var4 ? "&aReached" : var13 == var4 + 1 ? "&eYour next goal" : "&cLater milestone");
             var9.add("&7Rank: &f" + this.plugin.journey.title(var13));
             this.plugin
                .journey
@@ -147,7 +146,8 @@ final class Menu implements Listener {
             Material var10 = var13 <= var4
                ? Material.LIME_STAINED_GLASS_PANE
                : (var13 == var4 + 1 ? Material.YELLOW_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE);
-            this.button(var5, Journey.PATH[var12], var10, (var13 <= var4 ? "&a" : "&c") + "Level " + var13, var9, new Menu.Action("step", "", 0, var13));
+            this.button(var5, Journey.slot(var2, var12), var10,
+               (var13 <= var4 ? "&a" : var13 == var4 + 1 ? "&e" : "&c") + "Level " + var13, var9, new Menu.Action("step", "", 0, var13));
          }
 
          this.show(var1, var5);
@@ -179,7 +179,7 @@ final class Menu implements Listener {
             }
 
             for (String var15 : var10.commands()) {
-               var13.add("&7Use: &f" + var15);
+               var13.add((var15.startsWith("/") ? "&7Command: &f" : "&7") + var15);
             }
 
             var13.add("");
@@ -222,6 +222,58 @@ final class Menu implements Listener {
       }
    }
 
+   private List<String> progressLore(Player player, State state) {
+      List<String> lore = new ArrayList<>(ProgressInfo.summary(this.plugin.journey, state));
+      lore.add("");
+      lore.add("&dYour live stats");
+      lore.add("&7Active Journey time: &f" + String.format(Locale.US, "%.1fh", state.minutes / 60.0));
+      long mcmmo = this.plugin.sources.number(player, "%mcmmo_power_level%");
+      lore.add("&7mcMMO power level: &f" + (mcmmo < 0 ? "Unavailable" : mcmmo));
+      Map<String, Long> jobs = this.plugin.integrations.jobsLevels(player);
+      lore.add("&7Jobs level total: &f" + (jobs.isEmpty() ? "No active level data" : jobs.values().stream().mapToLong(Long::longValue).sum()));
+      lore.add("&7Fish caught: &f" + player.getStatistic(Statistic.FISH_CAUGHT));
+      return lore;
+   }
+
+   void guide(Player player, int page) throws Exception {
+      if (!player.isOnline() || !this.plugin.access(player)) return;
+      State state = this.plugin.state(player);
+      View view = this.create("guide", page, 0, "", "&d&lREBORN &8| &fHow to progress");
+      this.button(view, 4, Material.EXPERIENCE_BOTTLE, "&eYour next goal",
+         this.progressLore(player, state), null);
+      this.button(view, 10, Material.CLOCK, "&aStay active",
+         List.of("&fMove, build, farm or interact while playing.", "&7Reward: &a+1 JP per active minute",
+            "&7Active minutes: &f" + state.minutes, "&7Standing idle does not earn time points."), null);
+      this.sourceButton(view, state, 12, Material.DIAMOND_SWORD, "mcMMO skills", "mcmmo", "points-per-level", "Gain a new mcMMO power level.");
+      this.sourceButton(view, state, 14, Material.IRON_PICKAXE, "Jobs", "jobs", "points-per-level", "Gain a new level in one of your Jobs.");
+      this.sourceButton(view, state, 16, Material.FISHING_ROD, "Fishing", "fishing", "points-per-catch", "Catch a fish using a fishing rod.");
+      this.sourceButton(view, state, 28, Material.COMPASS, "Exploration", "exploration", "points-per-biome", "Visit a biome you have not recorded yet.");
+      this.sourceButton(view, state, 30, Material.KNOWLEDGE_BOOK, "Advancements", "advancements", "points-per-advancement", "Complete a new non-recipe advancement.");
+      if (this.plugin.getConfig().getBoolean("sources.quests.enabled", false))
+         this.sourceButton(view, state, 32, Material.BOOK, "Optional Quests", "quests", "points-per-completion", "Complete another quest.");
+      this.button(view, 22, Material.NETHER_STAR, "&fOne path, your choice",
+         List.of("&7Combine activities or choose your favourites.", "&7Reach the displayed Journey Point goal.", "&7Level up automatically and claim free rewards.",
+            "&7Reached supporter features become purchasable.", "&7No purchase is required for the next level."), null);
+      this.button(view, 45, Material.ARROW, "&dBack to journey", List.of(), new Action("journey", "", page, 0));
+      this.button(view, 49, Material.CLOCK, "&dServer snapshot",
+         List.of("&7Online: &f" + this.plugin.getServer().getOnlinePlayers().size(),
+            "&7TPS (1 minute): &f" + String.format(Locale.US, "%.1f", Math.min(20, Bukkit.getTPS()[0])),
+            "&7Progress updates every 30 seconds.",
+            "&7Daily source limits reset at midnight Berlin time."), null);
+      this.show(player, view);
+   }
+
+   private void sourceButton(View view, State state, int slot, Material icon, String title, String source, String rateKey, String action) {
+      boolean enabled = this.plugin.getConfig().getBoolean("sources." + source + ".enabled", true);
+      List<String> lore = enabled ? ProgressInfo.source(this.plugin.getConfig(), state, source, rateKey, action) : List.of("&cThis source is disabled on this server.");
+      this.button(view, slot, enabled ? icon : Material.GRAY_DYE, (enabled ? "&a" : "&7") + title, lore, null);
+   }
+
+   Material rewardIcon(Journey.Gift gift) {
+      Material icon = Material.matchMaterial(gift.icon());
+      return icon == null || !icon.isItem() ? Material.CHEST : icon;
+   }
+
    void step(Player var1, int var2) throws Exception {
       if (var1.isOnline() && this.plugin.access(var1)) {
          State var3 = this.plugin.state(var1);
@@ -231,12 +283,8 @@ final class Menu implements Listener {
             4,
             Material.NETHER_STAR,
             "&d" + this.plugin.journey.title(var2),
-            List.of(
-               "&7Required points: &f" + this.plugin.journey.threshold(var2),
-               "&7Your points: &a" + var3.points,
-               "&7Status: " + (this.plugin.journey.level(var3.points) >= var2 ? "&aReached" : "&cLocked")
-            ),
-            null
+            ProgressInfo.requirement(this.plugin.journey, var3, var2),
+            new Menu.Action("guide", "", this.plugin.journey.page(var2), 0)
          );
          int var5 = 10;
 
@@ -262,13 +310,14 @@ final class Menu implements Listener {
                this.button(
                   var4,
                   var5++,
-                  Material.EXPERIENCE_BOTTLE,
+                  rewardIcon(var9),
                   "&a" + var9.name(),
                   List.of(
                      "&aFree milestone reward",
                      "&7No money requirement.",
                      var9.townRequired() ? "&7Join a town to claim; you can claim later." : "&7Claim once when you reach this level.",
-                     var3.claimed.contains(var9.id()) ? "&aAlready claimed" : "&aClick to claim"
+                     var3.claimed.contains(var9.id()) ? "&aAlready claimed" :
+                        this.plugin.journey.level(var3.points) < var9.level() ? "&cReach Level " + var9.level() + " first" : "&aClick to claim"
                   ),
                   new Menu.Action("gift", var9.id(), 0, var2)
                );
@@ -343,6 +392,9 @@ final class Menu implements Listener {
                      break;
                   case "confirm":
                      this.confirm(var1, var2.id);
+                     break;
+                  case "guide":
+                     this.guide(var1, var2.page);
                }
             } catch (Exception var8) {
             } finally {
@@ -366,6 +418,9 @@ final class Menu implements Listener {
                      switch (var11.type()) {
                         case "journey":
                            this.journey(var10, var11.page());
+                           break;
+                        case "guide":
+                           this.guide(var10, var11.page());
                            break;
                         case "perks":
                            this.perks(var10, var11.page(), var11.step());

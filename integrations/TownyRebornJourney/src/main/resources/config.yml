@@ -1,15 +1,12 @@
-# Towny Reborn standalone journey. Access is controlled only by
-# townyreborn.progression.access (default false); there is no global pause.
-# Each page has 29 milestones. Increase journey.steps and add stable IDs to extend.
-# Rank levels depend only on Journey Points; purchases and claims are optional.
-# Keep existing perk/gift IDs when editing: receipts and ownership use these IDs.
-# Costs are game money; keys use existing ExcellentCrates IDs (patron = Supporter).
-# Text colours on signs/anvils and one Player Warp are already free in Default.
-# Rewards are FREE and claimed once. Never delete journeydata to retry a reward.
-# Town bonuses belong to the town at claim time, not to an individual plot.
-# mcMMO/Jobs count new personal high-water gains; first valid value is a baseline.
-# Quests integration is optional and disabled; Reborn has no Quests dependency.
-
+# Towny Reborn standalone Journey; player access requires townyreborn.progression.access.
+# Pages form one continuous snake; completed/next target/future = green/yellow/red.
+# Levels depend only on Journey Points. Perk purchases and reward claims are optional.
+# Reward IDs must remain stable; legacy-ids preserve previously claimed beta rewards.
+# Free rewards are claimed once. Money uses Vault with a durable receipt; never replay receipts.
+# No UltraCosmetics grants or permanent daily Supporter-key perk in this catalogue.
+# Existing paid rank subscriptions are handled by their own bridge.
+# Town rewards go to the town at claim time. All crate-key rewards below are one-time.
+# Sources track new personal mcMMO/Jobs highs; first valid value establishes a baseline.
 permission-context-server: smp
 legacy-cleanup:
   enabled: true
@@ -32,6 +29,21 @@ journey:
     87: Mythic
     100: Ascendant
     116: Reborn Legend
+  short-titles:
+    1: NEW
+    4: SET
+    8: RES
+    12: CIT
+    18: ADV
+    24: EXP
+    29: MER
+    36: PIO
+    45: ART
+    58: VET
+    70: CHM
+    87: MYT
+    100: ASC
+    116: LEG
 sources:
   active-timeout-seconds: 90
   ignored-worlds:
@@ -92,7 +104,7 @@ perks:
     help-commands:
     - /pv
   shops50:
-    name: +30 shop slots (50 base slots)
+    name: 50 QuickShop trading shops
     level: 4
     price: 10000
     permissions:
@@ -101,7 +113,8 @@ perks:
     legacy-markers:
     - townyreborn.perk.shops.30
     help-commands:
-    - /shops
+    - Left-click a chest/barrel with the item
+    - Trading shops; separate from player warps
   jobs2:
     name: 2 active jobs
     level: 6
@@ -202,16 +215,6 @@ perks:
     - townyreborn.perk.fly
     help-commands:
     - /fly
-  daily_supporter:
-    name: Daily Supporter Crate Key
-    level: 22
-    price: 75000
-    permissions:
-    - townysmp.supporter.dailycrate
-    legacy-markers:
-    - townysmp.supporter.dailycrate
-    help-commands:
-    - One key every 24 hours while online
   homes12:
     name: 12 homes
     level: 24
@@ -240,7 +243,7 @@ perks:
     help-commands:
     - /pv
   shops100:
-    name: 100 base shop slots
+    name: 100 QuickShop trading shops
     level: 28
     price: 25000
     permissions:
@@ -250,9 +253,10 @@ perks:
     - townyreborn.perk.shops.50
     requires: shops50
     help-commands:
-    - /shops
+    - Left-click a chest/barrel with the item
+    - Trading shops; separate from player warps
   warps2:
-    name: 2 player warps
+    name: 2 Player Warps
     level: 30
     price: 50000
     permissions:
@@ -263,6 +267,7 @@ perks:
     help-commands:
     - /pwarp
     - /shops
+    - 'Limit: 2 personal warp destinations'
   loom:
     name: Portable loom
     level: 32
@@ -331,7 +336,7 @@ perks:
     help-commands:
     - /pv
   shops150:
-    name: 150 base shop slots
+    name: 150 QuickShop trading shops
     level: 44
     price: 50000
     permissions:
@@ -341,7 +346,8 @@ perks:
     - townyreborn.perk.shops.80
     requires: shops100
     help-commands:
-    - /shops
+    - Left-click a chest/barrel with the item
+    - Trading shops; separate from player warps
   jobs3:
     name: 3 active jobs
     level: 46
@@ -426,7 +432,7 @@ perks:
     help-commands:
     - /pv
   shops200:
-    name: 200 base shop slots
+    name: 200 QuickShop trading shops
     level: 62
     price: 75000
     permissions:
@@ -436,9 +442,10 @@ perks:
     - townyreborn.perk.shops.120
     requires: shops150
     help-commands:
-    - /shops
+    - Left-click a chest/barrel with the item
+    - Trading shops; separate from player warps
   warps3:
-    name: 3 player warps
+    name: 3 Player Warps
     level: 64
     price: 75000
     permissions:
@@ -450,6 +457,7 @@ perks:
     help-commands:
     - /pwarp
     - /shops
+    - 'Limit: 3 personal warp destinations'
   name_gradient:
     name: Nickname RGB gradients
     level: 66
@@ -523,7 +531,7 @@ perks:
     help-commands:
     - /pv
   shops240:
-    name: 240 base shop slots
+    name: 240 QuickShop trading shops
     level: 78
     price: 100000
     permissions:
@@ -533,7 +541,8 @@ perks:
     - townyreborn.perk.shops.160
     requires: shops200
     help-commands:
-    - /shops
+    - Left-click a chest/barrel with the item
+    - Trading shops; separate from player warps
   jobs4:
     name: 4 active jobs
     level: 80
@@ -579,587 +588,1055 @@ perks:
     help-commands:
     - /tfly
 gifts:
-  vanilla_xp_1:
-    name: 55 Minecraft XP
+  milestone_001:
     level: 1
-    commands:
-    - minecraft:experience add %player% 55 points
-  vanilla_xp_2:
-    name: 60 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_1
+    permissions: []
+    commands: []
+    name: $550 game money
+    icon: GOLD_INGOT
+    money: 550
+  milestone_002:
     level: 2
+    legacy-ids:
+    - vanilla_xp_2
+    permissions: []
     commands:
-    - minecraft:experience add %player% 60 points
-  vanilla_xp_3:
-    name: 65 Minecraft XP
+    - minecraft:give %player% minecraft:iron_ingot 12
+    name: 12 Iron ingots
+    icon: IRON_INGOT
+  milestone_003:
     level: 3
+    legacy-ids:
+    - vanilla_xp_3
+    permissions: []
     commands:
-    - minecraft:experience add %player% 65 points
-  cosmetic_hats_chicken:
-    name: Chicken Hat
+    - minecraft:give %player% minecraft:lantern 16
+    name: 16 Lanterns
+    icon: LANTERN
+  milestone_004:
     level: 4
-    permissions:
-    - ultracosmetics.hats.chicken
-  daily_key_5:
-    name: 1 Daily Crate Key
+    legacy-ids:
+    - cosmetic_hats_chicken
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:copper_ingot 32
+    name: 32 Copper ingots
+    icon: COPPER_INGOT
+  milestone_005:
     level: 5
+    legacy-ids:
+    - daily_key_5
+    permissions: []
     commands:
     - cratekey give %player% daily 1
-  vanilla_xp_6:
-    name: 80 Minecraft XP
+    name: 1 Daily Crate Key (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_006:
     level: 6
+    legacy-ids:
+    - vanilla_xp_6
+    permissions: []
     commands:
-    - minecraft:experience add %player% 80 points
-  vanilla_xp_7:
-    name: 85 Minecraft XP
+    - minecraft:give %player% minecraft:golden_carrot 16
+    name: 16 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_007:
     level: 7
+    legacy-ids:
+    - vanilla_xp_7
+    permissions: []
     commands:
-    - minecraft:experience add %player% 85 points
-  cosmetic_hats_sheep:
-    name: Sheep Hat
+    - minecraft:give %player% minecraft:quartz 32
+    name: 32 Quartz
+    icon: QUARTZ
+  milestone_008:
     level: 8
-    permissions:
-    - ultracosmetics.hats.sheep
-  vanilla_xp_9:
-    name: 95 Minecraft XP
-    level: 9
+    legacy-ids:
+    - cosmetic_hats_sheep
+    permissions: []
     commands:
-    - minecraft:experience add %player% 95 points
-  vote_key_10:
-    name: 1 Vote Crate Key
+    - minecraft:give %player% minecraft:oak_log 64
+    name: 64 Oak logs
+    icon: OAK_LOG
+  milestone_009:
+    level: 9
+    legacy-ids:
+    - vanilla_xp_9
+    permissions: []
+    commands: []
+    name: $950 game money
+    icon: GOLD_INGOT
+    money: 950
+  milestone_010:
     level: 10
+    legacy-ids:
+    - vote_key_10
+    permissions: []
     commands:
     - cratekey give %player% vote 1
-  vanilla_xp_11:
-    name: 105 Minecraft XP
+    name: 1 Vote Crate Key (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_011:
     level: 11
+    legacy-ids:
+    - vanilla_xp_11
+    permissions: []
     commands:
-    - minecraft:experience add %player% 105 points
-  cosmetic_emotes_happy:
-    name: Happy Emote
+    - minecraft:give %player% minecraft:lantern 16
+    name: 16 Lanterns
+    icon: LANTERN
+  milestone_012:
     level: 12
-    permissions:
-    - ultracosmetics.emotes.happy
-  vanilla_xp_13:
-    name: 115 Minecraft XP
-    level: 13
-    commands:
-    - minecraft:experience add %player% 115 points
-  vanilla_xp_14:
-    name: 120 Minecraft XP
-    level: 14
-    commands:
-    - minecraft:experience add %player% 120 points
-  daily_key_15:
-    name: 1 Daily Crate Key
-    level: 15
-    commands:
-    - cratekey give %player% daily 1
-  cosmetic_hats_squid:
-    name: Squid Hat
-    level: 16
-    permissions:
-    - ultracosmetics.hats.squid
-  vanilla_xp_17:
-    name: 135 Minecraft XP
-    level: 17
-    commands:
-    - minecraft:experience add %player% 135 points
-  vanilla_xp_18:
-    name: 140 Minecraft XP
-    level: 18
-    commands:
-    - minecraft:experience add %player% 140 points
-  vanilla_xp_19:
-    name: 145 Minecraft XP
-    level: 19
-    commands:
-    - minecraft:experience add %player% 145 points
-  supporter_key_20:
-    name: 1 Supporter Crate Key
-    level: 20
-    commands:
-    - cratekey give %player% patron 1
-  vanilla_xp_21:
-    name: 155 Minecraft XP
-    level: 21
-    commands:
-    - minecraft:experience add %player% 155 points
-  vanilla_xp_22:
-    name: 160 Minecraft XP
-    level: 22
-    commands:
-    - minecraft:experience add %player% 160 points
-  vanilla_xp_23:
-    name: 165 Minecraft XP
-    level: 23
-    commands:
-    - minecraft:experience add %player% 165 points
-  cosmetic_hats_cool:
-    name: Cool Hat
-    level: 24
-    permissions:
-    - ultracosmetics.hats.cool
-  town_claims_25:
-    name: 2 extra claims for your town
-    level: 25
-    town-required: true
-    town-blocks: 2
-  vanilla_xp_26:
-    name: 180 Minecraft XP
-    level: 26
-    commands:
-    - minecraft:experience add %player% 180 points
-  vanilla_xp_27:
-    name: 185 Minecraft XP
-    level: 27
-    commands:
-    - minecraft:experience add %player% 185 points
-  cosmetic_emotes_wink:
-    name: Wink Emote
-    level: 28
-    permissions:
-    - ultracosmetics.emotes.wink
-  cosmetic_key_29:
-    name: 1 Cosmetic Crate Key
-    level: 29
-    commands:
-    - cratekey give %player% cosmetic 1
-  vanilla_xp_30:
-    name: 200 Minecraft XP
-    level: 30
-    commands:
-    - minecraft:experience add %player% 200 points
-  vanilla_xp_31:
-    name: 205 Minecraft XP
-    level: 31
-    commands:
-    - minecraft:experience add %player% 205 points
-  cosmetic_hats_bee:
-    name: Bee Hat
-    level: 32
-    permissions:
-    - ultracosmetics.hats.bee
-  vanilla_xp_33:
-    name: 215 Minecraft XP
-    level: 33
-    commands:
-    - minecraft:experience add %player% 215 points
-  vanilla_xp_34:
-    name: 220 Minecraft XP
-    level: 34
-    commands:
-    - minecraft:experience add %player% 220 points
-  daily_keys_35:
-    name: 2 Daily Crate Keys
-    level: 35
-    commands:
-    - cratekey give %player% daily 2
-  cosmetic_particleeffects_notes:
-    name: Notes Particles
-    level: 36
-    permissions:
-    - ultracosmetics.particleeffects.notes
-  vanilla_xp_37:
-    name: 235 Minecraft XP
-    level: 37
-    commands:
-    - minecraft:experience add %player% 235 points
-  vanilla_xp_38:
-    name: 240 Minecraft XP
-    level: 38
-    commands:
-    - minecraft:experience add %player% 240 points
-  vanilla_xp_39:
-    name: 245 Minecraft XP
-    level: 39
-    commands:
-    - minecraft:experience add %player% 245 points
-  cosmetic_hats_fox:
-    name: Fox Hat
-    level: 40
-    permissions:
-    - ultracosmetics.hats.fox
-  vanilla_xp_41:
-    name: 255 Minecraft XP
-    level: 41
-    commands:
-    - minecraft:experience add %player% 255 points
-  vanilla_xp_42:
-    name: 260 Minecraft XP
-    level: 42
-    commands:
-    - minecraft:experience add %player% 260 points
-  vanilla_xp_43:
-    name: 265 Minecraft XP
-    level: 43
-    commands:
-    - minecraft:experience add %player% 265 points
-  cosmetic_emotes_love:
-    name: Love Emote
-    level: 44
-    permissions:
-    - ultracosmetics.emotes.love
-  vote_keys_45:
-    name: 2 Vote Crate Keys
-    level: 45
-    commands:
-    - cratekey give %player% vote 2
-  vanilla_xp_46:
-    name: 280 Minecraft XP
-    level: 46
-    commands:
-    - minecraft:experience add %player% 280 points
-  vanilla_xp_47:
-    name: 285 Minecraft XP
-    level: 47
-    commands:
-    - minecraft:experience add %player% 285 points
-  cosmetic_hats_turtle:
-    name: Turtle Hat
-    level: 48
-    permissions:
-    - ultracosmetics.hats.turtle
-  vanilla_xp_49:
-    name: 295 Minecraft XP
-    level: 49
-    commands:
-    - minecraft:experience add %player% 295 points
-  vanilla_xp_50:
-    name: 300 Minecraft XP
-    level: 50
+    legacy-ids:
+    - cosmetic_emotes_happy
+    permissions: []
     commands:
     - minecraft:experience add %player% 300 points
-  vanilla_xp_51:
-    name: 305 Minecraft XP
-    level: 51
+    name: 300 Minecraft XP
+    icon: EXPERIENCE_BOTTLE
+  milestone_013:
+    level: 13
+    legacy-ids:
+    - vanilla_xp_13
+    permissions: []
+    commands: []
+    name: $1,150 game money
+    icon: GOLD_INGOT
+    money: 1150
+  milestone_014:
+    level: 14
+    legacy-ids:
+    - vanilla_xp_14
+    permissions: []
     commands:
-    - minecraft:experience add %player% 305 points
-  cosmetic_particleeffects_greensparks:
-    name: Green Sparks Particles
-    level: 52
-    permissions:
-    - ultracosmetics.particleeffects.greensparks
-  vanilla_xp_53:
-    name: 315 Minecraft XP
-    level: 53
+    - minecraft:give %player% minecraft:golden_carrot 16
+    name: 16 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_015:
+    level: 15
+    legacy-ids:
+    - daily_key_15
+    permissions: []
     commands:
-    - minecraft:experience add %player% 315 points
-  vanilla_xp_54:
-    name: 320 Minecraft XP
-    level: 54
+    - cratekey give %player% daily 1
+    name: 1 Daily Crate Key (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_016:
+    level: 16
+    legacy-ids:
+    - cosmetic_hats_squid
+    permissions: []
     commands:
-    - minecraft:experience add %player% 320 points
-  town_claims_55:
-    name: 3 extra claims for your town
-    level: 55
-    town-required: true
-    town-blocks: 3
-  cosmetic_hats_axolotlpink:
-    name: Pink Axolotl Hat
-    level: 56
-    permissions:
-    - ultracosmetics.hats.axolotlpink
-  vanilla_xp_57:
-    name: 335 Minecraft XP
-    level: 57
+    - minecraft:give %player% minecraft:oak_log 64
+    name: 64 Oak logs
+    icon: OAK_LOG
+  milestone_017:
+    level: 17
+    legacy-ids:
+    - vanilla_xp_17
+    permissions: []
+    commands: []
+    name: $1,350 game money
+    icon: GOLD_INGOT
+    money: 1350
+  milestone_018:
+    level: 18
+    legacy-ids:
+    - vanilla_xp_18
+    permissions: []
     commands:
-    - minecraft:experience add %player% 335 points
-  supporter_key_58:
-    name: 1 Supporter Crate Key
-    level: 58
+    - minecraft:give %player% minecraft:iron_ingot 12
+    name: 12 Iron ingots
+    icon: IRON_INGOT
+  milestone_019:
+    level: 19
+    legacy-ids:
+    - vanilla_xp_19
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:lantern 16
+    name: 16 Lanterns
+    icon: LANTERN
+  milestone_020:
+    level: 20
+    legacy-ids:
+    - supporter_key_20
+    permissions: []
     commands:
     - cratekey give %player% patron 1
-  vanilla_xp_59:
-    name: 345 Minecraft XP
-    level: 59
+    name: 1 Supporter Crate Key (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_021:
+    level: 21
+    legacy-ids:
+    - vanilla_xp_21
+    permissions: []
+    commands: []
+    name: $1,550 game money
+    icon: GOLD_INGOT
+    money: 1550
+  milestone_022:
+    level: 22
+    legacy-ids:
+    - vanilla_xp_22
+    permissions: []
     commands:
-    - minecraft:experience add %player% 345 points
-  cosmetic_hats_diamond:
-    name: Diamond Hat
-    level: 60
-    permissions:
-    - ultracosmetics.hats.diamond
-  vanilla_xp_61:
-    name: 355 Minecraft XP
-    level: 61
+    - minecraft:give %player% minecraft:golden_carrot 16
+    name: 16 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_023:
+    level: 23
+    legacy-ids:
+    - vanilla_xp_23
+    permissions: []
     commands:
-    - minecraft:experience add %player% 355 points
-  vanilla_xp_62:
-    name: 360 Minecraft XP
-    level: 62
+    - minecraft:give %player% minecraft:quartz 32
+    name: 32 Quartz
+    icon: QUARTZ
+  milestone_024:
+    level: 24
+    legacy-ids:
+    - cosmetic_hats_cool
+    permissions: []
+    commands: []
+    name: $1,700 game money
+    icon: GOLD_INGOT
+    money: 1700
+  milestone_025:
+    level: 25
+    legacy-ids:
+    - town_claims_25
+    permissions: []
+    commands: []
+    name: +2 bonus town claim chunks
+    icon: GRASS_BLOCK
+    town-required: true
+    town-blocks: 2
+  milestone_026:
+    level: 26
+    legacy-ids:
+    - vanilla_xp_26
+    permissions: []
     commands:
-    - minecraft:experience add %player% 360 points
-  vanilla_xp_63:
-    name: 365 Minecraft XP
-    level: 63
+    - minecraft:give %player% minecraft:iron_ingot 12
+    name: 12 Iron ingots
+    icon: IRON_INGOT
+  milestone_027:
+    level: 27
+    legacy-ids:
+    - vanilla_xp_27
+    permissions: []
     commands:
-    - minecraft:experience add %player% 365 points
-  cosmetic_emotes_dealwithit:
-    name: Deal With It Emote
-    level: 64
-    permissions:
-    - ultracosmetics.emotes.dealwithit
-  daily_keys_65:
-    name: 2 Daily Crate Keys
-    level: 65
+    - minecraft:give %player% minecraft:lantern 16
+    name: 16 Lanterns
+    icon: LANTERN
+  milestone_028:
+    level: 28
+    legacy-ids:
+    - cosmetic_emotes_wink
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:copper_ingot 32
+    name: 32 Copper ingots
+    icon: COPPER_INGOT
+  milestone_029:
+    level: 29
+    legacy-ids:
+    - cosmetic_key_29
+    permissions: []
     commands:
     - cratekey give %player% daily 2
-  vanilla_xp_66:
-    name: 380 Minecraft XP
+    name: 2 Daily Crate Keys (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_030:
+    level: 30
+    legacy-ids:
+    - vanilla_xp_30
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:golden_carrot 16
+    name: 16 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_031:
+    level: 31
+    legacy-ids:
+    - vanilla_xp_31
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:quartz 32
+    name: 32 Quartz
+    icon: QUARTZ
+  milestone_032:
+    level: 32
+    legacy-ids:
+    - cosmetic_hats_bee
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:oak_log 64
+    name: 64 Oak logs
+    icon: OAK_LOG
+  milestone_033:
+    level: 33
+    legacy-ids:
+    - vanilla_xp_33
+    permissions: []
+    commands: []
+    name: $2,150 game money
+    icon: GOLD_INGOT
+    money: 2150
+  milestone_034:
+    level: 34
+    legacy-ids:
+    - vanilla_xp_34
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:iron_ingot 12
+    name: 12 Iron ingots
+    icon: IRON_INGOT
+  milestone_035:
+    level: 35
+    legacy-ids:
+    - daily_keys_35
+    permissions: []
+    commands:
+    - cratekey give %player% daily 2
+    name: 2 Daily Crate Keys (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_036:
+    level: 36
+    legacy-ids:
+    - cosmetic_particleeffects_notes
+    permissions: []
+    commands: []
+    name: $2,300 game money
+    icon: GOLD_INGOT
+    money: 2300
+  milestone_037:
+    level: 37
+    legacy-ids:
+    - vanilla_xp_37
+    permissions: []
+    commands: []
+    name: $2,350 game money
+    icon: GOLD_INGOT
+    money: 2350
+  milestone_038:
+    level: 38
+    legacy-ids:
+    - vanilla_xp_38
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:golden_carrot 16
+    name: 16 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_039:
+    level: 39
+    legacy-ids:
+    - vanilla_xp_39
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:quartz 32
+    name: 32 Quartz
+    icon: QUARTZ
+  milestone_040:
+    level: 40
+    legacy-ids:
+    - cosmetic_hats_fox
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:oak_log 128
+    name: 128 Oak logs
+    icon: OAK_LOG
+  milestone_041:
+    level: 41
+    legacy-ids:
+    - vanilla_xp_41
+    permissions: []
+    commands: []
+    name: $2,550 game money
+    icon: GOLD_INGOT
+    money: 2550
+  milestone_042:
+    level: 42
+    legacy-ids:
+    - vanilla_xp_42
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:iron_ingot 24
+    name: 24 Iron ingots
+    icon: IRON_INGOT
+  milestone_043:
+    level: 43
+    legacy-ids:
+    - vanilla_xp_43
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:lantern 32
+    name: 32 Lanterns
+    icon: LANTERN
+  milestone_044:
+    level: 44
+    legacy-ids:
+    - cosmetic_emotes_love
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:copper_ingot 64
+    name: 64 Copper ingots
+    icon: COPPER_INGOT
+  milestone_045:
+    level: 45
+    legacy-ids:
+    - vote_keys_45
+    permissions: []
+    commands:
+    - cratekey give %player% vote 2
+    name: 2 Vote Crate Keys (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_046:
+    level: 46
+    legacy-ids:
+    - vanilla_xp_46
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:golden_carrot 32
+    name: 32 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_047:
+    level: 47
+    legacy-ids:
+    - vanilla_xp_47
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:quartz 64
+    name: 64 Quartz
+    icon: QUARTZ
+  milestone_048:
+    level: 48
+    legacy-ids:
+    - cosmetic_hats_turtle
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:oak_log 128
+    name: 128 Oak logs
+    icon: OAK_LOG
+  milestone_049:
+    level: 49
+    legacy-ids:
+    - vanilla_xp_49
+    permissions: []
+    commands: []
+    name: $2,950 game money
+    icon: GOLD_INGOT
+    money: 2950
+  milestone_050:
+    level: 50
+    legacy-ids:
+    - vanilla_xp_50
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:iron_ingot 24
+    name: 24 Iron ingots
+    icon: IRON_INGOT
+  milestone_051:
+    level: 51
+    legacy-ids:
+    - vanilla_xp_51
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:lantern 32
+    name: 32 Lanterns
+    icon: LANTERN
+  milestone_052:
+    level: 52
+    legacy-ids:
+    - cosmetic_particleeffects_greensparks
+    permissions: []
+    commands:
+    - minecraft:experience add %player% 800 points
+    name: 800 Minecraft XP
+    icon: EXPERIENCE_BOTTLE
+  milestone_053:
+    level: 53
+    legacy-ids:
+    - vanilla_xp_53
+    permissions: []
+    commands: []
+    name: $3,150 game money
+    icon: GOLD_INGOT
+    money: 3150
+  milestone_054:
+    level: 54
+    legacy-ids:
+    - vanilla_xp_54
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:golden_carrot 32
+    name: 32 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_055:
+    level: 55
+    legacy-ids:
+    - town_claims_55
+    permissions: []
+    commands: []
+    name: +3 bonus town claim chunks
+    icon: GRASS_BLOCK
+    town-required: true
+    town-blocks: 3
+  milestone_056:
+    level: 56
+    legacy-ids:
+    - cosmetic_hats_axolotlpink
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:oak_log 128
+    name: 128 Oak logs
+    icon: OAK_LOG
+  milestone_057:
+    level: 57
+    legacy-ids:
+    - vanilla_xp_57
+    permissions: []
+    commands: []
+    name: $3,350 game money
+    icon: GOLD_INGOT
+    money: 3350
+  milestone_058:
+    level: 58
+    legacy-ids:
+    - supporter_key_58
+    permissions: []
+    commands:
+    - cratekey give %player% patron 1
+    name: 1 Supporter Crate Key (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_059:
+    level: 59
+    legacy-ids:
+    - vanilla_xp_59
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:lantern 32
+    name: 32 Lanterns
+    icon: LANTERN
+  milestone_060:
+    level: 60
+    legacy-ids:
+    - cosmetic_hats_diamond
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:copper_ingot 64
+    name: 64 Copper ingots
+    icon: COPPER_INGOT
+  milestone_061:
+    level: 61
+    legacy-ids:
+    - vanilla_xp_61
+    permissions: []
+    commands: []
+    name: $3,550 game money
+    icon: GOLD_INGOT
+    money: 3550
+  milestone_062:
+    level: 62
+    legacy-ids:
+    - vanilla_xp_62
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:golden_carrot 32
+    name: 32 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_063:
+    level: 63
+    legacy-ids:
+    - vanilla_xp_63
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:quartz 64
+    name: 64 Quartz
+    icon: QUARTZ
+  milestone_064:
+    level: 64
+    legacy-ids:
+    - cosmetic_emotes_dealwithit
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:oak_log 128
+    name: 128 Oak logs
+    icon: OAK_LOG
+  milestone_065:
+    level: 65
+    legacy-ids:
+    - daily_keys_65
+    permissions: []
+    commands:
+    - cratekey give %player% daily 2
+    name: 2 Daily Crate Keys (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_066:
     level: 66
+    legacy-ids:
+    - vanilla_xp_66
+    permissions: []
     commands:
-    - minecraft:experience add %player% 380 points
-  vanilla_xp_67:
-    name: 385 Minecraft XP
+    - minecraft:give %player% minecraft:iron_ingot 24
+    name: 24 Iron ingots
+    icon: IRON_INGOT
+  milestone_067:
     level: 67
+    legacy-ids:
+    - vanilla_xp_67
+    permissions: []
     commands:
-    - minecraft:experience add %player% 385 points
-  cosmetic_hats_allay:
-    name: Allay Hat
+    - minecraft:give %player% minecraft:lantern 32
+    name: 32 Lanterns
+    icon: LANTERN
+  milestone_068:
     level: 68
-    permissions:
-    - ultracosmetics.hats.allay
-  vanilla_xp_69:
-    name: 395 Minecraft XP
+    legacy-ids:
+    - cosmetic_hats_allay
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:copper_ingot 64
+    name: 64 Copper ingots
+    icon: COPPER_INGOT
+  milestone_069:
     level: 69
-    commands:
-    - minecraft:experience add %player% 395 points
-  vanilla_xp_70:
-    name: 400 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_69
+    permissions: []
+    commands: []
+    name: $3,950 game money
+    icon: GOLD_INGOT
+    money: 3950
+  milestone_070:
     level: 70
-    commands:
-    - minecraft:experience add %player% 400 points
-  vanilla_xp_71:
-    name: 405 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_70
+    permissions: []
+    commands: []
+    name: $4,000 game money
+    icon: GOLD_INGOT
+    money: 4000
+  milestone_071:
     level: 71
+    legacy-ids:
+    - vanilla_xp_71
+    permissions: []
     commands:
-    - minecraft:experience add %player% 405 points
-  cosmetic_particleeffects_enchanted:
-    name: Enchanted Particles
+    - minecraft:give %player% minecraft:quartz 64
+    name: 64 Quartz
+    icon: QUARTZ
+  milestone_072:
     level: 72
-    permissions:
-    - ultracosmetics.particleeffects.enchanted
-  vanilla_xp_73:
-    name: 415 Minecraft XP
+    legacy-ids:
+    - cosmetic_particleeffects_enchanted
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:oak_log 128
+    name: 128 Oak logs
+    icon: OAK_LOG
+  milestone_073:
     level: 73
-    commands:
-    - minecraft:experience add %player% 415 points
-  vanilla_xp_74:
-    name: 420 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_73
+    permissions: []
+    commands: []
+    name: $4,150 game money
+    icon: GOLD_INGOT
+    money: 4150
+  milestone_074:
     level: 74
+    legacy-ids:
+    - vanilla_xp_74
+    permissions: []
     commands:
-    - minecraft:experience add %player% 420 points
-  cosmetic_key_75:
-    name: 1 Cosmetic Crate Key
+    - minecraft:give %player% minecraft:iron_ingot 24
+    name: 24 Iron ingots
+    icon: IRON_INGOT
+  milestone_075:
     level: 75
+    legacy-ids:
+    - cosmetic_key_75
+    permissions: []
     commands:
-    - cratekey give %player% cosmetic 1
-  cosmetic_hats_enderman:
-    name: Enderman Hat
+    - cratekey give %player% vote 2
+    name: 2 Vote Crate Keys (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_076:
     level: 76
-    permissions:
-    - ultracosmetics.hats.enderman
-  vanilla_xp_77:
-    name: 435 Minecraft XP
+    legacy-ids:
+    - cosmetic_hats_enderman
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:copper_ingot 64
+    name: 64 Copper ingots
+    icon: COPPER_INGOT
+  milestone_077:
     level: 77
-    commands:
-    - minecraft:experience add %player% 435 points
-  vanilla_xp_78:
-    name: 440 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_77
+    permissions: []
+    commands: []
+    name: $4,350 game money
+    icon: GOLD_INGOT
+    money: 4350
+  milestone_078:
     level: 78
+    legacy-ids:
+    - vanilla_xp_78
+    permissions: []
     commands:
-    - minecraft:experience add %player% 440 points
-  vanilla_xp_79:
-    name: 445 Minecraft XP
+    - minecraft:give %player% minecraft:golden_carrot 32
+    name: 32 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_079:
     level: 79
+    legacy-ids:
+    - vanilla_xp_79
+    permissions: []
     commands:
-    - minecraft:experience add %player% 445 points
-  cosmetic_emotes_cool:
-    name: Cool Emote
+    - minecraft:give %player% minecraft:quartz 64
+    name: 64 Quartz
+    icon: QUARTZ
+  milestone_080:
     level: 80
-    permissions:
-    - ultracosmetics.emotes.cool
-  vanilla_xp_81:
-    name: 455 Minecraft XP
+    legacy-ids:
+    - cosmetic_emotes_cool
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:oak_log 192
+    name: 192 Oak logs
+    icon: OAK_LOG
+  milestone_081:
     level: 81
-    commands:
-    - minecraft:experience add %player% 455 points
-  vanilla_xp_82:
-    name: 460 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_81
+    permissions: []
+    commands: []
+    name: $4,550 game money
+    icon: GOLD_INGOT
+    money: 4550
+  milestone_082:
     level: 82
+    legacy-ids:
+    - vanilla_xp_82
+    permissions: []
     commands:
-    - minecraft:experience add %player% 460 points
-  vanilla_xp_83:
-    name: 465 Minecraft XP
+    - minecraft:give %player% minecraft:iron_ingot 36
+    name: 36 Iron ingots
+    icon: IRON_INGOT
+  milestone_083:
     level: 83
+    legacy-ids:
+    - vanilla_xp_83
+    permissions: []
     commands:
-    - minecraft:experience add %player% 465 points
-  cosmetic_hats_blaze:
-    name: Blaze Hat
+    - minecraft:give %player% minecraft:lantern 48
+    name: 48 Lanterns
+    icon: LANTERN
+  milestone_084:
     level: 84
-    permissions:
-    - ultracosmetics.hats.blaze
-  town_claims_85:
-    name: 4 extra claims for your town
+    legacy-ids:
+    - cosmetic_hats_blaze
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:copper_ingot 96
+    name: 96 Copper ingots
+    icon: COPPER_INGOT
+  milestone_085:
     level: 85
+    legacy-ids:
+    - town_claims_85
+    permissions: []
+    commands: []
+    name: +4 bonus town claim chunks
+    icon: GRASS_BLOCK
     town-required: true
     town-blocks: 4
-  vanilla_xp_86:
-    name: 480 Minecraft XP
+  milestone_086:
     level: 86
+    legacy-ids:
+    - vanilla_xp_86
+    permissions: []
     commands:
-    - minecraft:experience add %player% 480 points
-  supporter_keys_87:
-    name: 2 Supporter Crate Keys
+    - minecraft:give %player% minecraft:golden_carrot 48
+    name: 48 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_087:
     level: 87
+    legacy-ids:
+    - supporter_keys_87
+    permissions: []
     commands:
     - cratekey give %player% patron 2
-  cosmetic_particleeffects_enderfootprints:
-    name: Ender Footprints
+    name: 2 Supporter Crate Keys (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_088:
     level: 88
-    permissions:
-    - ultracosmetics.particleeffects.enderfootprints
-  vanilla_xp_89:
-    name: 495 Minecraft XP
+    legacy-ids:
+    - cosmetic_particleeffects_enderfootprints
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:oak_log 192
+    name: 192 Oak logs
+    icon: OAK_LOG
+  milestone_089:
     level: 89
-    commands:
-    - minecraft:experience add %player% 495 points
-  vanilla_xp_90:
-    name: 500 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_89
+    permissions: []
+    commands: []
+    name: $4,950 game money
+    icon: GOLD_INGOT
+    money: 4950
+  milestone_090:
     level: 90
+    legacy-ids:
+    - vanilla_xp_90
+    permissions: []
     commands:
-    - minecraft:experience add %player% 500 points
-  vanilla_xp_91:
-    name: 505 Minecraft XP
+    - minecraft:give %player% minecraft:iron_ingot 36
+    name: 36 Iron ingots
+    icon: IRON_INGOT
+  milestone_091:
     level: 91
+    legacy-ids:
+    - vanilla_xp_91
+    permissions: []
     commands:
-    - minecraft:experience add %player% 505 points
-  cosmetic_hats_coppergolem:
-    name: Copper Golem Hat
+    - minecraft:give %player% minecraft:lantern 48
+    name: 48 Lanterns
+    icon: LANTERN
+  milestone_092:
     level: 92
-    permissions:
-    - ultracosmetics.hats.coppergolem
-  vanilla_xp_93:
-    name: 515 Minecraft XP
+    legacy-ids:
+    - cosmetic_hats_coppergolem
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:copper_ingot 96
+    name: 96 Copper ingots
+    icon: COPPER_INGOT
+  milestone_093:
     level: 93
-    commands:
-    - minecraft:experience add %player% 515 points
-  vanilla_xp_94:
-    name: 520 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_93
+    permissions: []
+    commands: []
+    name: $5,150 game money
+    icon: GOLD_INGOT
+    money: 5150
+  milestone_094:
     level: 94
+    legacy-ids:
+    - vanilla_xp_94
+    permissions: []
     commands:
-    - minecraft:experience add %player% 520 points
-  cosmetic_keys_95:
-    name: 2 Cosmetic Crate Keys
+    - minecraft:give %player% minecraft:golden_carrot 48
+    name: 48 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_095:
     level: 95
+    legacy-ids:
+    - cosmetic_keys_95
+    permissions: []
     commands:
-    - cratekey give %player% cosmetic 2
-  cosmetic_particleeffects_inlove:
-    name: Hearts Particles
+    - cratekey give %player% vote 3
+    name: 3 Vote Crate Keys (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_096:
     level: 96
-    permissions:
-    - ultracosmetics.particleeffects.inlove
-  vanilla_xp_97:
-    name: 535 Minecraft XP
+    legacy-ids:
+    - cosmetic_particleeffects_inlove
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:oak_log 192
+    name: 192 Oak logs
+    icon: OAK_LOG
+  milestone_097:
     level: 97
-    commands:
-    - minecraft:experience add %player% 535 points
-  vanilla_xp_98:
-    name: 540 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_97
+    permissions: []
+    commands: []
+    name: $5,350 game money
+    icon: GOLD_INGOT
+    money: 5350
+  milestone_098:
     level: 98
+    legacy-ids:
+    - vanilla_xp_98
+    permissions: []
     commands:
-    - minecraft:experience add %player% 540 points
-  vanilla_xp_99:
-    name: 545 Minecraft XP
+    - minecraft:give %player% minecraft:iron_ingot 36
+    name: 36 Iron ingots
+    icon: IRON_INGOT
+  milestone_099:
     level: 99
+    legacy-ids:
+    - vanilla_xp_99
+    permissions: []
     commands:
-    - minecraft:experience add %player% 545 points
-  cosmetic_hats_unicorn:
-    name: Unicorn Hat
+    - minecraft:give %player% minecraft:lantern 48
+    name: 48 Lanterns
+    icon: LANTERN
+  milestone_100:
     level: 100
-    permissions:
-    - ultracosmetics.hats.unicorn
-  vanilla_xp_101:
-    name: 555 Minecraft XP
+    legacy-ids:
+    - cosmetic_hats_unicorn
+    permissions: []
+    commands: []
+    name: $5,500 game money
+    icon: GOLD_INGOT
+    money: 5500
+  milestone_101:
     level: 101
-    commands:
-    - minecraft:experience add %player% 555 points
-  vanilla_xp_102:
-    name: 560 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_101
+    permissions: []
+    commands: []
+    name: $5,550 game money
+    icon: GOLD_INGOT
+    money: 5550
+  milestone_102:
     level: 102
+    legacy-ids:
+    - vanilla_xp_102
+    permissions: []
     commands:
-    - minecraft:experience add %player% 560 points
-  vanilla_xp_103:
-    name: 565 Minecraft XP
+    - minecraft:give %player% minecraft:golden_carrot 48
+    name: 48 Golden carrots
+    icon: GOLDEN_CARROT
+  milestone_103:
     level: 103
+    legacy-ids:
+    - vanilla_xp_103
+    permissions: []
     commands:
-    - minecraft:experience add %player% 565 points
-  cosmetic_particleeffects_angelwings:
-    name: Angel Wings
+    - minecraft:give %player% minecraft:quartz 96
+    name: 96 Quartz
+    icon: QUARTZ
+  milestone_104:
     level: 104
-    permissions:
-    - ultracosmetics.particleeffects.angelwings
-  town_claims_105:
-    name: 5 extra claims for your town
+    legacy-ids:
+    - cosmetic_particleeffects_angelwings
+    permissions: []
+    commands:
+    - minecraft:experience add %player% 1500 points
+    name: 1,500 Minecraft XP
+    icon: EXPERIENCE_BOTTLE
+  milestone_105:
     level: 105
+    legacy-ids:
+    - town_claims_105
+    permissions: []
+    commands: []
+    name: +5 bonus town claim chunks
+    icon: GRASS_BLOCK
     town-required: true
     town-blocks: 5
-  vanilla_xp_106:
-    name: 580 Minecraft XP
+  milestone_106:
     level: 106
+    legacy-ids:
+    - vanilla_xp_106
+    permissions: []
     commands:
-    - minecraft:experience add %player% 580 points
-  vanilla_xp_107:
-    name: 585 Minecraft XP
+    - minecraft:give %player% minecraft:iron_ingot 36
+    name: 36 Iron ingots
+    icon: IRON_INGOT
+  milestone_107:
     level: 107
+    legacy-ids:
+    - vanilla_xp_107
+    permissions: []
     commands:
-    - minecraft:experience add %player% 585 points
-  cosmetic_hats_kitsunemask:
-    name: Kitsune Mask
+    - minecraft:give %player% minecraft:lantern 48
+    name: 48 Lanterns
+    icon: LANTERN
+  milestone_108:
     level: 108
-    permissions:
-    - ultracosmetics.hats.kitsunemask
-  vanilla_xp_109:
-    name: 595 Minecraft XP
+    legacy-ids:
+    - cosmetic_hats_kitsunemask
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:copper_ingot 96
+    name: 96 Copper ingots
+    icon: COPPER_INGOT
+  milestone_109:
     level: 109
-    commands:
-    - minecraft:experience add %player% 595 points
-  vanilla_xp_110:
-    name: 600 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_109
+    permissions: []
+    commands: []
+    name: $5,950 game money
+    icon: GOLD_INGOT
+    money: 5950
+  milestone_110:
     level: 110
+    legacy-ids:
+    - vanilla_xp_110
+    permissions: []
     commands:
-    - minecraft:experience add %player% 600 points
-  vanilla_xp_111:
-    name: 605 Minecraft XP
+    - cratekey give %player% vote 3
+    name: 3 Vote Crate Keys (one-time)
+    icon: TRIPWIRE_HOOK
+  milestone_111:
     level: 111
+    legacy-ids:
+    - vanilla_xp_111
+    permissions: []
     commands:
-    - minecraft:experience add %player% 605 points
-  cosmetic_particleeffects_rainbowwings:
-    name: Rainbow Wings
+    - minecraft:give %player% minecraft:quartz 96
+    name: 96 Quartz
+    icon: QUARTZ
+  milestone_112:
     level: 112
-    permissions:
-    - ultracosmetics.particleeffects.rainbowwings
-  vanilla_xp_113:
-    name: 615 Minecraft XP
+    legacy-ids:
+    - cosmetic_particleeffects_rainbowwings
+    permissions: []
+    commands:
+    - minecraft:give %player% minecraft:oak_log 192
+    name: 192 Oak logs
+    icon: OAK_LOG
+  milestone_113:
     level: 113
-    commands:
-    - minecraft:experience add %player% 615 points
-  vanilla_xp_114:
-    name: 620 Minecraft XP
+    legacy-ids:
+    - vanilla_xp_113
+    permissions: []
+    commands: []
+    name: $6,150 game money
+    icon: GOLD_INGOT
+    money: 6150
+  milestone_114:
     level: 114
+    legacy-ids:
+    - vanilla_xp_114
+    permissions: []
     commands:
-    - minecraft:experience add %player% 620 points
-  vanilla_xp_115:
-    name: 625 Minecraft XP
+    - minecraft:give %player% minecraft:iron_ingot 36
+    name: 36 Iron ingots
+    icon: IRON_INGOT
+  milestone_115:
     level: 115
+    legacy-ids:
+    - vanilla_xp_115
+    permissions: []
     commands:
-    - minecraft:experience add %player% 625 points
-  legend_bundle:
-    name: Reborn Legend reward bundle
+    - minecraft:give %player% minecraft:lantern 48
+    name: 48 Lanterns
+    icon: LANTERN
+  milestone_116:
     level: 116
-    permissions:
-    - ultracosmetics.particleeffects.cherryfairy
-    - ultracosmetics.hats.greendragon
+    legacy-ids:
+    - legend_bundle
+    permissions: []
     commands:
     - cratekey give %player% patron 3
-    - cratekey give %player% cosmetic 3
+    name: 'Legend reward: $10,000 + 3 Supporter Keys (one-time)'
+    icon: TRIPWIRE_HOOK
+    money: 10000
+catalogue-version: 3
+display:
+  auto-configure: true

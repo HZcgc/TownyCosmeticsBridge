@@ -21,6 +21,7 @@ public final class State {
    public String pendingGift = "";
    public String pendingGiftTown = "";
    public int pendingGiftTownBlocks;
+   public double pendingGiftMoney;
    public List<String> pendingGiftCommands = List.of();
    public State.Purchase pending;
    public boolean dirty;

@@ -59,6 +59,8 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
             throw new IllegalStateException("Placeholder registration failed");
          }
 
+         DisplaySetup.run(this);
+
          this.getServer().getScheduler().runTaskTimer(this, this.sources::poll, 600L, 600L);
 
          for (Player var2 : this.getServer().getOnlinePlayers()) {
@@ -119,6 +121,20 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
 
          this.reloadConfig();
          this.getLogger().info("Legacy settings archived; standalone configuration installed. Player data preserved.");
+      }
+      var2 = LegacyCleanup.load(var1);
+      if (var2.getInt("catalogue-version", 0) < ConfigUpgrade.VERSION) {
+         YamlConfiguration defaults = new YamlConfiguration();
+         try (InputStream input = Objects.requireNonNull(this.getResource("config.yml"))) {
+            defaults.loadFromString(new String(input.readAllBytes(), StandardCharsets.UTF_8));
+         }
+         YamlConfiguration updated = ConfigUpgrade.upgrade(var2, defaults);
+         Path backup = this.getDataFolder().toPath().resolve("legacy-backup/config-before-catalogue-v3.yml");
+         Files.createDirectories(backup.getParent());
+         if (!Files.exists(backup)) Files.copy(var1, backup);
+         Store.atomic(var1, updated.saveToString());
+         this.reloadConfig();
+         this.getLogger().info("Journey rewards updated; old reward receipts, points and permanent perks are preserved.");
       }
    }
 

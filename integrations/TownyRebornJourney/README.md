@@ -1,65 +1,56 @@
 # Standalone Reborn Journey
 
-TownyRebornProgression 2.0.0-beta.1 replaces the previous Quests-bound Reborn progression. It owns its inventory, levels, active time, rewards and permanent perk purchases. Public access is controlled by `townyreborn.progression.access`, which defaults to false. There is no global pause flag.
+Current release: **TownyRebornProgression 2.0.0-beta.2**. Install [the beta.2 bundle](releases/TownyReborn-Journey-2.0.0-beta.2.zip). [German installation guide](README-DE.md), [all rewards](REWARDS.md), [permanent perks](PERKS.md).
 
-The default journey has 116 levels across four 29-node snake pages, 44 optional permanent perks and a free reward at every level. Functional Skeleton through Wither permissions are available by level 86. `/fly` becomes purchasable at level 18, `/tfly` at level 12. The existing monthly rank prefixes/groups remain separate from earned titles.
+The standalone plugin owns 116 levels, four snake pages, Journey Points, free milestone rewards and 43 optional permanent purchases. Access requires `townyreborn.progression.access`, default false. Level-ups depend only on points. Buying a perk or collecting a reward never blocks the next level.
 
-A level is derived only from Journey Points. Optional purchases use Vault money without spending points. Buying perks or claiming rewards never becomes a prerequisite for the next level. Upgrade chains apply only to a purchase within the same feature family, such as homes or vaults.
+## Current behavior
 
-## Dependencies and optional sources
+Each level states the required total and missing points. The progress bottle shows completed/remaining percentages, point totals and live personal stats. Its guide provides actions, configured point rates, daily limits and server TPS/online count. Green means reached, yellow the next goal, red a later locked milestone.
 
-Required: Paper, PlaceholderAPI, LuckPerms, Vault and a registered economy provider. Jobs and mcMMO are optional level-gain sources. Quests and DeluxeMenus are not dependencies. The plugin loads before them to archive its old integration before their files are read.
+Alternate pages mirror the path's five rows. A bottom endpoint continues at the bottom of the next page; a top endpoint continues at the top. The default path contains 29 milestones per page and can be extended up to 10,000 levels.
 
-Default point sources: one point per active minute; new mcMMO high-water levels (+5, 500/day); separate per-job high-water levels (+12, 500/day); catches (+3, 300/day); previously unvisited biomes (+8, 200/day); non-recipe advancements (+15, 300/day). AFK worlds, NPCs, test bots and Creative/Spectator players do not earn points. A first valid mcMMO/Jobs counter establishes a baseline. Leaving/rejoining a job or restoring a lower level cannot award previously recorded gains again. Gains beyond a daily cap are not banked for future days.
+Rewards are money through Vault, useful vanilla items, occasional one-shot keys and town bonus chunks. Minecraft XP appears only at levels 12, 52 and 104. There are no UltraCosmetics or cosmetic-crate rewards and no permanent daily Supporter-key perk. One-time Supporter-key rewards remain at four milestones.
 
-Quests points are an optional source and are disabled by default. The new path has no mandatory quest count, category requirements or mcMMO-only requirement. Existing Jobs payouts and mcMMO leveling settings are outside this plugin.
+QuickShop trading shops and Player Warps are explicitly different. Trading allowances use the existing SubscriptionBridge's 50/100/150/200/240 shop tiers, add-on stacking and 300-shop ceiling. Warp purchases grant two or three destinations. No 200-warp permission exists. `/fly` remains available at level 18 and `/tfly` at level 12.
 
-The curve for level L is `30 × (L−1) + 15 × (L−1) × (L−2) / 2` points. Titles, curve, source rates, prices, levels and rewards are editable in `plugins/TownyRebornProgression/config.yml`. Increase `journey.steps` and add stable reward/perk IDs to extend the path, then restart. Current validation supports up to 10,000 levels. Preserve IDs and existing receipts when editing the catalogue.
+## Displays
 
-## Installation and controlled release
+- Nametag: Town/Nation; LuckPerms rank and full Journey title; display name.
+- TAB: LuckPerms rank, Journey abbreviation, display name, existing small mcMMO number.
+- TownyChat: LuckPerms rank, full Journey title, display name, existing mcMMO number.
 
-1. Stop the server fully. Keep a snapshot of the existing Progression, Quests, DeluxeMenus and LuckPerms data for rollback.
-2. Remove all old TownyRebornProgression JAR copies, including the paused build. Install the single 2.0.0-beta.1 JAR in `plugins/`.
-3. Keep `plugins/TownyRebornProgression/` in place. The new plugin reads old `playerdata/` and writes new `journeydata/`; it does not replace an existing player database with uploaded snapshots.
-4. Copy the supplied LyttleNametag `config.yml` and TAB `groups.yml` to their matching plugin folders if you want the new displays. Other TAB settings, mcMMO statistics, display names, AFK suffixes and Town/nation lines retain their existing behavior.
-5. Start the server. Original/paused progression settings are backed up to `legacy-backup/config-pre-standalone.yml` before installing the native configuration. The old `progression.paused` option has no effect on the standalone release.
-6. The startup cleanup archives `Quests/quests/reborn`, removes the Reborn category and its old shortcut, and archives/removes the old `reborn_*.yml` DeluxeMenus registrations. Originals are in `TownyRebornProgression/legacy-backup/<timestamp>/`. Normal quests and all legacy player records remain intact.
-7. Grant access to a test account. Once the owner is satisfied, grant it to Default. A full restart is required for the migration; use a full restart for later config edits too.
+On full startup, `DisplaySetup` adjusts the installed TAB `groups.yml`, Towny `settings/ChatConfig.yml` and LyttleNametag `config.yml`. It preserves unrelated settings, AFK suffixes, RGB display names, chat channel tags, permission suffixes and per-world channel formats. Unsupported custom formatter lines are left unchanged. Existing small-number mcMMO formatting is retained where present; the known small-number format is the fallback. Set `display.auto-configure: false` after applying the layout if you want to manage those fields yourself. Display backups are under `legacy-backup/display-v3/`.
 
-Console commands (omit the leading slash in the console):
+TownyChat formats its own existing channels; this plugin does not cancel/rebroadcast chat, change recipients, or install another chat formatter. If a separate plugin owns global chat, its format needs the same placeholders. The shipped plugin loads before TownyChat, TAB and LyttleNametag.
 
-```text
-lp user HZcgc_No2 permission set townyreborn.progression.access true server=smp
-lp user HZcgc_No2 permission set townyreborn.progression.admin true server=smp
-```
+New placeholders: `%reborn_short_title%`, `%reborn_tab_prefix%`, `%reborn_chat_prefix%`, `%reborn_remaining_percent%`, `%reborn_remaining_points%`. Existing `level`, `title`, `points`, `percent`, `next_level`, `next_title`, `next_required`, `playtime_hours` and `access` placeholders remain. `trprogress` aliases remain compatible. Abbreviations are configured in `journey.short-titles`.
 
-Owner test: open `/reborn`, browse the four pages, open `/reborn perks`, review a purchase, earn a few points, claim one free reward and relog. `/rebornadmin status HZcgc_No2` shows level and pending receipts. Use an alt without access to verify the release gate.
+## Point sources
 
-Public release:
+Defaults: one JP per active minute; new mcMMO power levels +5, 500/day; separate new personal levels per Job +12, 500/day; fishing +3, 300/day; new biomes +8, 200/day; non-recipe advancements +15, 300/day. Quests are optional and disabled. There is no required quest count or single-skill requirement. NPCs, ignored worlds/bots and Creative/Spectator players do not earn points.
 
-```text
-lp group default permission set townyreborn.progression.access true server=smp
-```
+The first valid mcMMO/Jobs counter establishes the baseline. Recorded high-water marks prevent re-awarding gains after a reset, job switch or relog. Gains above a daily cap are not banked. Limits reset at midnight Europe/Berlin. Progress and open menus refresh every 30 seconds.
 
-Public access can be removed with `lp group default permission unset townyreborn.progression.access server=smp`. Explicit per-user permissions and wildcard staff permissions still apply. The configuration's permission context is `smp`, matching the supplied export; adjust it if your LuckPerms server context changes.
+The threshold for level L is `30 × (L−1) + 15 × (L−1) × (L−2) / 2`. Rates and the curve remain configurable. A level is not Minecraft XP; occasional XP gifts do not advance the Journey.
 
-## Migration and permanent permissions
+## Installation and migration
 
-Legacy levels, active minutes and quest points seed the new journey once, deterministically: the larger of the mapped old level threshold and `active minutes + 25 × quest points`. Level 1 maps to 1; later old levels map to `(old level−1)×12`, capped at the new path length. Reading a placeholder alone does not create a player file or award points. Players without access do not earn new points.
+Stop fully, keep a data/permissions backup, replace every old Progression JAR with the single beta.2 JAR, keep the existing Progression data folder, then start fully. The bundle does not contain player records or an overriding live config. Its reference files are for comparison.
 
-Owned perks are imported from explicit permanent user nodes with matching/global server context, not from paid group inheritance, wildcard access or expiring/world/region-only grants. Higher owned tiers include lower purchase tiers. Permanent profile records also repair missing companion LP permissions without charging money or replaying reward commands.
+Beta.1 config is backed up to `legacy-backup/config-before-catalogue-v3.yml`. The new catalogue is installed once while preserving curve, source settings, permission context, titles and paid-perk prices/ownership IDs. The recurring-key offer is removed; shop/warp labels and help text are corrected. Later version-3 custom edits are not overwritten.
 
-Homes/vaults retain the existing SubscriptionBridge counter permissions. Shop upgrades retain its exact legacy markers (`shops.30/50/80/120/160`): the first perk adds 30 slots to the current base allowance; later perks provide minimum total allowances of 100/150/200/240. The existing paid group, permanent add-on and 300-shop ceiling are still calculated by SubscriptionBridge. The new plugin never changes a LuckPerms parent group or grants paid rank prefixes.
+Each new reward has a stable `milestone_NNN` ID with aliases for its old beta.1 reward IDs. Existing claimed IDs and direct permanent LP markers import as claimed, without executing replacement rewards. Pending old receipts retain the original rendered commands, town bonus and amount. Never reuse an ID for a different claim or delete a player's claim ledger. Old earned permission grants are not broadly revoked; paid monthly subscriptions remain managed by their existing bridge.
 
-Default already provides one Player Warp, plain nicknames and basic sign/anvil colours, so these are not sold as new perks. Existing crate bonuses from old perk purchases are not replayed on import. The new milestones have their own one-shot IDs.
+Legacy Quests cleanup from beta.1 remains: it archives only the old Reborn quest definitions/category/menu registrations before Quests and DeluxeMenus load. Normal quests remain. Old `playerdata/` is read without overwriting it; new native profiles use `journeydata/`. Placeholder reads alone do not create a profile or award points.
 
-## Purchases, rewards and receipt review
+## Transactions
 
-Purchases save a PREPARED receipt before asking Vault to withdraw money, then a DEBITED receipt before granting permissions. Double clicks and overlapping purchases/rewards are blocked per player. A saved DEBITED receipt can safely finish its permission grant after restart without another debit. A PREPARED receipt with an ambiguous wallet result requires owner review: a changed balance is not treated as proof of a payment.
+Purchases save PREPARED before debit and DEBITED before LP changes. Duplicate/overlapping clicks are blocked. A saved DEBITED transaction may finish permissions after restart without another debit. Ambiguous PREPARED transactions need owner review.
 
-Free key/item/town rewards persist a pending receipt and a durable LP marker before issuing a non-idempotent effect. They are never automatically replayed after restart. If a plugin call fails, a bundle partially executes, or final storage fails, staff review the saved receipt and deliver only the missing portion. Receipts contain rendered commands and the original reward town. This favors preventing duplicated rewards; unrelated plugins' inventory/economy/Towny databases cannot participate in one atomic transaction. A hard crash can therefore leave a reward needing manual repair. Towny saves its bonus blocks through its own persistence queue.
+Free reward delivery saves its original cash amount/commands/town in a receipt, then durably saves the LP marker before attempting money or item/key/town effects. Side effects are attempted once. A failed/ambiguous deposit, partial bundle, crash or final-save failure leaves a pending receipt; there is no automatic replay. Profile, economy, inventory and Towny databases do not share an atomic transaction, so a hard crash can require manual repair. Permission repair never replays commands or pays money.
 
-Owner commands, with the player online:
+Owner controls, player online:
 
 ```text
 rebornadmin status <player>
@@ -69,35 +60,19 @@ rebornadmin gift <player> delivered
 rebornadmin addpoints <player> <1..1000000>
 ```
 
-Use `receipt ... grant` only after confirming that the recorded payment occurred; `cancel` closes a receipt without debit or refund. Use `gift ... delivered` only after verifying/delivering the reward. In-flight saves cannot be manually closed. These commands require `townyreborn.progression.admin`.
+Confirm original payment/delivery before closing a receipt. In-flight saves cannot be manually closed. A rollback must restore matching config, profile, permission and economy records as well as the old binary.
 
-Never delete `journeydata/`, claimed IDs, LP reward markers or transaction receipts to retry a delivery. A rollback must restore the matching data/permissions snapshot as well as the old JAR and archived Quests/DeluxeMenus configurations; mixing old/new reward ledgers can duplicate rewards.
+## Dependencies, build and verification
 
-## Displays and placeholders
-
-`/reborn` opens the native journey. Aliases: `/ranks`, `/perks`, `/progress`, `/journey`, `/fortschritt`. `/reborn perks` opens all permanent upgrades. Nametags show the existing rank prefix, the Reborn title and a small Reborn level; TAB replaces the former mcMMO number with the Reborn level. mcMMO remains available as its own gameplay statistic.
-
-Placeholders: `%reborn_level%`, `%reborn_title%`, `%reborn_points%`, `%reborn_percent%`, `%reborn_next_required%`, `%reborn_playtime_hours%`, `%reborn_access%`. Corresponding `trprogress` placeholders are retained for older integrations. Retired `ready_*` meta-quest placeholders always return 0.
-
-Keys use the current `cratekey give <player> <key> <amount>` command and existing virtual IDs: `daily`, `vote`, `cosmetic`, `patron` (Supporter). Halloween balances/rewards are not part of the journey migration. The added UltraCosmetics rewards use installed hats, emotes and particles; pet catalogues remain managed by their current plugins.
-
-Town rewards give extra available claim chunks to the town at claim time. They can be claimed later if the player has no town. Joining another town cannot re-claim a milestone already delivered.
-
-## Verification and build
-
-The supplied release passes 41 named Java checks against real Paper YAML and API classes, plus 12 dependency/catalogue checks. Tests use all 36 uploaded progression profiles, preserving all 48 old claimed-level records and original bytes; cover native inventory actions, permission gates/revocation, LP import filters, cleanup rollback, deterministic migration, concurrent clicks, restart recovery, storage/payment failures and partial reward delivery. Wallet/LP/GUI side effects use controlled test backends or mocks. A live server/client integration test is still required before public release.
-
-The original local checkout was no longer present when publishing to GitHub. Sources were recovered from the checksum-verified delivered release and their erased local collection types restored for compilation. The exact previously tested binary and install bundle are retained under `releases/`, with SHA-256 hashes. The original 53-check report is retained under `verification/ORIGINAL-RELEASE-VERIFICATION.txt`; its original test source/input checkout is not included here.
-
-The recovered source compiles and passes 24 additional core scenarios against both the original binary and the source rebuild, including level boundaries, tier ownership, profile storage, high-water gains, duplicate purchases, ambiguous/debited payment recovery, free reward receipts and town-claim deferral. These recovery checks are separate from the recorded original 53-check run. Install the checksum-verified binary from `releases/` for the current beta.
-
-Build and verify recovered source with the repository's dependency directory and JDK path:
+Requires Paper/Java 21+, PlaceholderAPI, LuckPerms, Vault and a registered economy provider. Jobs/mcMMO are optional sources; Quests/DeluxeMenus are not dependencies.
 
 ```text
 python build.py --jdk <jdk-bin> --deps <dependency-directory> --output <output-jar>
 python verify.py --jdk <jdk-bin> --deps <dependency-directory> --jar <output-jar> --output <verification-directory>
 ```
 
-The shipped JAR contains only the new source-built classes and its own resources. It contains no Quests API, old progression classes or player data.
+`RecoveryChecks` runs 24 purchase/reward/profile recovery scenarios against the preserved beta.1 binary and this update. `JourneyUpdateChecks` covers the requested layout, configurable instructions, claim/config migration, uncertain/declined payouts, failed storage, preserved displays and native inventory actions. Paper inventory/registry, wallet and LP boundaries use controlled test doubles. A live server/client check remains necessary before public access.
 
-Towny API references used for optional integration: [TownyAPI](https://townyadvanced.github.io/Towny/javadoc/release/com/palmergames/bukkit/towny/TownyAPI.html) and [Town bonus blocks/persistence](https://townyadvanced.github.io/Towny/javadoc/release/com/palmergames/bukkit/towny/object/Town.html).
+Original beta.1 files and their earlier verification report remain under `releases/` and `verification/` for historical comparison. Current checks are in `verification/JOURNEY-UPDATE-VERIFICATION.txt`; current binaries and bundles have SHA-256 hashes in `releases/SHA256SUMS.txt`.
+
+References: [TownyChat placeholder support](https://github.com/TownyAdvanced/TownyChat#papi-placeholder-support), [Towny API](https://townyadvanced.github.io/Towny/javadoc/release/com/palmergames/bukkit/towny/TownyAPI.html).
