@@ -1,4 +1,4 @@
-# Journey rewards — beta.5
+# Journey rewards — beta.6
 
 One free reward per level. Gifts and original legacy aliases retain their stable IDs; increased values never re-award completed receipts. Existing pending receipts retain their original delivery amounts. No UltraCosmetics or recurring supporter keys.
 

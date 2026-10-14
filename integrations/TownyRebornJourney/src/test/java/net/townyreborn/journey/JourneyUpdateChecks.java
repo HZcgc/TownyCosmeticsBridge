@@ -125,7 +125,7 @@ public final class JourneyUpdateChecks {
             for(String id:journey.perks.keySet()) {
                 require(config.getDouble("perks."+id+".price")<previous.getDouble("perks."+id+".price"));
                 for(String field:List.of("level","permissions","legacy-markers","requires"))
-                    if(!Set.of("fly","town_flight_bypass").contains(id)||!field.equals("level"))
+                    if(!(id.equals("fly")&&field.equals("level"))&&!(id.equals("town_flight_bypass")&&field.equals("permissions")))
                         require(Objects.equals(config.get("perks."+id+"."+field),previous.get("perks."+id+"."+field)));
             }
         });

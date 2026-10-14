@@ -124,9 +124,9 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
             var2.name = var1.getName();
             List var3 = this.integrations.importOwned(var2);
             this.store.save(var2);
-            if (!var3.isEmpty()) {
+            if (!var3.isEmpty() || var2.owned.contains("town_flight_bypass")) {
                this.integrations
-                  .grant(var2.uuid, var3)
+                  .repairOwned(var2, var3)
                   .whenComplete(
                      (var2x, var3x) -> {
                         if (var3x != null) {

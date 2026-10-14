@@ -1,10 +1,10 @@
-# Towny Reborn Journey 2.0.0-beta.5
+# Towny Reborn Journey 2.0.0-beta.6
 
-## Hotfix für bereits installierte Beta.4
+## Hotfix für bereits installierte Beta.4 / Beta.5
 
-Server stoppen, die Beta.4-JAR entfernen und aus `TownyReborn-Journey-Hotfix-2.0.0-beta.5.zip` den `plugins/`-Baum einfügen. Er enthält ausschließlich die neue JAR und die aktualisierte Progression-Config für die günstigeren Preise. `playerdata`, `journeydata` und `migration-backups` bleiben im bestehenden Ordner. Vollständig starten. Der feste Fortschrittsmarker bleibt unverändert; bereits seit Beta.4 verdiente JP werden nicht nochmals zurückgesetzt. Die ausführliche ZIP enthält zusätzlich die bisherigen statischen TAB-, Nametag- und Quests-Configs.
+Server stoppen, die bisherige Progression-JAR entfernen und aus `TownyReborn-Journey-Hotfix-2.0.0-beta.6.zip` den `plugins/`-Baum einfügen. Er enthält ausschließlich die neue JAR und die aktualisierte Progression-Config für den Flug in allen Towns und die günstigeren Preise. `playerdata`, `journeydata` und `migration-backups` bleiben im bestehenden Ordner. Vollständig starten. Der feste Fortschrittsmarker bleibt unverändert; bereits seit Beta.4 verdiente JP werden nicht nochmals zurückgesetzt. Die ausführliche ZIP enthält zusätzlich die bisherigen statischen TAB-, Nametag- und Quests-Configs.
 
-Beta.5 trennt **zum Kauf freigeschaltet** von **dauerhaft gekauft**. Vor dem Level-Neustart erreichte Kauf-Freigaben werden aus der passenden Sicherung mit der bisherigen 30/15-JP-Kurve und den früheren Perk-Gates wiederhergestellt und als `unlocked-perks` separat gespeichert. Die Sicherung belegt auch frühere tatsächliche Käufe; diese bleiben ohne erneute Zahlung erhalten. Neue Spieler müssen `/fly` auf Level 116 erreichen. Eine bereits vor dem Neustart erreichte Fly-Kauf-Freigabe bleibt erhalten.
+Diese Version trennt **zum Kauf freigeschaltet** von **dauerhaft gekauft**. Vor dem Level-Neustart erreichte Kauf-Freigaben werden aus der passenden Sicherung mit der bisherigen 30/15-JP-Kurve und den früheren Perk-Gates wiederhergestellt und als `unlocked-perks` separat gespeichert. Die Sicherung belegt auch frühere tatsächliche Käufe; diese bleiben ohne erneute Zahlung erhalten. Neue Spieler müssen `/fly` auf Level 116 erreichen. Eine bereits vor dem Neustart erreichte Fly-Kauf-Freigabe bleibt erhalten.
 
 | Perk-Anzeige | Bedeutung |
 |---|---|
@@ -19,7 +19,7 @@ Owner-/Supporter-Rechte werden nicht als individuelle Käufe gespeichert. Besteh
 
 ## Günstigere Perks und Flug-Erklärung
 
-Alle 43 optionalen Perk-Preise sind gesenkt: insgesamt rund 25 %. Die Journey-Anforderungen und Belohnungen bleiben gleich. Käufe werden nicht erneut berechnet; offene Belege behalten auch bei einem Speicherfehler ihren tatsächlich bezahlten alten Betrag. Die neue `config.yml` muss ausdrücklich eingefügt werden, damit die Preise gelten; das Plugin schreibt vorhandene Configs weiterhin nicht um.
+Alle 43 optionalen Perk-Preise bleiben gegenüber Beta.4 gesenkt: insgesamt rund 25 %. Die JP-Kurve und Belohnungen bleiben gleich. Käufe werden nicht erneut berechnet; offene Belege behalten auch bei einem Speicherfehler ihren tatsächlich bezahlten alten Betrag. Die neue `config.yml` muss ausdrücklich eingefügt werden, damit die Town-Flug-Erweiterung und Preise gelten; das Plugin schreibt vorhandene Configs weiterhin nicht um.
 
 | Bisher | Jetzt |
 |---:|---:|
@@ -33,7 +33,11 @@ Alle 43 optionalen Perk-Preise sind gesenkt: insgesamt rund 25 %. Die Journey-An
 | $150.000 | $110.000 |
 | $200.000 | $150.000 |
 
-`Town flight` schaltet `/tfly` innerhalb der eigenen Town frei. Der bisher unklar bezeichnete `Expanded town flight access` heißt jetzt **Town flight anywhere** und gibt `townyflight.bypass`: TownyFlight entfernt den Flug beim Verlassen der eigenen Town nicht mehr, und `/tfly` lässt sich auch in fremden Towns und in der Wildnis benutzen. Weil dies bereits freies Fliegen erlaubt, erfordert auch dieser Perk für neue Freigaben **Level 116**. Frühere belegte Käufe und Kauf-Freigaben bleiben erhalten. `/fly` bleibt ebenfalls auf Level 116. Die beiden Perks werden einzeln gekauft; ein Spieler muss nicht beide kaufen. Andere Server-Plugins können unabhängig davon Flugbeschränkungen setzen.
+**Town flight** schaltet `/tfly` innerhalb der eigenen Town auf Level 12 frei. **Flight in all towns** erweitert dies auf sämtliche Towns auf Level 86 und gibt ausschließlich `townyflight.alltowns`. Beim Übergang in die Wildnis endet dieser Town-Flug. Der Perk gibt weder `townyflight.bypass` noch `townyflight.wilderness` oder `/fly`. Freies `/fly` bleibt der letzte Perk auf Level 116. Preis der Town-Erweiterung: **$110.000**. Frühere belegte Käufe und Kauf-Freigaben behalten ihren stabilen internen Perk-Schlüssel `town_flight_bypass`; es wird nicht erneut bezahlt.
+
+Beim Laden eines Besitzers ersetzt das Plugin seine alte direkte permanente Perk-Berechtigung `townyflight.bypass` durch All-Town-Zugriff in einem LuckPerms-Speichervorgang. Die native Besitzmarkierung wird vorher gesichert. Ein fehlgeschlagener LP-Speichervorgang wird beim nächsten Laden/Login erneut gespeichert, ohne erneut zu zahlen. Globale oder zum konfigurierten Server passende alte direkte Grants werden ersetzt; Welt-Kontexte, andere oder kombinierte Server-Kontexte, befristete Rechte, negative Nodes, Gruppen und separate `/fly`-Rechte bleiben unangetastet. Nur persistente direkte LP-Nodes belegen einen alten Kauf; transiente oder geerbte Zugriffe werden nicht zu Käufen.
+
+**Zum Flug-Test einen normalen Spieler verwenden**, der nur diese beiden Town-Perks besitzt. Owner-/Staff-Rechte und der aktive Wither-Rang können separat weiterhin freies Fliegen erlauben. Die Journey verändert diese Rang-Gruppen nicht.
 
 Der Blaze-Tab verwendet nun die verifizierte Mojang-Identität und den Namen **MHF_Blaze** zusammen mit der festen Textur statt einer künstlichen UUID ohne Profilnamen. Die Textur wurde als PNG direkt von Mojangs Texturserver geprüft; die Darstellung im Minecraft-Client ist separat zu prüfen.
 

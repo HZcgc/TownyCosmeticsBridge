@@ -1,7 +1,7 @@
-# Permanent rank features — beta.5
+# Permanent rank features — beta.6
 
 Features are individual permanent purchases. Already owned features remain owned after the points restart. Fly needs the last Journey level for new eligibility; previous purchase unlocks survive the restart. Tier tabs are labels, not paid LP groups.
-Prices are around 25% lower in aggregate than Beta.4. Existing purchases remain paid; historical receipts retain their original amounts. `Town flight anywhere` grants the existing `townyflight.bypass`, allowing `/tfly` in other towns and wilderness. Its new purchase eligibility is therefore at Level 116 alongside `/fly`; prior proven unlocks remain valid. These are separate optional purchases, not a requirement to buy both. Own-town `/tfly` remains Level 12.
+Prices remain around 25% lower in aggregate than Beta.4. Existing purchases remain paid; historical receipts retain their original amounts. `Flight in all towns` grants only `townyflight.alltowns`: `/tfly` works inside towns and ends on entering wilderness. It unlocks at Level 86 and costs $110,000; unrestricted `/fly` remains Level 116. The internal `town_flight_bypass` ID is retained for purchase continuity. Existing direct permanent perk bypass grants are migrated to town-only access; independent staff/supporter group and `/fly` access are preserved. Own-town `/tfly` remains Level 12.
 
 | Rank page | ID | Feature | Level | Price | Usage |
 |---|---|---|---:|---:|---|
@@ -46,5 +46,5 @@ Prices are around 25% lower in aggregate than Beta.4. Existing purchases remain 
 | Wither | `jobs4` | 4 active jobs | 80 | $55,000 | /jobs browse |
 | Wither | `redstone` | Redstone kit every 72 hours | 82 | $55,000 | /kit redstone |
 | Wither | `enderchest` | Portable ender chest | 84 | $55,000 | /enderchest |
-| Wither | `town_flight_bypass` | Town flight anywhere | 116 | $110,000 | /tfly |
+| Wither | `town_flight_bypass` | Flight in all towns | 86 | $110,000 | /tfly |
 | Wither | `fly` | Personal flight | 116 | $150,000 | /fly |

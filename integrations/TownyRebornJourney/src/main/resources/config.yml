@@ -860,18 +860,18 @@ perks:
     rank-tier: WITHER
     menu-order: 5
   town_flight_bypass:
-    name: Town flight anywhere
-    level: 116
+    name: Flight in all towns
+    level: 86
     price: 110000
     permissions:
-    - townyflight.bypass
+    - townyflight.alltowns
     legacy-markers:
     - townyflight.bypass
     requires: tfly
     help-commands:
     - /tfly
-    - Fly in any town and in the wilderness.
-    - Leaving your town no longer removes TownyFlight.
+    - Fly within your own town and other towns.
+    - Flight ends when you enter the wilderness.
     rank-tier: WITHER
     menu-order: 6
   fly:
@@ -1937,6 +1937,6 @@ gifts:
     name: 'Reborn Legend: $100,000 + 5 Supporter Keys'
     icon: TRIPWIRE_HOOK
     money: 100000
-catalogue-version: 6
+catalogue-version: 7
 notifications:
   enabled: true

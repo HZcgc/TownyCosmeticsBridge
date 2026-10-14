@@ -77,6 +77,35 @@ final class Integrations implements Purchases.Backend {
       return this.luck.getUserManager().saveUser(var1);
    }
 
+   CompletableFuture<Void> repairOwned(State state, List<String> permissions) {
+      Journey.Perk townFlight = this.plugin.journey.perks.get("town_flight_bypass");
+      boolean replaceBypass = state.owned.contains("town_flight_bypass") && townFlight != null
+         && townFlight.permissions().contains("townyflight.alltowns") && !townFlight.permissions().contains("townyflight.bypass");
+      if (permissions.isEmpty() && !replaceBypass) return CompletableFuture.completedFuture(null);
+      User user = this.luck.getUserManager().getUser(state.uuid);
+      return user == null ? this.luck.getUserManager().loadUser(state.uuid)
+         .thenCompose(loaded -> this.repairOwnedTo(loaded, permissions, replaceBypass))
+         : this.repairOwnedTo(user, permissions, replaceBypass);
+   }
+
+   private CompletableFuture<Void> repairOwnedTo(User user, List<String> permissions, boolean replaceBypass) {
+      if (replaceBypass) {
+         String server = this.plugin.getConfig().getString("permission-context-server", "smp");
+         for (Node node : List.copyOf(user.data().toCollection())) {
+            Set<String> servers = node.getContexts().getValues("server");
+            boolean matchingContext = (servers.isEmpty() || servers.equals(Set.of(server)))
+               && node.getContexts().toMap().keySet().stream().allMatch(key -> key.equals("server"));
+            if (node.getKey().equals("townyflight.bypass") && node.getValue() && !node.hasExpiry() && matchingContext) {
+               user.data().remove(node);
+            }
+         }
+      }
+      // Add the replacement and remove only the old direct perk grant in one LP save.
+      // Inherited staff/rank nodes, temporary grants and other contexts are not edited.
+      // Persist even if cached nodes already match, allowing a failed LP save to retry on login.
+      return this.grantTo(user, permissions);
+   }
+
    Set<String> explicitPermanentNodes(UUID var1) {
       User var2 = this.luck.getUserManager().getUser(var1);
       if (var2 == null) {
@@ -86,7 +115,7 @@ final class Integrations implements Purchases.Backend {
       String var3 = this.plugin.getConfig().getString("permission-context-server", "smp");
       HashSet var4 = new HashSet();
 
-      for (Node var6 : var2.getNodes()) {
+      for (Node var6 : var2.data().toCollection()) {
          if (var6.getValue() && !var6.hasExpiry()) {
             Set var7 = var6.getContexts().getValues("server");
             if ((var7.isEmpty() || var7.contains(var3)) && !var6.getContexts().toMap().keySet().stream().anyMatch(var0 -> !var0.equals("server"))) {
@@ -136,7 +165,8 @@ final class Integrations implements Purchases.Backend {
    boolean hasFeatureAccess(Player player, Journey.Perk perk) {
       List<String> functional = perk.permissions().stream()
          .filter(node -> !node.startsWith("townyreborn.perk.") && !node.startsWith("townyreborn.journey.") && !node.startsWith("townysmp.subscriptions.")).toList();
-      return !functional.isEmpty() && functional.stream().allMatch(player::hasPermission);
+      return !functional.isEmpty() && functional.stream().allMatch(node -> player.hasPermission(node)
+         || node.equals("townyflight.alltowns") && player.hasPermission("townyflight.bypass"));
    }
 
    Map<String, Long> jobsLevels(Player var1) {

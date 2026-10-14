@@ -1,6 +1,6 @@
-Towny Reborn Journey 2.0.0-beta.5
+Towny Reborn Journey 2.0.0-beta.6
 
-Current build: 113 scenarios passed (24 recovery + 45 menu/update + 32 long-Journey/migration + 12 permission-import).
+Current build: 118 scenarios passed (24 recovery + 45 menu/update + 32 long-Journey/migration + 17 permission-import).
 Preserved Beta.1 reference: the same 24 recovery scenarios passed independently.
 Java sources compile with --release 21; JVM verification runs with -Xverify:all.
 
@@ -102,7 +102,7 @@ PASS new first skill readings cannot import pre-update levels or farm old record
 PASS a debited flight receipt recovers at level one without another debit
 PASS larger reward amounts cannot replay old gift claims or ambiguous receipts
 PASS flight needs the final level for a new purchase; owned flight remains owned
-PASS town flight bypass cannot provide a new full-flight purchase before the final level
+PASS all-town flight is scoped to towns and available before unrestricted flight
 PASS all permanent feature prices fall moderately while rewards and point requirements stay unchanged
 PASS permission delivery save failure retains the original paid receipt after a price reduction
 PASS rank colours move pink to lime and both render formats preserve titles
@@ -123,6 +123,11 @@ PASS old direct permanent purchase markers restore ownership at Journey level on
 PASS temporary false and unrelated-context nodes cannot prove a permanent purchase
 PASS owner wildcard and supporter membership stay separate from paid ownership
 PASS missing LP nodes do not remove already recorded purchases
+PASS old direct town-flight purchase migrates to all towns without wilderness access or payment
+PASS town-flight migration preserves temporary negative world hub multi-server and other flight nodes
+PASS staff and supporter memberships do not trigger a town-flight purchase migration
+PASS transient flight access cannot prove ownership or trigger a permanent flight migration
+PASS town-flight permission save retries safely with unchanged ownership and points
 PASS anonymous exported permission case 1 keeps confirmed purchases
 PASS anonymous exported permission case 2 keeps confirmed purchases
 PASS anonymous exported permission case 3 keeps confirmed purchases
@@ -131,4 +136,4 @@ PASS anonymous exported permission case 5 keeps confirmed purchases
 PASS anonymous exported permission case 6 keeps confirmed purchases
 PASS anonymous exported permission case 7 keeps confirmed purchases
 PASS anonymous exported permission case 8 keeps confirmed purchases
-RESULT 12 permission import checks passed
+RESULT 17 permission import checks passed

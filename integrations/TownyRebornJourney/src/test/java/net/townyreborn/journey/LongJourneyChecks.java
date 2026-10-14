@@ -156,10 +156,12 @@ public final class LongJourneyChecks {
             s.points=journey.threshold(116);require(journey.purchasable(s,journey.perks.get("fly")));s.owned.add("fly");s.points=0;
             require(s.owned.contains("fly")&&!journey.purchasable(s,journey.perks.get("fly")));
         });
-        test("town flight bypass cannot provide a new full-flight purchase before the final level",()->{
-            State s=new State(UUID.randomUUID(),"Test");s.owned.add("tfly");s.points=journey.threshold(115);
+        test("all-town flight is scoped to towns and available before unrestricted flight",()->{
+            require(journey.perks.get("town_flight_bypass").permissions().equals(List.of("townyflight.alltowns")));
+            require(journey.perks.values().stream().noneMatch(p->p.permissions().contains("townyflight.bypass")||p.permissions().contains("townyflight.wilderness")));
+            State s=new State(UUID.randomUUID(),"Test");s.owned.add("tfly");s.points=journey.threshold(85);
             require(!journey.purchasable(s,journey.perks.get("town_flight_bypass")));
-            s.points=journey.threshold(116);require(journey.purchasable(s,journey.perks.get("town_flight_bypass")));
+            s.points=journey.threshold(86);require(journey.purchasable(s,journey.perks.get("town_flight_bypass"))&&!journey.purchasable(s,journey.perks.get("fly")));
             s.points=0;s.unlocked.add("town_flight_bypass");require(journey.purchasable(s,journey.perks.get("town_flight_bypass")));
         });
         test("all permanent feature prices fall moderately while rewards and point requirements stay unchanged",()->{
@@ -169,7 +171,7 @@ public final class LongJourneyChecks {
                 String path=section+"."+key;if(!previous.isConfigurationSection(path))require(Objects.equals(config.get(path),previous.get(path)));}
             require(journey.gifts.equals(oldJourney.gifts));
             for(var p:journey.perks.values()) {var old=oldJourney.perks.get(p.id());double ratio=p.price()/old.price();
-                require(ratio>=0.65&&ratio<=0.80&&p.permissions().equals(old.permissions())&&p.requires().equals(old.requires()));oldTotal+=old.price();newTotal+=p.price();}
+                require(ratio>=0.65&&ratio<=0.80&&(p.id().equals("town_flight_bypass")||p.permissions().equals(old.permissions()))&&p.requires().equals(old.requires()));oldTotal+=old.price();newTotal+=p.price();}
             require(oldTotal==2350000&&newTotal==1755000&&journey.perks.get("fly").price()==150000&&journey.perks.get("tfly").price()==150000);
         });
         test("permission delivery save failure retains the original paid receipt after a price reduction",()->{
@@ -236,8 +238,8 @@ public final class LongJourneyChecks {
                 require(gui.tile(16).icon()==Material.LIGHT_BLUE_DYE&&gui.text(16).contains("Your rank currently provides")&&!gui.state().owned.contains("fly"));
             });
             test("town flight scope is explained before confirming a purchase",()->{
-                gui.menu.perks(gui.player,4,0);require(gui.text(15).contains("Fly in any town and in the wilderness"));
-                gui.menu.confirm(gui.player,"town_flight_bypass");require(gui.text(13).contains("Leaving your town no longer removes TownyFlight"));
+                gui.menu.perks(gui.player,4,0);require(gui.text(15).contains("Fly within your own town and other towns"));
+                gui.menu.confirm(gui.player,"town_flight_bypass");require(gui.text(13).contains("Flight ends when you enter the wilderness"));
             });
             test("Blaze tab sends the named official Mojang profile with its canonical skin URL",()->{
                 SkullMeta skull=mock(SkullMeta.class);PlayerProfile profile=mock(PlayerProfile.class);PlayerTextures textures=mock(PlayerTextures.class);when(profile.getTextures()).thenReturn(textures);
