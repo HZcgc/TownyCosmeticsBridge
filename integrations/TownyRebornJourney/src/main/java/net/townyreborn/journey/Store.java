@@ -26,6 +26,7 @@ public final class Store {
    private final Path migrationBackups;
    private final Journey journey;
    private final HistoryCredit history;
+   private final StaffAudit staffAudit;
    private final Map<UUID, State> cache = new HashMap<>();
 
    public Store(Path var1, Journey var2) throws IOException {
@@ -34,6 +35,7 @@ public final class Store {
       this.migrationBackups = var1.resolve("migration-backups");
       this.journey = var2;
       this.history = new HistoryCredit(var1, var2);
+      this.staffAudit = new StaffAudit(var1);
       Files.createDirectories(this.folder);
    }
 
@@ -162,6 +164,12 @@ public final class Store {
 
    public synchronized void save(State var1) throws IOException {
       this.journey.recordUnlocks(var1);
+      Path profilePath = this.folder.resolve(var1.uuid + ".yml");
+      YamlConfiguration before = null;
+      if (Files.isRegularFile(profilePath)) {
+         try { before = read(profilePath); }
+         catch (Exception error) { throw new IOException("Cannot read existing profile before audit commit", error); }
+      }
       YamlConfiguration var2 = new YamlConfiguration();
       var2.set("schema", 2);
       var2.set("uuid", var1.uuid.toString());
@@ -202,7 +210,14 @@ public final class Store {
          var2.set("pending-purchase.created", var1.pending.created());
       }
 
-      atomic(this.folder.resolve(var1.uuid + ".yml"), var2.saveToString());
+      StaffAudit.Prepared audit = this.staffAudit.prepare(var1.uuid, before, var2);
+      var2.set("staff-audit-sequence", audit == null ? (before == null ? 0 : before.getLong("staff-audit-sequence", 0)) : audit.sequence());
+      atomic(profilePath, var2.saveToString());
+      try { this.staffAudit.commit(audit); }
+      catch (IOException error) {
+         // The committed profile proves the pending receipt on recovery. Do not undo gameplay.
+         java.util.logging.Logger.getLogger("TownyRebornProgression").warning("Staff audit finalisation deferred; receipt retained for recovery.");
+      }
       var1.dirty = false;
       var1.persisted = true;
       var1.blocked = false;

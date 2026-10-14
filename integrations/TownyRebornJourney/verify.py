@@ -63,3 +63,9 @@ command=[str(a.jdk/'java'),'-Xverify:all',jar_arg,'-Dnet.bytebuddy.experimental=
 if a.permissions_fixture:command.append(str(a.permissions_fixture))
 r=subprocess.run(command,capture_output=True,text=True);(a.output/'permissions.log').write_text(r.stdout+r.stderr);print(r.stdout)
 if r.returncode:print(r.stderr);raise SystemExit(r.returncode)
+
+subprocess.run([str(a.jdk/'javac'),'--release','21','-cp',str(classes)+':'+str(a.jar)+':'+cp,'-d',str(classes),str(ROOT/'src/test/java/net/townyreborn/journey/StaffAuditChecks.java')],check=True)
+audit_data=Path(tempfile.mkdtemp(prefix='audit-data-',dir=a.output))
+r=subprocess.run([str(a.jdk/'java'),'-Xverify:all','-cp',str(classes)+':'+str(a.jar)+':'+cp,'net.townyreborn.journey.StaffAuditChecks',str(audit_data),str(ROOT/'src/main/resources/config.yml')],capture_output=True,text=True)
+(a.output/'audit.log').write_text(r.stdout+r.stderr);print(r.stdout)
+if r.returncode:print(r.stderr);raise SystemExit(r.returncode)

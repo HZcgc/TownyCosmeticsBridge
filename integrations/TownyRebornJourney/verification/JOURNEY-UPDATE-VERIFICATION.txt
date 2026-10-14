@@ -1,6 +1,6 @@
-Towny Reborn Journey 2.0.0-beta.8
+Towny Reborn Journey 2.0.0-beta.9
 
-Current build: 202 scenarios passed (24 recovery + 45 menu/update + 32 long-Journey/migration + 17 permission-import + 65 historical-credit + 19 quest/eGlow).
+Current build: 210 scenarios passed (24 recovery + 45 menu/update + 32 long-Journey/migration + 17 permission-import + 65 historical-credit + 19 quest/eGlow + 8 durable Staff audit).
 Preserved Beta.1 reference: the same 24 recovery scenarios passed independently.
 Java sources compile with --release 21; JVM verification runs with -Xverify:all.
 
@@ -227,3 +227,14 @@ PASS successful level crossing notifies only after its saved point and completio
 PASS Wither eGlow costs 20000 at level 88 and grants only personal use
 PASS actual eGlow purchase charges 20000 once and keeps JP plus durable ownership
 RESULT 19 quest/eGlow checks passed
+
+AUDIT
+PASS initial committed state has a stable receipt and persistent sequence
+PASS unchanged save cannot create another earned-activity receipt
+PASS actual capped quest JP commit records both states and its source
+PASS saved payment phases retain the exact debited amount
+PASS post-profile crash recovery finalises the same receipt without replaying it
+PASS independent audit counter survives an older profile writer removing its sequence
+PASS failed profile commit never creates a completed receipt
+PASS audit prepare failure leaves the existing gameplay profile unchanged
+RESULT 8 Staff audit checks passed

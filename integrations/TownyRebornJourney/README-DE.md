@@ -1,4 +1,10 @@
-# Towny Reborn Journey 2.0.0-beta.8
+# Towny Reborn Journey 2.0.0-beta.9
+
+## Staff-HQ-Anbindung (Beta.9)
+
+Die Journey schreibt bestätigte Profiländerungen als dauerhafte Auditbelege unter `staff-audit/`. Staff Connector 1.5.0 übernimmt sie in sein eigenes dauerhaftes Ausgangsprotokoll und überträgt sie mit stabilen Ereignis-IDs ins Staff HQ 5.2.0. JP und Quellen, Levelwechsel, historische Gutschriften, Kauf-Freigaben, gekaufte Perks, tatsächliche Zahlungsbeträge, Belohnungsbelege, Reward-Befehle und Town-Boni sind damit getrennt nachvollziehbar. Früherer Besitz wird nicht als neuer Kauf gerechnet.
+
+JAR und Progression-Config aus dem Beta.9-Hotfix einfügen. **Keine Revisionsmarker ändern und keine Datenordner ersetzen.** Level, Preise, Quests-JP, Käufe und historische Gutschriften bleiben wie in Beta.8. Die Website muss zuerst das HQ-5.2.0-Update erhalten; auf dem SMP danach Journey Beta.9 und Staff Connector 1.5.0 verwenden. Details: `STAFF-AUDIT-DE.md`.
 
 ## Update: Quests und eGlow (Beta.8)
 
@@ -10,7 +16,7 @@ Auf der Wither-Perk-Seite ist **Glow colours and effects** für **$20.000 ab Lev
 
 ## Fortschritt übernehmen (Beta.4 bis Beta.7)
 
-Server stoppen, den bestehenden Progression-Ordner sichern, die bisherige JAR entfernen und aus `TownyReborn-Journey-Hotfix-2.0.0-beta.8.zip` den `plugins/`-Baum einfügen. Er enthält die neue JAR und die neue Progression-Config. **Beide ersetzen**, damit die Fortschrittsübernahme aktiviert ist. `playerdata`, `journeydata`, `migration-backups` und der neue Ordner `history-credits` bleiben im bestehenden Ordner. Vollständig starten. Offline-Spieler werden beim nächsten Laden/Login übernommen. Die ausführliche ZIP enthält zusätzlich die bisherigen statischen TAB-, Nametag- und Quests-Configs.
+Server stoppen, den bestehenden Progression-Ordner sichern, die bisherige JAR entfernen und aus `TownyReborn-Journey-Hotfix-2.0.0-beta.9.zip` den `plugins/`-Baum einfügen. Er enthält die neue JAR und die neue Progression-Config. **Beide ersetzen**, damit die Fortschrittsübernahme aktiviert ist. `playerdata`, `journeydata`, `migration-backups` und der neue Ordner `history-credits` bleiben im bestehenden Ordner. Vollständig starten. Offline-Spieler werden beim nächsten Laden/Login übernommen. Die ausführliche ZIP enthält zusätzlich die bisherigen statischen TAB-, Nametag- und Quests-Configs.
 
 Beta.7 rechnet den früher verdienten Fortschritt auf die längere Journey um: **alte belegte JP + seit Beta.4 verdiente JP**. Der aktuelle Stand wird nicht durch eine alte Spielerdatei ersetzt. Bereits gezahlte Perks, offene Transaktionen, abgeholte Belohnungen, Tageszähler, Skill-Höchststände und mcMMO-/Jobs-Daten bleiben erhalten.
 
