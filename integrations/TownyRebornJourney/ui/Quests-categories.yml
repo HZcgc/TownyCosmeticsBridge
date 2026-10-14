@@ -1,4 +1,4 @@
-# Existing quest categories; only display styling is changed.
+# Current category IDs and styling; Experience is last so it occupies the dedicated lower slot.
 categories:
   farming:
     gui-name: '&d&lTOWNY &a&lREBORN &8• &fFarming'
@@ -322,29 +322,6 @@ categories:
       - HIDE_PLACED_ON
       - HIDE_POTION_EFFECTS
       - HIDE_UNBREAKABLE
-  expquests:
-    gui-name: '&d&lTOWNY &a&lREBORN &8• &fExperience'
-    display:
-      name: '&a&lExperience'
-      lore:
-      - '&7Earn experience through varied challenges.'
-      - ''
-      - '&8Progress'
-      - '&7Completed: &a%quests_category:expquests_completed%&8/&f%quests_category:expquests_all%'
-      - '&7Active: &e%quests_category:expquests_started%'
-      - '&7Difficulty: &aEasy &8→ &cHard'
-      - ''
-      - '&d▶ &fClick to browse'
-      type: EXPERIENCE_BOTTLE
-      itemflags:
-      - HIDE_ARMOR_TRIM
-      - HIDE_ATTRIBUTES
-      - HIDE_DESTROYS
-      - HIDE_DYE
-      - HIDE_ENCHANTS
-      - HIDE_PLACED_ON
-      - HIDE_POTION_EFFECTS
-      - HIDE_UNBREAKABLE
   misc:
     gui-name: '&d&lTOWNY &a&lREBORN &8• &fMiscellaneous'
     display:
@@ -382,6 +359,29 @@ categories:
       - ''
       - '&d▶ &fClick to browse'
       type: ENDER_EYE
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  expquests:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fExperience'
+    display:
+      name: '&a&lExperience'
+      lore:
+      - '&7Earn experience through varied challenges.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:expquests_completed%&8/&f%quests_category:expquests_all%'
+      - '&7Active: &e%quests_category:expquests_started%'
+      - '&7Difficulty: &aEasy &8→ &cHard'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: EXPERIENCE_BOTTLE
       itemflags:
       - HIDE_ARMOR_TRIM
       - HIDE_ATTRIBUTES

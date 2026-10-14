@@ -33,7 +33,7 @@ public final class RecoveryChecks {
         YamlConfiguration config=new YamlConfiguration();config.loadFromString(Files.readString(Path.of(args[1])));journey=new Journey(config);
         var fly=journey.perks.get("fly");var key=journey.gifts.getOrDefault("daily_key_5",journey.gifts.get("milestone_005"));
         int expectedPerks=config.getInt("catalogue-version",0)>=3?43:44;
-        test("default catalogue, pages and early flight",()->require(journey.steps==116&&journey.pages()==4&&journey.perks.size()==expectedPerks&&journey.gifts.size()==116&&fly.level()==18));
+        test("default catalogue, pages and configured flight gate",()->require(journey.steps==116&&journey.pages()==4&&journey.perks.size()==expectedPerks&&journey.gifts.size()==116&&fly.level()==(config.getInt("catalogue-version",0)>=5?116:18)));
         test("all level boundaries and cap",()->{for(int level=1;level<=116;level++){require(journey.level(journey.threshold(level))==level);if(level>1)require(journey.level(journey.threshold(level)-1)==level-1);}require(journey.level(Long.MAX_VALUE)==116);});
         test("snake is connected and unique",()->{Set<Integer> slots=new HashSet<>();int last=-1;for(int slot:Journey.PATH){require(slot>=9&&slot<54&&slots.add(slot));if(last>=0)require(Math.abs(last/9-slot/9)+Math.abs(last%9-slot%9)==1);last=slot;}require(slots.size()==29);});
         test("free level progression",()->{State state=ready(store("free"));require(state.owned.isEmpty()&&journey.level(state.points)==116);});
@@ -44,7 +44,15 @@ public final class RecoveryChecks {
         test("corrupt profiles fail closed",()->{Store s=store("corrupt");UUID id=UUID.randomUUID();Path p=root.resolve("corrupt/journeydata/"+id+".yml");Files.writeString(p,"schema: [");reject(()->s.get(id,"Test"));require(Files.readString(p).equals("schema: ["));});
         test("high-water and job rejoin protection",()->{State state=ready(store("high"));require(state.advanceHighWater("job:Miner",10,12)==0&&state.advanceHighWater("job:Miner",12,12)==24&&state.advanceHighWater("job:Miner",1,12)==0&&state.advanceHighWater("job:Miner",12,12)==0);});
         test("daily limits",()->{State state=new State(UUID.randomUUID(),"Test");require(state.capped("A","fish",500,300)==300&&state.capped("A","fish",20,300)==0&&state.capped("B","fish",3,300)==3&&state.points==303);});
-        test("purchase and duplicate click",()->{Store s=store("buy");State state=ready(s);Bank b=new Bank();Purchases p=new Purchases(journey,s,b);long points=state.points;p.buy(state,fly,x->{});p.buy(state,fly,x->{});require(b.debits==1&&state.pending.phase().equals("DEBITED"));b.future.complete(null);require(state.pending==null&&state.owned.contains("fly")&&state.points==points);});
+        test("purchase and duplicate click",()->{
+            Store s=store("buy");State state=ready(s);Bank b=new Bank();Purchases p=new Purchases(journey,s,b);long points=state.points;
+            p.buy(state,fly,x->{});p.buy(state,fly,x->{});
+            if(b.debits!=1||state.pending==null||!state.pending.phase().equals("DEBITED"))
+                throw new AssertionError("Payment phase: debits="+b.debits+", pending="+state.pending+", owned="+state.owned);
+            b.future.complete(null);
+            if(state.pending!=null||!state.owned.contains("fly")||state.points!=points)
+                throw new AssertionError("Delivery phase: pending="+state.pending+", owned="+state.owned+", points="+state.points+" expected="+points);
+        });
         test("in-flight receipt cannot be cleared",()->{Store s=store("inflight");State state=ready(s);Bank b=new Bank();Purchases p=new Purchases(journey,s,b);p.buy(state,fly,x->{});reject(()->p.resolve(state,false,x->{}));require(state.pending!=null);});
         test("insufficient funds and prerequisite do not charge",()->{Store s=store("denied");State state=ready(s);Bank b=new Bank();Purchases p=new Purchases(journey,s,b);b.balance=1;p.buy(state,fly,x->{});b.balance=1000000;p.buy(state,journey.perks.get("homes30"),x->{});require(b.debits==0);});
         test("declined payment grants nothing",()->{Store s=store("declined");State state=ready(s);Bank b=new Bank();b.declined=true;new Purchases(journey,s,b).buy(state,fly,x->{});require(state.pending==null&&b.grants==0&&state.owned.isEmpty());});

@@ -2,7 +2,7 @@
 # mcMMO is attached directly to the Journey title without a separator.
 nametag: '<light_purple>%townyadvanced_town_unformatted%</light_purple> <green>%townyadvanced_nation_unformatted%</green>
 
-  <luckperms_prefix>  <light_purple>%reborn_title%</light_purple><gray>%string_replaceCharacters_small-numbers_{mcmmo_power_level}%</gray>
+  <luckperms_prefix>  %reborn_title_mini%<gray>%string_replaceCharacters_small-numbers_{mcmmo_power_level}%</gray>
 
   <displayname>'
 interval: 0.5

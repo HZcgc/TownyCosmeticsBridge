@@ -1,4 +1,4 @@
-# Towny Reborn Quests UI overlay. Quest definitions and player data are kept.
+# Current Quests(8) layout; Experience category occupies the previous stone slot (40).
 options:
   categories-enabled: true
   trim-gui-size:
@@ -288,16 +288,6 @@ custom-elements:
         type: BLACK_STAINED_GLASS_PANE
     '39':
       display:
-        name: '&f&lQuest States'
-        type: PAPER
-        lore:
-        - '&aGreen: completed'
-        - '&eYellow: active / in progress'
-        - '&cRed: locked'
-        - ''
-        - '&7Inspect a quest for its requirements.'
-    '40':
-      display:
         name: ' '
         type: BLACK_STAINED_GLASS_PANE
     '41':
@@ -350,7 +340,7 @@ custom-elements:
         - '&7Active: &e%quests_started%'
         - ''
         - '&7Journey progression is in the menu to the right.'
-    '50':
+    '51':
       display:
         name: '&d&lReborn &a&lProgression'
         type: EXPERIENCE_BOTTLE
@@ -358,7 +348,7 @@ custom-elements:
         - '&7Your standalone Journey and permanent perks.'
         - ''
         - '&7Current level: &e%reborn_level%'
-        - '&7Journey title: &f%reborn_title%'
+        - '&7Journey title: &f%reborn_title_colored%'
         - '&7Progress: &a%reborn_percent%%'
         - '&7Still needed: &e%reborn_remaining_points% JP'
         - ''
@@ -366,7 +356,7 @@ custom-elements:
       commands:
       - rebornadmin open {player}
       result: CLOSE_MENU
-    '51':
+    '50':
       display:
         name: ' '
         type: BLACK_STAINED_GLASS_PANE
@@ -378,6 +368,10 @@ custom-elements:
       display:
         name: ' '
         type: MAGENTA_STAINED_GLASS_PANE
+    '31':
+      display:
+        name: ' '
+        type: BLACK_STAINED_GLASS_PANE
 titles:
   quest-start:
     title: '&d&lQUEST STARTED'
@@ -397,19 +391,19 @@ messages:
   quest-start-limit: '&d&lTOWNY&a&lREBORN &8» &r&7You are limited to &d{limit}&7 started quests at a time.'
   quest-start-disabled: '&d&lTOWNY&a&lREBORN &8» &r&cYou cannot repeat this quest.'
   quest-start-locked: '&d&lTOWNY&a&lREBORN &8» &r&cYou have not unlocked this quest yet.'
-  quest-start-cooldown: '&d&lTOWNY&a&lREBORN &8» &r&7You have recently completed this quest. You have to wait &d{time}&7
-    until you are able to start it.'
+  quest-start-cooldown: '&d&lTOWNY&a&lREBORN &8» &r&7You have recently completed this quest. You have to wait
+    &d{time}&7 until you are able to start it.'
   quest-start-started: '&d&lTOWNY&a&lREBORN &8» &r&cYou have already started this quest.'
   quest-start-permission: '&d&lTOWNY&a&lREBORN &8» &r&cYou do not have permission to start this quest.'
   quest-category-permission: '&d&lTOWNY&a&lREBORN &8» &r&cYou do not have permission to view this category.'
-  quest-category-quest-permission: '&d&lTOWNY&a&lREBORN &8» &r&cYou do not have permission to start this quest since
-    it is in a category you do not have permission to view.'
+  quest-category-quest-permission: '&d&lTOWNY&a&lREBORN &8» &r&cYou do not have permission to start this quest
+    since it is in a category you do not have permission to view.'
   quest-cancel-notstarted: '&d&lTOWNY&a&lREBORN &8» &r&cYou have not started this quest.'
   quest-cancel-notcancellable: '&d&lTOWNY&a&lREBORN &8» &r&cYou cannot cancel this quest.'
-  quest-updater: '&d&lTOWNY&a&lREBORN &8» &r&7A new version of Quest &d{newver}&7 was found on Spigot. Update the
-    plugin here: &d{link}'
-  command-data-not-loaded: '&d&lTOWNY&a&lREBORN &8» &r&cYour quests progress file has not been loaded; you cannot
-    use quests. If this issue persists, contact an admin.'
+  quest-updater: '&d&lTOWNY&a&lREBORN &8» &r&7A new version of Quest &d{newver}&7 was found on Spigot. Update
+    the plugin here: &d{link}'
+  command-data-not-loaded: '&d&lTOWNY&a&lREBORN &8» &r&cYour quests progress file has not been loaded; you
+    cannot use quests. If this issue persists, contact an admin.'
   command-sub-doesntexist: '&d&lTOWNY&a&lREBORN &8» &r&cThe specified subcommand does not exist.'
   command-no-permission: '&d&lTOWNY&a&lREBORN &8» &r&cYou do not have permission to use this command.'
   command-quest-start-doesntexist: '&d&lTOWNY&a&lREBORN &8» &r&cThe quest does not exist.'
@@ -417,42 +411,46 @@ messages:
   command-category-open-disabled: '&d&lTOWNY&a&lREBORN &8» &r&7Categories are currently disabled.'
   command-category-open-doesntexist: '&d&lTOWNY&a&lREBORN &8» &r&cThe specified category does not exist.'
   command-quest-admin-playernotfound: '&d&lTOWNY&a&lREBORN &8» &r&c&d{player}&7 could not be found.'
-  command-quest-openquests-admin-success: '&d&lTOWNY&a&lREBORN &8» &rThe quest inventory has been opened for &a{player}.'
+  command-quest-openquests-admin-success: '&d&lTOWNY&a&lREBORN &8» &rThe quest inventory has been opened for
+    &a{player}.'
   command-quest-openstarted-admin-success: '&d&lTOWNY&a&lREBORN &8» &rOpened started Quest GUI for player &a{player}.'
-  command-quest-opencategory-admin-success: '&d&lTOWNY&a&lREBORN &8» &rThe &a({category}) has been opened for &e({player}).'
+  command-quest-opencategory-admin-success: '&d&lTOWNY&a&lREBORN &8» &rThe &a({category}) has been opened for
+    &e({player}).'
   command-taskview-admin-fail: '&d&lTOWNY&a&lREBORN &8» &rThe task type &c({task}) does not exist.'
-  beta-reminder: '&d&lTOWNY&a&lREBORN &8» &rYou are using a beta version of the quest plugin. Please report any
-    bugs you find.'
+  beta-reminder: '&d&lTOWNY&a&lREBORN &8» &rYou are using a beta version of the quest plugin. Please report
+    any bugs you find.'
   command-quest-admin-loaddata: '&d&lTOWNY&a&lREBORN &8» &rQuest data for &e({player}) is being loaded.'
   command-quest-admin-nodata: '&d&lTOWNY&a&lREBORN &8» &rNo data could be found for &c({player}).'
   command-quest-admin-fullreset: '&d&lTOWNY&a&lREBORN &8» &rData for &a({player}) has been reset.'
-  command-quest-admin-start-faillocked: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started for &c({player}).
-    They have not yet unlocked it.'
-  command-quest-admin-start-failcooldown: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started for
-    &c({player}). It is still on cooldown for them.'
-  command-quest-admin-start-failcomplete: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started for
-    &c({player}). They have already completed it.'
-  command-quest-admin-start-faillimit: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started for &c({player}).
-    They have reached their quest start limit.'
-  command-quest-admin-start-failstarted: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started for &c({player}).
-    It is already started.'
-  command-quest-admin-start-failpermission: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started for
-    &c({player}). They do not have permission.'
-  command-quest-admin-start-failcategorypermission: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started
-    for &c({player}). They do not have permission for the category which the quest is in.'
-  command-quest-admin-start-failother: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started for &c({player}).'
+  command-quest-admin-start-faillocked: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started for
+    &c({player}). They have not yet unlocked it.'
+  command-quest-admin-start-failcooldown: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started
+    for &c({player}). It is still on cooldown for them.'
+  command-quest-admin-start-failcomplete: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started
+    for &c({player}). They have already completed it.'
+  command-quest-admin-start-faillimit: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started for
+    &c({player}). They have reached their quest start limit.'
+  command-quest-admin-start-failstarted: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started
+    for &c({player}). It is already started.'
+  command-quest-admin-start-failpermission: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started
+    for &c({player}). They do not have permission.'
+  command-quest-admin-start-failcategorypermission: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not
+    be started for &c({player}). They do not have permission for the category which the quest is in.'
+  command-quest-admin-start-failother: '&d&lTOWNY&a&lREBORN &8» &rQuest &c({quest}) could not be started for
+    &c({player}).'
   command-quest-admin-start-success: '&d&lTOWNY&a&lREBORN &8» &rQuest &a({quest}) has been started for &a({player}).'
-  command-quest-admin-category-permission: '&d&lTOWNY&a&lREBORN &8» &rCategory &c({category}) could not be opened
-    for &c({player}). They do not have permission to view it.'
+  command-quest-admin-category-permission: '&d&lTOWNY&a&lREBORN &8» &rCategory &c({category}) could not be
+    opened for &c({player}). They do not have permission to view it.'
   command-quest-admin-complete-success: '&d&lTOWNY&a&lREBORN &8» &rQuest &2({quest}) &fcompleted for &a({player}).'
   command-quest-admin-reset-success: '&d&lTOWNY&a&lREBORN &8» &rSuccessfully reset quest &a({quest}) for &a({player}).'
-  command-quest-admin-random-none: '&d&lTOWNY&a&lREBORN &8» &rPlayer &c{player} has no quests which they can start.'
+  command-quest-admin-random-none: '&d&lTOWNY&a&lREBORN &8» &rPlayer &c{player} has no quests which they can
+    start.'
   command-quest-admin-random-success: '&d&lTOWNY&a&lREBORN &8» &rSuccessfully started random quest ''&c{quest}''
     for player &c{player}.'
   command-quest-admin-random-category-none: '&d&lTOWNY&a&lREBORN &8» &rPlayer &c{player} has no quests in category
     ''&c{category}'' which they can start.'
-  command-quest-admin-random-category-success: '&d&lTOWNY&a&lREBORN &8» &rSuccessfully started random quest ''&c{quest}''
-    from category ''&c{category}'' for player &c{player}.'
+  command-quest-admin-random-category-success: '&d&lTOWNY&a&lREBORN &8» &rSuccessfully started random quest
+    ''&c{quest}'' from category ''&c{category}'' for player &c{player}.'
   ui-placeholder-completed-true: 'true'
   ui-placeholder-completed-false: 'false'
   ui-placeholder-truncated: ' +{amount} more'

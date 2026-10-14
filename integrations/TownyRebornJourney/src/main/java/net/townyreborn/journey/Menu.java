@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
@@ -100,8 +103,8 @@ final class Menu implements Listener {
          this.button(var5, 7, Material.LIME_DYE, "&fPath colour legend", ProgressInfo.legend(), null);
          ItemStack var6 = this.item(
             Material.PLAYER_HEAD,
-            "&f" + var1.getName(),
-            List.of("&d" + this.plugin.journey.title(var4), "&7Active time: &f" + String.format(Locale.US, "%.1fh", var3.minutes / 60.0))
+            "&dYour live stats &8• &f" + var1.getName(),
+            this.liveStats(var1, var3)
          );
          if (var6.getItemMeta() instanceof SkullMeta var7) {
             var7.setOwningPlayer(var1);
@@ -131,7 +134,7 @@ final class Menu implements Listener {
                case CURRENT -> "&eYour current Journey level";
                case LOCKED -> "&cFuture, locked level";
             });
-            var9.add("&7Rank: &f" + this.plugin.journey.title(var13));
+            var9.add("&7Rank: &r" + this.plugin.journey.styledTitle(var13));
             this.plugin
                .journey
                .perks
@@ -176,11 +179,28 @@ final class Menu implements Listener {
             for (Journey.Tier tier : this.plugin.journey.perkTiers()) {
                int targetPage = 0;
                while (pages.get(targetPage).tier() != tier) targetPage++;
-               this.button(var7, slot++, tierIcon(tier),
-                  (tier == selected.tier() ? "&a✓ " : "&d") + tier.label,
-                  List.of("&7Browse " + tier.label + " supporter features.", "&7Purchases are individual and optional."),
-                  new Menu.Action("perks", "", targetPage, 0));
+               String name = (tier == selected.tier() ? "&a✓ " : "&d▶ ") + tier.label + " &8• &fClick to browse";
+               List<String> lore = List.of("&aClick this head to switch rank perks.",
+                  "&7See all " + tier.label + " features and required levels.", "&7The green label marks your selected rank page.",
+                  "", "&7Buy individual features with game money.", "&7Higher rank pages can be previewed now.");
+               this.button(var7, slot, tierIcon(tier), name, lore, new Menu.Action("perks", "", targetPage, 0));
+               if (tier == Journey.Tier.BLAZE) {
+                  ItemStack blaze = this.item(Material.PLAYER_HEAD, name, lore);
+                  if (blaze.getItemMeta() instanceof SkullMeta skull) {
+                     var profile = Bukkit.createPlayerProfile(UUID.nameUUIDFromBytes("TownyReborn:BlazeTab".getBytes(StandardCharsets.UTF_8)));
+                     var textures = profile.getTextures();
+                     textures.setSkin(URI.create("https://textures.minecraft.net/texture/d06e342f90ec538aaa1552b224f264a040840902e126d91ece6139aa5b3c7cc3").toURL());
+                     profile.setTextures(textures);
+                     skull.setOwnerProfile(profile);
+                     blaze.setItemMeta(skull);
+                  }
+                  var7.inventory.setItem(slot, blaze);
+               }
+               slot++;
             }
+            this.button(var7, 6, Material.BOOK, "&eClick a rank head &8• &fBrowse all perks",
+               List.of("&aThe five heads above are clickable rank pages.", "&7Skeleton → Creeper → Blaze → Dragon → Wither",
+                  "&7Preview the later features and their required levels.", "&7Purchases are individual; this does not buy a rank."), null);
          }
 
          for (int var8 = 0; var8 < 36; var8++) {
@@ -247,7 +267,7 @@ final class Menu implements Listener {
       return switch (tier) {
          case SKELETON -> Material.SKELETON_SKULL;
          case CREEPER -> Material.CREEPER_HEAD;
-         case BLAZE -> Material.BLAZE_ROD;
+         case BLAZE -> Material.PLAYER_HEAD;
          case DRAGON -> Material.DRAGON_HEAD;
          case WITHER -> Material.WITHER_SKELETON_SKULL;
          case EXTRA -> Material.CHEST;
@@ -255,15 +275,32 @@ final class Menu implements Listener {
    }
 
    private List<String> progressLore(Player player, State state) {
-      List<String> lore = new ArrayList<>(ProgressInfo.summary(this.plugin.journey, state));
-      lore.add("");
-      lore.add("&dYour live stats");
-      lore.add("&7Active Journey time: &f" + String.format(Locale.US, "%.1fh", state.minutes / 60.0));
+      return ProgressInfo.summary(this.plugin.journey, state);
+   }
+
+   private List<String> liveStats(Player player, State state) {
+      int level = this.plugin.journey.level(state.points);
+      List<String> lore = new ArrayList<>(List.of("&r" + this.plugin.journey.styledTitle(level),
+         "&7Journey level: &a" + level + " &8/ &f" + this.plugin.journey.steps,
+         "&7Total Journey Points: &e" + state.points,
+         "&7Next level: &a" + this.plugin.journey.percent(state.points) + "% &8• &f" + this.plugin.journey.remainingPercent(state.points) + "% remaining", "",
+         "&dYour live stats", "&7Balance: &a$" + money(this.plugin.integrations.balance(player.getUniqueId())),
+         "&7Active Journey time: &f" + String.format(Locale.US, "%.1fh", state.journeyMinutes / 60.0),
+         "&7Total playtime: &f" + String.format(Locale.US, "%.1fh", player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 72000.0)));
       long mcmmo = this.plugin.sources.number(player, "%mcmmo_power_level%");
       lore.add("&7mcMMO power level: &f" + (mcmmo < 0 ? "Unavailable" : mcmmo));
       Map<String, Long> jobs = this.plugin.integrations.jobsLevels(player);
       lore.add("&7Jobs level total: &f" + (jobs.isEmpty() ? "No active level data" : jobs.values().stream().mapToLong(Long::longValue).sum()));
+      jobs.entrySet().stream().sorted(Map.Entry.comparingByKey()).limit(4)
+         .forEach(job -> lore.add("&8  &7" + job.getKey().replaceFirst("^job:", "") + ": &f" + job.getValue()));
       lore.add("&7Fish caught: &f" + player.getStatistic(Statistic.FISH_CAUGHT));
+      long quests = this.plugin.sources.number(player, "%quests_completed%");
+      lore.add("&7Quests completed: &f" + (quests < 0 ? "Unavailable" : quests));
+      lore.add("&7Mobs defeated: &f" + player.getStatistic(Statistic.MOB_KILLS));
+      long owned = state.owned.stream().filter(this.plugin.journey.perks::containsKey).count();
+      lore.add("&7Permanent features owned: &a" + owned + " &8/ &f" + this.plugin.journey.perks.size());
+      lore.add("");
+      lore.add("&8Live data refreshes every 30 seconds.");
       return lore;
    }
 
@@ -271,25 +308,29 @@ final class Menu implements Listener {
       if (!player.isOnline() || !this.plugin.access(player)) return;
       State state = this.plugin.state(player);
       View view = this.create("guide", page, 0, "", "&d&lREBORN &8| &fHow to progress");
+      for (int slot : new int[]{0,8,46,52}) this.button(view, slot, Material.MAGENTA_STAINED_GLASS_PANE, " ", List.of(), null);
+      for (int slot : new int[]{1,7,47,51}) this.button(view, slot, Material.LIME_STAINED_GLASS_PANE, " ", List.of(), null);
       this.button(view, 4, Material.EXPERIENCE_BOTTLE, "&eYour next goal",
          this.progressLore(player, state), null);
-      this.button(view, 10, Material.CLOCK, "&aStay active",
-         List.of("&fMove, build, farm or interact while playing.", "&7Reward: &a+1 JP per active minute",
-            "&7Active minutes: &f" + state.minutes, "&7Standing idle does not earn time points."), null);
-      this.sourceButton(view, state, 12, Material.DIAMOND_SWORD, "mcMMO skills", "mcmmo", "points-per-level", "Gain a new mcMMO power level.");
-      this.sourceButton(view, state, 14, Material.IRON_PICKAXE, "Jobs", "jobs", "points-per-level", "Gain a new level in one of your Jobs.");
-      this.sourceButton(view, state, 16, Material.FISHING_ROD, "Fishing", "fishing", "points-per-catch", "Catch a fish using a fishing rod.");
-      this.sourceButton(view, state, 28, Material.COMPASS, "Exploration", "exploration", "points-per-biome", "Visit a biome you have not recorded yet.");
-      this.sourceButton(view, state, 30, Material.KNOWLEDGE_BOOK, "Advancements", "advancements", "points-per-advancement", "Complete a new non-recipe advancement.");
+      List<String> active = new ArrayList<>(ProgressInfo.source(this.plugin.getConfig(), state, "playtime", "points-per-minute", "Move, build, farm or interact for one minute."));
+      active.add("&7Standing idle does not earn time points.");
+      active.add("&7Active Journey minutes: &f" + state.journeyMinutes);
+      this.button(view, 10, Material.CLOCK, "&d1. &fActive playtime", active, null);
+      this.sourceButton(view, state, 13, Material.DIAMOND_SWORD, "2. mcMMO skills", "mcmmo", "points-per-level", "Gain a new mcMMO power level.");
+      this.sourceButton(view, state, 16, Material.IRON_PICKAXE, "3. Jobs", "jobs", "points-per-level", "Gain a new level in one of your Jobs.");
+      this.sourceButton(view, state, 19, Material.FISHING_ROD, "4. Fishing", "fishing", "points-per-catch", "Catch a fish using a fishing rod.");
+      this.sourceButton(view, state, 22, Material.COMPASS, "5. Exploration", "exploration", "points-per-biome", "Visit a biome you have not recorded yet.");
+      this.sourceButton(view, state, 25, Material.KNOWLEDGE_BOOK, "6. Advancements", "advancements", "points-per-advancement", "Complete a new non-recipe advancement.");
       if (this.plugin.getConfig().getBoolean("sources.quests.enabled", false))
-         this.sourceButton(view, state, 32, Material.BOOK, "Optional Quests", "quests", "points-per-completion", "Complete another quest.");
-      this.button(view, 22, Material.NETHER_STAR, "&fHow Journey Points work", ProgressInfo.explanation(), null);
+         this.sourceButton(view, state, 40, Material.BOOK, "Optional Quests", "quests", "points-per-completion", "Complete another quest.");
+      this.button(view, 28, Material.NETHER_STAR, "&dHow Journey Points work", ProgressInfo.explanation(this.plugin.journey, this.plugin.getConfig()), null);
+      this.button(view, 31, Material.MAP, "&dYour live stats", this.liveStats(player, state), null);
+      this.button(view, 34, Material.CLOCK, "&dDaily limits &8• &f00:00 UTC",
+         List.of("&7Each source has its own daily allowance.", "&7Daily reset: &f00:00 UTC &8(server time)",
+            "&7Unused daily allowance does not carry over.", "&7Hover each activity to see today's remaining JP.", "",
+            "&7Your total Journey Points never reset daily.", "&7Only new skill/Job records earn points.", "&7Progress refreshes every 30 seconds."), null);
       this.button(view, 45, Material.ARROW, "&dBack to journey", List.of(), new Action("journey", "", page, 0));
-      this.button(view, 49, Material.CLOCK, "&dServer snapshot",
-         List.of("&7Online: &f" + this.plugin.getServer().getOnlinePlayers().size(),
-            "&7TPS (1 minute): &f" + String.format(Locale.US, "%.1f", Math.min(20, Bukkit.getTPS()[0])),
-            "&7Progress updates every 30 seconds.",
-            "&7Daily source limits reset at midnight Berlin time."), null);
+      this.button(view, 49, Material.ENDER_CHEST, "&aPermanent perks", List.of("&aClick to browse all five rank pages."), new Action("perks", "", 0, 0));
       this.show(player, view);
    }
 
@@ -312,7 +353,7 @@ final class Menu implements Listener {
             var4,
             4,
             Material.NETHER_STAR,
-            "&d" + this.plugin.journey.title(var2),
+            "&r" + this.plugin.journey.styledTitle(var2),
             ProgressInfo.requirement(this.plugin.journey, var3, var2),
             new Menu.Action("guide", "", this.plugin.journey.page(var2), 0)
          );

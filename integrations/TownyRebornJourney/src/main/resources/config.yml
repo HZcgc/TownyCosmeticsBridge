@@ -1,45 +1,256 @@
-# Towny Reborn Journey. Copy this file with the matching JAR while the server is stopped.
-# No startup config rewrites, external plugin edits or automatic menu removal.
-# Access requires townyreborn.progression.access (default false).
-# Main-line colours: green = earlier completed levels; yellow = current level; red = future locked levels.
-# Perks are grouped by supporter feature tier; fly is the final Wither entry, still unlocked at level 18.
-# All activities add to one Journey Point total. Purchases use money and never spend JP.
-# Keep reward IDs, legacy-ids and player receipts; each reward is claimable once.
+# Towny Reborn Journey beta.4. Install with the matching JAR while the server is stopped.
+# No external config changes. Access: townyreborn.progression.access.
+# One-time authorised restart: long-journey-2026-10-v1 starts JP at zero, retaining perks/receipts.
+# Keep progress-revision unchanged on later updates: it is the durable reset identifier.
+# Profiles are backed up in migration-backups before their first reset; offline profiles migrate on first load.
+# UTC 00:00 daily reset; active playtime is capped at 360 JP/day. Other source caps are retained.
+# Green = earlier completed level, yellow = current level, red = future locked level.
+# All 116 levels have distinct titles. Tab uses J001-J116; rank palette moves pink to lime.
+# /fly is the final Wither feature and requires the final level 116 for a new purchase.
+# Keep reward IDs/legacy aliases/receipts: increased rewards never replay already delivered gifts.
 permission-context-server: smp
 journey:
   steps: 116
-  points-first: 30
-  points-increase: 15
+  points-first: 150
+  points-increase: 30
   titles:
     1: Newcomer
-    4: Settler
+    2: Drifter
+    3: Wanderer
+    4: Traveller
+    5: Wayfarer
+    6: Scout
+    7: Settler
     8: Resident
-    12: Citizen
-    18: Adventurer
-    24: Explorer
-    29: Merchant
-    36: Pioneer
-    45: Artisan
-    58: Veteran
-    70: Champion
-    87: Mythic
-    100: Ascendant
+    9: Citizen
+    10: Homesteader
+    11: Gatherer
+    12: Forager
+    13: Harvester
+    14: Cultivator
+    15: Gardener
+    16: Trailblazer
+    17: Pathfinder
+    18: Ranger
+    19: Tracker
+    20: Explorer
+    21: Digger
+    22: Prospector
+    23: Miner
+    24: Excavator
+    25: Stoneworker
+    26: Mason
+    27: Builder
+    28: Architect
+    29: Crafter
+    30: Artisan
+    31: Apprentice
+    32: Smith
+    33: Forgemaster
+    34: Tinkerer
+    35: Engineer
+    36: Inventor
+    37: Angler
+    38: Fisher
+    39: Sailor
+    40: Navigator
+    41: Merchant
+    42: Trader
+    43: Broker
+    44: Quartermaster
+    45: Steward
+    46: Caretaker
+    47: Warden
+    48: Guardian
+    49: Defender
+    50: Sentinel
+    51: Adventurer
+    52: Voyager
+    53: Expeditioner
+    54: Pioneer
+    55: Frontiersman
+    56: Mountaineer
+    57: Cartographer
+    58: Discoverer
+    59: Scholar
+    60: Researcher
+    61: Sage
+    62: Lorekeeper
+    63: Alchemist
+    64: Enchanter
+    65: Spellweaver
+    66: Runekeeper
+    67: Veteran
+    68: Seasoned Soul
+    69: Stalwart
+    70: Vanguard
+    71: Commander
+    72: Marshal
+    73: Champion
+    74: Gladiator
+    75: Conqueror
+    76: Vanquisher
+    77: Hero
+    78: Protector
+    79: Paragon
+    80: Luminary
+    81: Starwatcher
+    82: Stargazer
+    83: Astronomer
+    84: Celestial
+    85: Moonwalker
+    86: Dawnbringer
+    87: Sunseeker
+    88: Radiant
+    89: Emberkeeper
+    90: Flamewarden
+    91: Phoenix
+    92: Fireheart
+    93: Stormcaller
+    94: Tempest
+    95: Thunderlord
+    96: Skywarden
+    97: Earthkeeper
+    98: Worldshaper
+    99: Worldwalker
+    100: Worldkeeper
+    101: Mystic
+    102: Oracle
+    103: Seer
+    104: Visionary
+    105: Ethereal
+    106: Astral
+    107: Mythic
+    108: Ascendant
+    109: Exalted
+    110: Sovereign
+    111: Immortal
+    112: Eternal
+    113: Legend
+    114: Reborn Hero
+    115: Reborn Master
     116: Reborn Legend
   short-titles:
-    1: NEW
-    4: SET
-    8: RES
-    12: CIT
-    18: ADV
-    24: EXP
-    29: MER
-    36: PIO
-    45: ART
-    58: VET
-    70: CHM
-    87: MYT
-    100: ASC
-    116: LEG
+    1: J001
+    2: J002
+    3: J003
+    4: J004
+    5: J005
+    6: J006
+    7: J007
+    8: J008
+    9: J009
+    10: J010
+    11: J011
+    12: J012
+    13: J013
+    14: J014
+    15: J015
+    16: J016
+    17: J017
+    18: J018
+    19: J019
+    20: J020
+    21: J021
+    22: J022
+    23: J023
+    24: J024
+    25: J025
+    26: J026
+    27: J027
+    28: J028
+    29: J029
+    30: J030
+    31: J031
+    32: J032
+    33: J033
+    34: J034
+    35: J035
+    36: J036
+    37: J037
+    38: J038
+    39: J039
+    40: J040
+    41: J041
+    42: J042
+    43: J043
+    44: J044
+    45: J045
+    46: J046
+    47: J047
+    48: J048
+    49: J049
+    50: J050
+    51: J051
+    52: J052
+    53: J053
+    54: J054
+    55: J055
+    56: J056
+    57: J057
+    58: J058
+    59: J059
+    60: J060
+    61: J061
+    62: J062
+    63: J063
+    64: J064
+    65: J065
+    66: J066
+    67: J067
+    68: J068
+    69: J069
+    70: J070
+    71: J071
+    72: J072
+    73: J073
+    74: J074
+    75: J075
+    76: J076
+    77: J077
+    78: J078
+    79: J079
+    80: J080
+    81: J081
+    82: J082
+    83: J083
+    84: J084
+    85: J085
+    86: J086
+    87: J087
+    88: J088
+    89: J089
+    90: J090
+    91: J091
+    92: J092
+    93: J093
+    94: J094
+    95: J095
+    96: J096
+    97: J097
+    98: J098
+    99: J099
+    100: J100
+    101: J101
+    102: J102
+    103: J103
+    104: J104
+    105: J105
+    106: J106
+    107: J107
+    108: J108
+    109: J109
+    110: J110
+    111: J111
+    112: J112
+    113: J113
+    114: J114
+    115: J115
+    116: J116
+  progress-revision: long-journey-2026-10-v1
+  rank-colours:
+    start: '#ff6bd6'
+    end: '#b8ff60'
 sources:
   active-timeout-seconds: 90
   ignored-worlds:
@@ -73,6 +284,10 @@ sources:
     enabled: false
     points-per-completion: 10
     daily-cap: 300
+  playtime:
+    enabled: true
+    points-per-minute: 1
+    daily-cap: 360
 perks:
   homes8:
     name: 8 homes
@@ -658,7 +873,7 @@ perks:
     menu-order: 6
   fly:
     name: Personal flight
-    level: 18
+    level: 116
     price: 200000
     permissions:
     - essentials.fly
@@ -676,17 +891,17 @@ gifts:
     - vanilla_xp_1
     permissions: []
     commands: []
-    name: $550 game money
+    name: $2,000
     icon: GOLD_INGOT
-    money: 550
+    money: 2000
   milestone_002:
     level: 2
     legacy-ids:
     - vanilla_xp_2
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 12
-    name: 12 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 16
+    name: 16 iron ingots
     icon: IRON_INGOT
   milestone_003:
     level: 3
@@ -694,8 +909,8 @@ gifts:
     - vanilla_xp_3
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:lantern 16
-    name: 16 Lanterns
+    - minecraft:give %player% minecraft:lantern 24
+    name: 24 lanterns
     icon: LANTERN
   milestone_004:
     level: 4
@@ -703,8 +918,8 @@ gifts:
     - cosmetic_hats_chicken
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:copper_ingot 32
-    name: 32 Copper ingots
+    - minecraft:give %player% minecraft:copper_ingot 48
+    name: 48 copper ingots
     icon: COPPER_INGOT
   milestone_005:
     level: 5
@@ -712,8 +927,8 @@ gifts:
     - daily_key_5
     permissions: []
     commands:
-    - cratekey give %player% daily 1
-    name: 1 Daily Crate Key (one-time)
+    - cratekey give %player% daily 2
+    name: 2 Daily Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_006:
     level: 6
@@ -721,8 +936,8 @@ gifts:
     - vanilla_xp_6
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:golden_carrot 16
-    name: 16 Golden carrots
+    - minecraft:give %player% minecraft:golden_carrot 24
+    name: 24 golden carrots
     icon: GOLDEN_CARROT
   milestone_007:
     level: 7
@@ -730,8 +945,8 @@ gifts:
     - vanilla_xp_7
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:quartz 32
-    name: 32 Quartz
+    - minecraft:give %player% minecraft:quartz 48
+    name: 48 quartz
     icon: QUARTZ
   milestone_008:
     level: 8
@@ -740,7 +955,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:oak_log 64
-    name: 64 Oak logs
+    name: 64 oak logs
     icon: OAK_LOG
   milestone_009:
     level: 9
@@ -748,17 +963,17 @@ gifts:
     - vanilla_xp_9
     permissions: []
     commands: []
-    name: $950 game money
+    name: $4,000
     icon: GOLD_INGOT
-    money: 950
+    money: 4000
   milestone_010:
     level: 10
     legacy-ids:
     - vote_key_10
     permissions: []
     commands:
-    - cratekey give %player% vote 1
-    name: 1 Vote Crate Key (one-time)
+    - cratekey give %player% vote 2
+    name: 2 Vote Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_011:
     level: 11
@@ -766,8 +981,8 @@ gifts:
     - vanilla_xp_11
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:lantern 16
-    name: 16 Lanterns
+    - minecraft:give %player% minecraft:lantern 24
+    name: 24 lanterns
     icon: LANTERN
   milestone_012:
     level: 12
@@ -775,8 +990,8 @@ gifts:
     - cosmetic_emotes_happy
     permissions: []
     commands:
-    - minecraft:experience add %player% 300 points
-    name: 300 Minecraft XP
+    - minecraft:experience add %player% 500 points
+    name: 500 Minecraft XP
     icon: EXPERIENCE_BOTTLE
   milestone_013:
     level: 13
@@ -784,17 +999,17 @@ gifts:
     - vanilla_xp_13
     permissions: []
     commands: []
-    name: $1,150 game money
+    name: $5,000
     icon: GOLD_INGOT
-    money: 1150
+    money: 5000
   milestone_014:
     level: 14
     legacy-ids:
     - vanilla_xp_14
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:golden_carrot 16
-    name: 16 Golden carrots
+    - minecraft:give %player% minecraft:golden_carrot 24
+    name: 24 golden carrots
     icon: GOLDEN_CARROT
   milestone_015:
     level: 15
@@ -802,8 +1017,8 @@ gifts:
     - daily_key_15
     permissions: []
     commands:
-    - cratekey give %player% daily 1
-    name: 1 Daily Crate Key (one-time)
+    - cratekey give %player% daily 2
+    name: 2 Daily Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_016:
     level: 16
@@ -812,7 +1027,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:oak_log 64
-    name: 64 Oak logs
+    name: 64 oak logs
     icon: OAK_LOG
   milestone_017:
     level: 17
@@ -820,17 +1035,17 @@ gifts:
     - vanilla_xp_17
     permissions: []
     commands: []
-    name: $1,350 game money
+    name: $6,000
     icon: GOLD_INGOT
-    money: 1350
+    money: 6000
   milestone_018:
     level: 18
     legacy-ids:
     - vanilla_xp_18
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 12
-    name: 12 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 16
+    name: 16 iron ingots
     icon: IRON_INGOT
   milestone_019:
     level: 19
@@ -838,8 +1053,8 @@ gifts:
     - vanilla_xp_19
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:lantern 16
-    name: 16 Lanterns
+    - minecraft:give %player% minecraft:lantern 24
+    name: 24 lanterns
     icon: LANTERN
   milestone_020:
     level: 20
@@ -848,7 +1063,7 @@ gifts:
     permissions: []
     commands:
     - cratekey give %player% patron 1
-    name: 1 Supporter Crate Key (one-time)
+    name: 1 Supporter Crate Key
     icon: TRIPWIRE_HOOK
   milestone_021:
     level: 21
@@ -856,17 +1071,17 @@ gifts:
     - vanilla_xp_21
     permissions: []
     commands: []
-    name: $1,550 game money
+    name: $7,000
     icon: GOLD_INGOT
-    money: 1550
+    money: 7000
   milestone_022:
     level: 22
     legacy-ids:
     - vanilla_xp_22
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:golden_carrot 16
-    name: 16 Golden carrots
+    - minecraft:give %player% minecraft:golden_carrot 24
+    name: 24 golden carrots
     icon: GOLDEN_CARROT
   milestone_023:
     level: 23
@@ -874,8 +1089,8 @@ gifts:
     - vanilla_xp_23
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:quartz 32
-    name: 32 Quartz
+    - minecraft:give %player% minecraft:quartz 48
+    name: 48 quartz
     icon: QUARTZ
   milestone_024:
     level: 24
@@ -883,16 +1098,16 @@ gifts:
     - cosmetic_hats_cool
     permissions: []
     commands: []
-    name: $1,700 game money
+    name: $7,500
     icon: GOLD_INGOT
-    money: 1700
+    money: 7500
   milestone_025:
     level: 25
     legacy-ids:
     - town_claims_25
     permissions: []
     commands: []
-    name: +2 bonus town claim chunks
+    name: +2 town claim chunks
     icon: GRASS_BLOCK
     town-required: true
     town-blocks: 2
@@ -902,8 +1117,8 @@ gifts:
     - vanilla_xp_26
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 12
-    name: 12 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 16
+    name: 16 iron ingots
     icon: IRON_INGOT
   milestone_027:
     level: 27
@@ -911,8 +1126,8 @@ gifts:
     - vanilla_xp_27
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:lantern 16
-    name: 16 Lanterns
+    - minecraft:give %player% minecraft:lantern 24
+    name: 24 lanterns
     icon: LANTERN
   milestone_028:
     level: 28
@@ -920,8 +1135,8 @@ gifts:
     - cosmetic_emotes_wink
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:copper_ingot 32
-    name: 32 Copper ingots
+    - minecraft:give %player% minecraft:copper_ingot 48
+    name: 48 copper ingots
     icon: COPPER_INGOT
   milestone_029:
     level: 29
@@ -930,7 +1145,7 @@ gifts:
     permissions: []
     commands:
     - cratekey give %player% daily 2
-    name: 2 Daily Crate Keys (one-time)
+    name: 2 Daily Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_030:
     level: 30
@@ -938,8 +1153,8 @@ gifts:
     - vanilla_xp_30
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:golden_carrot 16
-    name: 16 Golden carrots
+    - minecraft:give %player% minecraft:golden_carrot 32
+    name: 32 golden carrots
     icon: GOLDEN_CARROT
   milestone_031:
     level: 31
@@ -947,8 +1162,8 @@ gifts:
     - vanilla_xp_31
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:quartz 32
-    name: 32 Quartz
+    - minecraft:give %player% minecraft:quartz 64
+    name: 64 quartz
     icon: QUARTZ
   milestone_032:
     level: 32
@@ -956,8 +1171,8 @@ gifts:
     - cosmetic_hats_bee
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:oak_log 64
-    name: 64 Oak logs
+    - minecraft:give %player% minecraft:oak_log 128
+    name: 128 oak logs
     icon: OAK_LOG
   milestone_033:
     level: 33
@@ -965,17 +1180,17 @@ gifts:
     - vanilla_xp_33
     permissions: []
     commands: []
-    name: $2,150 game money
+    name: $10,000
     icon: GOLD_INGOT
-    money: 2150
+    money: 10000
   milestone_034:
     level: 34
     legacy-ids:
     - vanilla_xp_34
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 12
-    name: 12 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 32
+    name: 32 iron ingots
     icon: IRON_INGOT
   milestone_035:
     level: 35
@@ -983,8 +1198,8 @@ gifts:
     - daily_keys_35
     permissions: []
     commands:
-    - cratekey give %player% daily 2
-    name: 2 Daily Crate Keys (one-time)
+    - cratekey give %player% daily 3
+    name: 3 Daily Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_036:
     level: 36
@@ -992,26 +1207,26 @@ gifts:
     - cosmetic_particleeffects_notes
     permissions: []
     commands: []
-    name: $2,300 game money
+    name: $10,500
     icon: GOLD_INGOT
-    money: 2300
+    money: 10500
   milestone_037:
     level: 37
     legacy-ids:
     - vanilla_xp_37
     permissions: []
     commands: []
-    name: $2,350 game money
+    name: $11,000
     icon: GOLD_INGOT
-    money: 2350
+    money: 11000
   milestone_038:
     level: 38
     legacy-ids:
     - vanilla_xp_38
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:golden_carrot 16
-    name: 16 Golden carrots
+    - minecraft:give %player% minecraft:golden_carrot 32
+    name: 32 golden carrots
     icon: GOLDEN_CARROT
   milestone_039:
     level: 39
@@ -1019,8 +1234,8 @@ gifts:
     - vanilla_xp_39
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:quartz 32
-    name: 32 Quartz
+    - minecraft:give %player% minecraft:quartz 64
+    name: 64 quartz
     icon: QUARTZ
   milestone_040:
     level: 40
@@ -1029,7 +1244,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:oak_log 128
-    name: 128 Oak logs
+    name: 128 oak logs
     icon: OAK_LOG
   milestone_041:
     level: 41
@@ -1037,17 +1252,17 @@ gifts:
     - vanilla_xp_41
     permissions: []
     commands: []
-    name: $2,550 game money
+    name: $12,000
     icon: GOLD_INGOT
-    money: 2550
+    money: 12000
   milestone_042:
     level: 42
     legacy-ids:
     - vanilla_xp_42
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 24
-    name: 24 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 32
+    name: 32 iron ingots
     icon: IRON_INGOT
   milestone_043:
     level: 43
@@ -1056,7 +1271,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:lantern 32
-    name: 32 Lanterns
+    name: 32 lanterns
     icon: LANTERN
   milestone_044:
     level: 44
@@ -1065,7 +1280,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:copper_ingot 64
-    name: 64 Copper ingots
+    name: 64 copper ingots
     icon: COPPER_INGOT
   milestone_045:
     level: 45
@@ -1073,8 +1288,8 @@ gifts:
     - vote_keys_45
     permissions: []
     commands:
-    - cratekey give %player% vote 2
-    name: 2 Vote Crate Keys (one-time)
+    - cratekey give %player% vote 3
+    name: 3 Vote Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_046:
     level: 46
@@ -1083,7 +1298,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:golden_carrot 32
-    name: 32 Golden carrots
+    name: 32 golden carrots
     icon: GOLDEN_CARROT
   milestone_047:
     level: 47
@@ -1092,7 +1307,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:quartz 64
-    name: 64 Quartz
+    name: 64 quartz
     icon: QUARTZ
   milestone_048:
     level: 48
@@ -1101,7 +1316,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:oak_log 128
-    name: 128 Oak logs
+    name: 128 oak logs
     icon: OAK_LOG
   milestone_049:
     level: 49
@@ -1109,17 +1324,17 @@ gifts:
     - vanilla_xp_49
     permissions: []
     commands: []
-    name: $2,950 game money
+    name: $14,000
     icon: GOLD_INGOT
-    money: 2950
+    money: 14000
   milestone_050:
     level: 50
     legacy-ids:
     - vanilla_xp_50
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 24
-    name: 24 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 32
+    name: 32 iron ingots
     icon: IRON_INGOT
   milestone_051:
     level: 51
@@ -1128,7 +1343,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:lantern 32
-    name: 32 Lanterns
+    name: 32 lanterns
     icon: LANTERN
   milestone_052:
     level: 52
@@ -1136,8 +1351,8 @@ gifts:
     - cosmetic_particleeffects_greensparks
     permissions: []
     commands:
-    - minecraft:experience add %player% 800 points
-    name: 800 Minecraft XP
+    - minecraft:experience add %player% 1500 points
+    name: 1,500 Minecraft XP
     icon: EXPERIENCE_BOTTLE
   milestone_053:
     level: 53
@@ -1145,9 +1360,9 @@ gifts:
     - vanilla_xp_53
     permissions: []
     commands: []
-    name: $3,150 game money
+    name: $15,000
     icon: GOLD_INGOT
-    money: 3150
+    money: 15000
   milestone_054:
     level: 54
     legacy-ids:
@@ -1155,7 +1370,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:golden_carrot 32
-    name: 32 Golden carrots
+    name: 32 golden carrots
     icon: GOLDEN_CARROT
   milestone_055:
     level: 55
@@ -1163,10 +1378,10 @@ gifts:
     - town_claims_55
     permissions: []
     commands: []
-    name: +3 bonus town claim chunks
+    name: +4 town claim chunks
     icon: GRASS_BLOCK
     town-required: true
-    town-blocks: 3
+    town-blocks: 4
   milestone_056:
     level: 56
     legacy-ids:
@@ -1174,7 +1389,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:oak_log 128
-    name: 128 Oak logs
+    name: 128 oak logs
     icon: OAK_LOG
   milestone_057:
     level: 57
@@ -1182,17 +1397,17 @@ gifts:
     - vanilla_xp_57
     permissions: []
     commands: []
-    name: $3,350 game money
+    name: $16,000
     icon: GOLD_INGOT
-    money: 3350
+    money: 16000
   milestone_058:
     level: 58
     legacy-ids:
     - supporter_key_58
     permissions: []
     commands:
-    - cratekey give %player% patron 1
-    name: 1 Supporter Crate Key (one-time)
+    - cratekey give %player% patron 2
+    name: 2 Supporter Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_059:
     level: 59
@@ -1201,7 +1416,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:lantern 32
-    name: 32 Lanterns
+    name: 32 lanterns
     icon: LANTERN
   milestone_060:
     level: 60
@@ -1209,8 +1424,8 @@ gifts:
     - cosmetic_hats_diamond
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:copper_ingot 64
-    name: 64 Copper ingots
+    - minecraft:give %player% minecraft:copper_ingot 96
+    name: 96 copper ingots
     icon: COPPER_INGOT
   milestone_061:
     level: 61
@@ -1218,17 +1433,17 @@ gifts:
     - vanilla_xp_61
     permissions: []
     commands: []
-    name: $3,550 game money
+    name: $17,000
     icon: GOLD_INGOT
-    money: 3550
+    money: 17000
   milestone_062:
     level: 62
     legacy-ids:
     - vanilla_xp_62
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:golden_carrot 32
-    name: 32 Golden carrots
+    - minecraft:give %player% minecraft:golden_carrot 48
+    name: 48 golden carrots
     icon: GOLDEN_CARROT
   milestone_063:
     level: 63
@@ -1236,8 +1451,8 @@ gifts:
     - vanilla_xp_63
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:quartz 64
-    name: 64 Quartz
+    - minecraft:give %player% minecraft:quartz 96
+    name: 96 quartz
     icon: QUARTZ
   milestone_064:
     level: 64
@@ -1245,8 +1460,8 @@ gifts:
     - cosmetic_emotes_dealwithit
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:oak_log 128
-    name: 128 Oak logs
+    - minecraft:give %player% minecraft:oak_log 192
+    name: 192 oak logs
     icon: OAK_LOG
   milestone_065:
     level: 65
@@ -1254,8 +1469,8 @@ gifts:
     - daily_keys_65
     permissions: []
     commands:
-    - cratekey give %player% daily 2
-    name: 2 Daily Crate Keys (one-time)
+    - cratekey give %player% daily 4
+    name: 4 Daily Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_066:
     level: 66
@@ -1263,8 +1478,8 @@ gifts:
     - vanilla_xp_66
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 24
-    name: 24 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 48
+    name: 48 iron ingots
     icon: IRON_INGOT
   milestone_067:
     level: 67
@@ -1272,8 +1487,8 @@ gifts:
     - vanilla_xp_67
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:lantern 32
-    name: 32 Lanterns
+    - minecraft:give %player% minecraft:lantern 48
+    name: 48 lanterns
     icon: LANTERN
   milestone_068:
     level: 68
@@ -1281,8 +1496,8 @@ gifts:
     - cosmetic_hats_allay
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:copper_ingot 64
-    name: 64 Copper ingots
+    - minecraft:give %player% minecraft:copper_ingot 96
+    name: 96 copper ingots
     icon: COPPER_INGOT
   milestone_069:
     level: 69
@@ -1290,26 +1505,26 @@ gifts:
     - vanilla_xp_69
     permissions: []
     commands: []
-    name: $3,950 game money
+    name: $19,000
     icon: GOLD_INGOT
-    money: 3950
+    money: 19000
   milestone_070:
     level: 70
     legacy-ids:
     - vanilla_xp_70
     permissions: []
     commands: []
-    name: $4,000 game money
+    name: $19,000
     icon: GOLD_INGOT
-    money: 4000
+    money: 19000
   milestone_071:
     level: 71
     legacy-ids:
     - vanilla_xp_71
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:quartz 64
-    name: 64 Quartz
+    - minecraft:give %player% minecraft:quartz 96
+    name: 96 quartz
     icon: QUARTZ
   milestone_072:
     level: 72
@@ -1317,8 +1532,8 @@ gifts:
     - cosmetic_particleeffects_enchanted
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:oak_log 128
-    name: 128 Oak logs
+    - minecraft:give %player% minecraft:oak_log 192
+    name: 192 oak logs
     icon: OAK_LOG
   milestone_073:
     level: 73
@@ -1326,17 +1541,17 @@ gifts:
     - vanilla_xp_73
     permissions: []
     commands: []
-    name: $4,150 game money
+    name: $20,000
     icon: GOLD_INGOT
-    money: 4150
+    money: 20000
   milestone_074:
     level: 74
     legacy-ids:
     - vanilla_xp_74
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 24
-    name: 24 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 48
+    name: 48 iron ingots
     icon: IRON_INGOT
   milestone_075:
     level: 75
@@ -1344,8 +1559,8 @@ gifts:
     - cosmetic_key_75
     permissions: []
     commands:
-    - cratekey give %player% vote 2
-    name: 2 Vote Crate Keys (one-time)
+    - cratekey give %player% vote 4
+    name: 4 Vote Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_076:
     level: 76
@@ -1353,8 +1568,8 @@ gifts:
     - cosmetic_hats_enderman
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:copper_ingot 64
-    name: 64 Copper ingots
+    - minecraft:give %player% minecraft:copper_ingot 96
+    name: 96 copper ingots
     icon: COPPER_INGOT
   milestone_077:
     level: 77
@@ -1362,17 +1577,17 @@ gifts:
     - vanilla_xp_77
     permissions: []
     commands: []
-    name: $4,350 game money
+    name: $21,000
     icon: GOLD_INGOT
-    money: 4350
+    money: 21000
   milestone_078:
     level: 78
     legacy-ids:
     - vanilla_xp_78
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:golden_carrot 32
-    name: 32 Golden carrots
+    - minecraft:give %player% minecraft:golden_carrot 48
+    name: 48 golden carrots
     icon: GOLDEN_CARROT
   milestone_079:
     level: 79
@@ -1380,8 +1595,8 @@ gifts:
     - vanilla_xp_79
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:quartz 64
-    name: 64 Quartz
+    - minecraft:give %player% minecraft:quartz 96
+    name: 96 quartz
     icon: QUARTZ
   milestone_080:
     level: 80
@@ -1390,7 +1605,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:oak_log 192
-    name: 192 Oak logs
+    name: 192 oak logs
     icon: OAK_LOG
   milestone_081:
     level: 81
@@ -1398,17 +1613,17 @@ gifts:
     - vanilla_xp_81
     permissions: []
     commands: []
-    name: $4,550 game money
+    name: $22,000
     icon: GOLD_INGOT
-    money: 4550
+    money: 22000
   milestone_082:
     level: 82
     legacy-ids:
     - vanilla_xp_82
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 36
-    name: 36 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 48
+    name: 48 iron ingots
     icon: IRON_INGOT
   milestone_083:
     level: 83
@@ -1417,7 +1632,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:lantern 48
-    name: 48 Lanterns
+    name: 48 lanterns
     icon: LANTERN
   milestone_084:
     level: 84
@@ -1426,7 +1641,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:copper_ingot 96
-    name: 96 Copper ingots
+    name: 96 copper ingots
     icon: COPPER_INGOT
   milestone_085:
     level: 85
@@ -1434,10 +1649,10 @@ gifts:
     - town_claims_85
     permissions: []
     commands: []
-    name: +4 bonus town claim chunks
+    name: +6 town claim chunks
     icon: GRASS_BLOCK
     town-required: true
-    town-blocks: 4
+    town-blocks: 6
   milestone_086:
     level: 86
     legacy-ids:
@@ -1445,7 +1660,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:golden_carrot 48
-    name: 48 Golden carrots
+    name: 48 golden carrots
     icon: GOLDEN_CARROT
   milestone_087:
     level: 87
@@ -1453,8 +1668,8 @@ gifts:
     - supporter_keys_87
     permissions: []
     commands:
-    - cratekey give %player% patron 2
-    name: 2 Supporter Crate Keys (one-time)
+    - cratekey give %player% patron 3
+    name: 3 Supporter Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_088:
     level: 88
@@ -1463,7 +1678,7 @@ gifts:
     permissions: []
     commands:
     - minecraft:give %player% minecraft:oak_log 192
-    name: 192 Oak logs
+    name: 192 oak logs
     icon: OAK_LOG
   milestone_089:
     level: 89
@@ -1471,17 +1686,17 @@ gifts:
     - vanilla_xp_89
     permissions: []
     commands: []
-    name: $4,950 game money
+    name: $24,000
     icon: GOLD_INGOT
-    money: 4950
+    money: 24000
   milestone_090:
     level: 90
     legacy-ids:
     - vanilla_xp_90
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 36
-    name: 36 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 64
+    name: 64 iron ingots
     icon: IRON_INGOT
   milestone_091:
     level: 91
@@ -1489,8 +1704,8 @@ gifts:
     - vanilla_xp_91
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:lantern 48
-    name: 48 Lanterns
+    - minecraft:give %player% minecraft:lantern 64
+    name: 64 lanterns
     icon: LANTERN
   milestone_092:
     level: 92
@@ -1498,8 +1713,8 @@ gifts:
     - cosmetic_hats_coppergolem
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:copper_ingot 96
-    name: 96 Copper ingots
+    - minecraft:give %player% minecraft:copper_ingot 128
+    name: 128 copper ingots
     icon: COPPER_INGOT
   milestone_093:
     level: 93
@@ -1507,17 +1722,17 @@ gifts:
     - vanilla_xp_93
     permissions: []
     commands: []
-    name: $5,150 game money
+    name: $25,000
     icon: GOLD_INGOT
-    money: 5150
+    money: 25000
   milestone_094:
     level: 94
     legacy-ids:
     - vanilla_xp_94
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:golden_carrot 48
-    name: 48 Golden carrots
+    - minecraft:give %player% minecraft:golden_carrot 64
+    name: 64 golden carrots
     icon: GOLDEN_CARROT
   milestone_095:
     level: 95
@@ -1525,8 +1740,8 @@ gifts:
     - cosmetic_keys_95
     permissions: []
     commands:
-    - cratekey give %player% vote 3
-    name: 3 Vote Crate Keys (one-time)
+    - cratekey give %player% vote 5
+    name: 5 Vote Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_096:
     level: 96
@@ -1534,8 +1749,8 @@ gifts:
     - cosmetic_particleeffects_inlove
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:oak_log 192
-    name: 192 Oak logs
+    - minecraft:give %player% minecraft:oak_log 256
+    name: 256 oak logs
     icon: OAK_LOG
   milestone_097:
     level: 97
@@ -1543,17 +1758,17 @@ gifts:
     - vanilla_xp_97
     permissions: []
     commands: []
-    name: $5,350 game money
+    name: $26,000
     icon: GOLD_INGOT
-    money: 5350
+    money: 26000
   milestone_098:
     level: 98
     legacy-ids:
     - vanilla_xp_98
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 36
-    name: 36 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 64
+    name: 64 iron ingots
     icon: IRON_INGOT
   milestone_099:
     level: 99
@@ -1561,8 +1776,8 @@ gifts:
     - vanilla_xp_99
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:lantern 48
-    name: 48 Lanterns
+    - minecraft:give %player% minecraft:lantern 64
+    name: 64 lanterns
     icon: LANTERN
   milestone_100:
     level: 100
@@ -1570,26 +1785,26 @@ gifts:
     - cosmetic_hats_unicorn
     permissions: []
     commands: []
-    name: $5,500 game money
+    name: $26,500
     icon: GOLD_INGOT
-    money: 5500
+    money: 26500
   milestone_101:
     level: 101
     legacy-ids:
     - vanilla_xp_101
     permissions: []
     commands: []
-    name: $5,550 game money
+    name: $27,000
     icon: GOLD_INGOT
-    money: 5550
+    money: 27000
   milestone_102:
     level: 102
     legacy-ids:
     - vanilla_xp_102
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:golden_carrot 48
-    name: 48 Golden carrots
+    - minecraft:give %player% minecraft:golden_carrot 64
+    name: 64 golden carrots
     icon: GOLDEN_CARROT
   milestone_103:
     level: 103
@@ -1597,8 +1812,8 @@ gifts:
     - vanilla_xp_103
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:quartz 96
-    name: 96 Quartz
+    - minecraft:give %player% minecraft:quartz 128
+    name: 128 quartz
     icon: QUARTZ
   milestone_104:
     level: 104
@@ -1606,8 +1821,8 @@ gifts:
     - cosmetic_particleeffects_angelwings
     permissions: []
     commands:
-    - minecraft:experience add %player% 1500 points
-    name: 1,500 Minecraft XP
+    - minecraft:experience add %player% 3000 points
+    name: 3,000 Minecraft XP
     icon: EXPERIENCE_BOTTLE
   milestone_105:
     level: 105
@@ -1615,18 +1830,18 @@ gifts:
     - town_claims_105
     permissions: []
     commands: []
-    name: +5 bonus town claim chunks
+    name: +8 town claim chunks
     icon: GRASS_BLOCK
     town-required: true
-    town-blocks: 5
+    town-blocks: 8
   milestone_106:
     level: 106
     legacy-ids:
     - vanilla_xp_106
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 36
-    name: 36 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 64
+    name: 64 iron ingots
     icon: IRON_INGOT
   milestone_107:
     level: 107
@@ -1634,8 +1849,8 @@ gifts:
     - vanilla_xp_107
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:lantern 48
-    name: 48 Lanterns
+    - minecraft:give %player% minecraft:lantern 64
+    name: 64 lanterns
     icon: LANTERN
   milestone_108:
     level: 108
@@ -1643,8 +1858,8 @@ gifts:
     - cosmetic_hats_kitsunemask
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:copper_ingot 96
-    name: 96 Copper ingots
+    - minecraft:give %player% minecraft:copper_ingot 128
+    name: 128 copper ingots
     icon: COPPER_INGOT
   milestone_109:
     level: 109
@@ -1652,17 +1867,17 @@ gifts:
     - vanilla_xp_109
     permissions: []
     commands: []
-    name: $5,950 game money
+    name: $29,000
     icon: GOLD_INGOT
-    money: 5950
+    money: 29000
   milestone_110:
     level: 110
     legacy-ids:
     - vanilla_xp_110
     permissions: []
     commands:
-    - cratekey give %player% vote 3
-    name: 3 Vote Crate Keys (one-time)
+    - cratekey give %player% vote 5
+    name: 5 Vote Crate Keys
     icon: TRIPWIRE_HOOK
   milestone_111:
     level: 111
@@ -1670,8 +1885,8 @@ gifts:
     - vanilla_xp_111
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:quartz 96
-    name: 96 Quartz
+    - minecraft:give %player% minecraft:quartz 128
+    name: 128 quartz
     icon: QUARTZ
   milestone_112:
     level: 112
@@ -1679,8 +1894,8 @@ gifts:
     - cosmetic_particleeffects_rainbowwings
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:oak_log 192
-    name: 192 Oak logs
+    - minecraft:give %player% minecraft:oak_log 256
+    name: 256 oak logs
     icon: OAK_LOG
   milestone_113:
     level: 113
@@ -1688,17 +1903,17 @@ gifts:
     - vanilla_xp_113
     permissions: []
     commands: []
-    name: $6,150 game money
+    name: $30,000
     icon: GOLD_INGOT
-    money: 6150
+    money: 30000
   milestone_114:
     level: 114
     legacy-ids:
     - vanilla_xp_114
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:iron_ingot 36
-    name: 36 Iron ingots
+    - minecraft:give %player% minecraft:iron_ingot 64
+    name: 64 iron ingots
     icon: IRON_INGOT
   milestone_115:
     level: 115
@@ -1706,8 +1921,8 @@ gifts:
     - vanilla_xp_115
     permissions: []
     commands:
-    - minecraft:give %player% minecraft:lantern 48
-    name: 48 Lanterns
+    - minecraft:give %player% minecraft:lantern 64
+    name: 64 lanterns
     icon: LANTERN
   milestone_116:
     level: 116
@@ -1715,8 +1930,10 @@ gifts:
     - legend_bundle
     permissions: []
     commands:
-    - cratekey give %player% patron 3
-    name: 'Legend reward: $10,000 + 3 Supporter Keys (one-time)'
+    - cratekey give %player% patron 5
+    name: 'Reborn Legend: $100,000 + 5 Supporter Keys'
     icon: TRIPWIRE_HOOK
-    money: 10000
-catalogue-version: 4
+    money: 100000
+catalogue-version: 5
+notifications:
+  enabled: true

@@ -165,6 +165,21 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
       var1.sendMessage(color("&d&lTOWNY&a&lREBORN &8» &r&7" + var2));
    }
 
+   void levelReached(Player player, State state, int previousLevel) {
+      int level = this.journey.level(state.points);
+      if (level <= previousLevel || !this.getConfig().getBoolean("notifications.enabled", true)) return;
+      String title = this.journey.styledTitle(level);
+      this.message(player, "&aYou reached &eLevel " + level + " &8• &r" + title + "&r&7!");
+      long rewards = this.journey.gifts.values().stream()
+         .filter(g -> g.level() > previousLevel && g.level() <= level && !state.claimed.contains(g.id())).count();
+      long perks = this.journey.perks.values().stream()
+         .filter(p -> p.level() > previousLevel && p.level() <= level && !state.owned.contains(p.id())).count();
+      this.message(player, "&f" + rewards + " new reward" + (rewards == 1 ? "" : "s") + " &8• &f" + perks
+         + " new perk" + (perks == 1 ? "" : "s") + " available&7. Open &a/progression &7to view them.");
+      player.sendTitle(color("&d&lJOURNEY &a&lLEVEL UP"), title + color("&r &8• &fLevel " + level), 10, 70, 20);
+      player.playSound(player.getLocation(), "minecraft:ui.toast.challenge_complete", 1.0F, 1.0F);
+   }
+
    public boolean onCommand(CommandSender var1, Command var2, String var3, String[] var4) {
       if (var2.getName().equalsIgnoreCase("rebornadmin")) {
          return this.admin(var1, var4);
@@ -266,8 +281,10 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
                if (var2.length == 3 && this.access(var3)) {
                   long var7 = Long.parseLong(var2[2]);
                   if (var7 >= 1L && var7 <= 1000000L) {
+                     int previousLevel = this.journey.level(var4.points);
                      var4.points = Math.min(1000000000000L, var4.points + var7);
                      this.store.save(var4);
+                     this.levelReached(var3, var4, previousLevel);
                      this.message(var1, "Added " + var7 + " Journey Points.");
                      break;
                   }

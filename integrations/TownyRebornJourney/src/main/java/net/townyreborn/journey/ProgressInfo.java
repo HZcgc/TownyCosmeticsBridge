@@ -1,7 +1,5 @@
 package net.townyreborn.journey;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -9,7 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 final class ProgressInfo {
     static List<String> summary(Journey journey, State state) {
         int level = journey.level(state.points);
-        List<String> lines = new ArrayList<>(List.of("&7Level: &a" + level + " &8| &f" + journey.title(level)));
+        List<String> lines = new ArrayList<>(List.of("&7Level: &a" + level + " &8| &r" + journey.styledTitle(level)));
         if (level == journey.steps) {
             lines.add("&aJourney complete: 100%");
             lines.add("&7Remaining: &a0%");
@@ -27,7 +25,7 @@ final class ProgressInfo {
         lines.add("&7Choose any of the point-earning activities.");
         lines.add("&7All activities add to the same JP total.");
         lines.add("&7Your level increases automatically.");
-        lines.add("&7Click for rates, limits and your stats.");
+        lines.add("&aClick for activities and daily limits.");
         return lines;
     }
 
@@ -35,11 +33,16 @@ final class ProgressInfo {
         return List.of("&aGreen: earlier, completed level", "&eYellow: your current Journey level", "&cRed: future, locked level", "",
             "&7Reached rewards can be claimed later.", "&7Purchases never block the next level.");
     }
-    static List<String> explanation() {
+    static List<String> explanation(Journey journey, ConfigurationSection config) {
+        long time = 10 * config.getLong("sources.playtime.points-per-minute", 1);
+        long fish = 5 * config.getLong("sources.fishing.points-per-catch", 3);
+        long skill = config.getLong("sources.mcmmo.points-per-level", 5);
         return List.of("&7Journey Points combine your activities.", "&7They all fill the same progress bar.", "",
-            "&fExample:", "&710 active minutes &8= &a10 JP", "&75 fish catches &8= &a15 JP", "&71 new mcMMO level &8= &a5 JP",
-            "&7Total: &a30 JP &8→ &fLevel 2", "", "&7Level 3 needs 75 JP in total.",
-            "&7Perks cost game money, never JP.", "&7Claiming rewards is optional.");
+            "&dExample: combine activities", "&710 active minutes &8= &a" + time + " JP", "&75 fish catches &8= &a" + fish + " JP",
+            "&71 new mcMMO level &8= &a" + skill + " JP", "&7Combined: &a" + (time + fish + skill) + " JP", "",
+            "&7Level 2 needs &f" + journey.threshold(2) + " total JP&7.", "&7Level 3 needs &f" + journey.threshold(3) + " total JP&7.",
+            "&7Points are cumulative and never spent.", "&7Perks use money; rewards are optional.",
+            config.getBoolean("sources.quests.enabled", false) ? "&7Quests can also earn JP on this server." : "&7Normal Quests give their own rewards, not JP.");
     }
     static List<String> requirement(Journey journey, State state, int target) {
         long missing = journey.remaining(state.points, target);
@@ -50,10 +53,12 @@ final class ProgressInfo {
     static List<String> source(ConfigurationSection config, State state, String id, String rateKey, String action) {
         long rate = config.getLong("sources." + id + "." + rateKey, 0);
         long cap = config.getLong("sources." + id + ".daily-cap", 0);
-        boolean today = LocalDate.now(ZoneId.of("Europe/Berlin")).toString().equals(state.day);
+        boolean today = DailyTime.today().equals(state.day);
         long earned = today ? state.daily.getOrDefault(id, 0L) : 0;
         List<String> lines = new ArrayList<>(List.of("&f" + action, "&7Reward: &a+" + rate + " JP", "&7Daily limit: &f" + cap + " JP",
             "&7Earned today: &f" + earned + " JP", "&7Available today: &e" + Math.max(0, cap - earned) + " JP"));
+        lines.add("");
+        lines.add("&7Daily reset: &f00:00 UTC &8(server time)");
         if (id.equals("mcmmo") || id.equals("jobs") || id.equals("quests")) {
             lines.add("&7Only new personal highest levels count.");
             lines.add("&7Existing levels are your starting baseline.");

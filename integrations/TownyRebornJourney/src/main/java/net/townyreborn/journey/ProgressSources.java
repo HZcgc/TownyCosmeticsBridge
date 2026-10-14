@@ -1,7 +1,5 @@
 package net.townyreborn.journey;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -10,7 +8,6 @@ import java.util.Map.Entry;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -63,11 +60,11 @@ final class ProgressSources implements Listener {
             }
 
             int var8 = this.plugin.journey.level(var7.points);
-            var7.capped(LocalDate.now(ZoneId.of("Europe/Berlin")).toString(), var2, var3, var5);
+            var7.capped(DailyTime.today(), var2, var3, var5);
             int var9 = this.plugin.journey.level(var7.points);
             if (var9 > var8) {
-               this.plugin.message(var1, "Reborn Level " + var9 + " • " + this.plugin.journey.title(var9));
-               var1.playSound(var1.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.1F);
+               this.plugin.store.save(var7);
+               this.plugin.levelReached(var1, var7, var8);
             }
          } catch (Exception var10) {
             this.plugin.profileError(var1, var10);
@@ -102,8 +99,11 @@ final class ProgressSources implements Listener {
                         long var7 = Math.min(1L, Math.max(0L, (var1 - var6.minute()) / 60000L));
                         if (var7 > 0L) {
                            var5.minutes += var7;
+                           var5.journeyMinutes += var7;
                            var5.dirty = true;
-                           this.award(var4, "playtime", var7, 100000L);
+                           if (this.plugin.getConfig().getBoolean("sources.playtime.enabled", true))
+                              this.award(var4, "playtime", var7 * this.plugin.getConfig().getLong("sources.playtime.points-per-minute", 1L),
+                                 this.plugin.getConfig().getLong("sources.playtime.daily-cap", 360L));
                            this.sessions.put(var4.getUniqueId(), new ProgressSources.Session(var6.active(), var1));
                         }
                      } else {

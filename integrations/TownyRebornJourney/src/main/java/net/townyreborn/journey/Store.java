@@ -23,12 +23,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public final class Store {
    private final Path folder;
    private final Path legacy;
+   private final Path migrationBackups;
    private final Journey journey;
    private final Map<UUID, State> cache = new HashMap<>();
 
    public Store(Path var1, Journey var2) throws IOException {
       this.folder = var1.resolve("journeydata");
       this.legacy = var1.resolve("playerdata");
+      this.migrationBackups = var1.resolve("migration-backups");
       this.journey = var2;
       Files.createDirectories(this.folder);
    }
@@ -41,6 +43,7 @@ public final class Store {
 
       State var4 = new State(var1, var2);
       Path var5 = this.folder.resolve(var1 + ".yml");
+      Path previousFile = null;
       if (Files.exists(var5)) {
          YamlConfiguration var6 = read(var5);
          if (var6.getInt("schema", 0) != 2 || !var1.toString().equals(var6.getString("uuid"))) {
@@ -49,6 +52,10 @@ public final class Store {
 
          var4.points = Math.max(0L, var6.getLong("points"));
          var4.minutes = Math.max(0L, var6.getLong("active-minutes"));
+         var4.journeyMinutes = Math.max(0L, var6.getLong("journey-active-minutes", var4.minutes));
+         var4.progressRevision = var6.getString("progress-revision", "");
+         var4.journeyStartedAt = var6.getLong("journey-started-at", 0);
+         var4.baselineDue.addAll(var6.getStringList("baseline-due"));
          var4.owned.addAll(var6.getStringList("owned-perks"));
          var4.claimed.addAll(var6.getStringList("claimed-gifts"));
          var4.achievements.addAll(var6.getStringList("achievements"));
@@ -80,14 +87,32 @@ public final class Store {
          }
 
          var4.persisted = true;
+         previousFile = var5;
       } else if (Files.isRegularFile(this.legacy.resolve(var1 + ".yml"))) {
-         YamlConfiguration var7 = read(this.legacy.resolve(var1 + ".yml"));
+         previousFile = this.legacy.resolve(var1 + ".yml");
+         YamlConfiguration var7 = read(previousFile);
          var4.minutes = Math.max(0L, var7.getLong("active-minutes"));
          var4.points = this.journey.legacyPoints(var7.getInt("level", 1), var4.minutes, var7.getInt("quest-points", 0));
       }
 
       this.journey.migrateGiftReceipts(var4);
       this.journey.inheritLowerPerks(var4.owned);
+      if (!this.journey.progressRevision.isEmpty() && !this.journey.progressRevision.equals(var4.progressRevision)) {
+         // Preserve the complete original record before committing the one-time points reset.
+         if (previousFile != null) {
+            Path backup = this.migrationBackups.resolve(this.journey.progressRevision)
+               .resolve(previousFile.getParent().getFileName()).resolve(previousFile.getFileName());
+            if (!Files.exists(backup)) atomic(backup, Files.readString(previousFile));
+         }
+         var4.points = 0;
+         var4.journeyMinutes = 0;
+         var4.progressRevision = this.journey.progressRevision;
+         var4.journeyStartedAt = System.currentTimeMillis();
+         var4.baselineDue.addAll(var4.high.keySet());
+         var4.dirty = true;
+         // A failed save must not leave a cached, partially migrated profile.
+         if (previousFile != null) this.save(var4);
+      }
       this.cache.put(var1, var4);
       return var4;
    }
@@ -116,6 +141,10 @@ public final class Store {
       var2.set("name", var1.name);
       var2.set("points", var1.points);
       var2.set("active-minutes", var1.minutes);
+      var2.set("journey-active-minutes", var1.journeyMinutes);
+      var2.set("progress-revision", var1.progressRevision);
+      var2.set("journey-started-at", var1.journeyStartedAt);
+      var2.set("baseline-due", var1.baselineDue.stream().sorted().toList());
       var2.set("owned-perks", var1.owned.stream().sorted().toList());
       var2.set("claimed-gifts", var1.claimed.stream().sorted().toList());
       var2.set("achievements", var1.achievements.stream().sorted().toList());

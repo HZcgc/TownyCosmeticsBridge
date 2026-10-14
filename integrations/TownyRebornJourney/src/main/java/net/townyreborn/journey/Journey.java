@@ -7,6 +7,8 @@ public final class Journey {
     public static final int[] PATH = {9,18,27,36,45,46,47,38,29,20,11,12,13,22,31,40,49,50,51,42,33,24,15,16,17,26,35,44,53};
     public final int steps;
     public final long base, increase;
+    public final String progressRevision;
+    public final RankStyle rankStyle;
     public final Map<String, Perk> perks = new LinkedHashMap<>();
     public final Map<String, Gift> gifts = new LinkedHashMap<>();
     public final NavigableMap<Integer, String> titles = new TreeMap<>();
@@ -17,6 +19,10 @@ public final class Journey {
         steps = config.getInt("journey.steps", 116);
         base = config.getLong("journey.points-first", 30);
         increase = config.getLong("journey.points-increase", 15);
+        progressRevision = config.getString("journey.progress-revision", "");
+        if (!progressRevision.isEmpty() && !progressRevision.matches("[a-z0-9_-]{1,80}"))
+            throw new IllegalArgumentException("Invalid progress revision");
+        rankStyle = new RankStyle(config);
         if (steps < 2 || steps > 10000 || base < 1 || base > 1000000 || increase < 0 || increase > 100000 || threshold(steps) > 1000000000000L)
             throw new IllegalArgumentException("Invalid progression curve");
         ConfigurationSection names = config.getConfigurationSection("journey.titles");
@@ -93,6 +99,9 @@ public final class Journey {
     }
     public String title(int level) { var e = titles.floorEntry(level); return e == null ? "Newcomer" : e.getValue(); }
     public String abbreviation(int level) { var e = abbreviations.floorEntry(level); return e == null ? "NEW" : e.getValue(); }
+    public String styledTitle(int level) { return rankStyle.legacy(title(level), level, steps); }
+    public String miniTitle(int level) { return rankStyle.mini(title(level), level, steps); }
+    public String styledAbbreviation(int level) { return rankStyle.legacy(abbreviation(level), level, steps); }
     public int pages() { return (steps + PATH.length - 1) / PATH.length; }
     public int page(int level) { return (Math.max(1, level) - 1) / PATH.length; }
     public StepStatus status(long points, int target) {

@@ -108,22 +108,22 @@ public final class JourneyUpdateChecks {
             require(journey.perks.get("shops200").name().contains("QuickShop")&&!journey.perks.get("shops200").commands().contains("/shops"));
         });
         test("remaining percentages and points at boundaries",()->{
-            require(journey.remainingPercent(0)==100&&journey.remaining(0,2)==30);
-            require(journey.percent(15)==50&&journey.remainingPercent(15)==50&&journey.remaining(15,2)==15);
+            require(journey.remainingPercent(0)==100&&journey.remaining(0,2)==150);
+            require(journey.percent(75)==50&&journey.remainingPercent(75)==50&&journey.remaining(75,2)==75);
             require(journey.remainingPercent(journey.threshold(116))==0&&journey.remaining(journey.threshold(116),116)==0);
         });
         test("abbreviations match title boundaries",()->{
-            require(journey.abbreviation(1).equals("NEW")&&journey.abbreviation(4).equals("SET")&&journey.abbreviation(17).equals("CIT")&&journey.abbreviation(116).equals("LEG"));
+            require(journey.abbreviation(1).equals("J001")&&journey.abbreviation(4).equals("J004")&&journey.abbreviation(17).equals("J017")&&journey.abbreviation(116).equals("J116"));
         });
         Path sourceRoot=Path.of(args[4]);
-        test("manual config preserves beta2 prices, gates, reward IDs and point curve",()->{
-            YamlConfiguration previous=readJar(sourceRoot.resolve("releases/TownyRebornProgression-2.0.0-beta.2.jar").toString());
-            require(config.get("journey.points-first").equals(previous.get("journey.points-first"))&&config.get("journey.points-increase").equals(previous.get("journey.points-increase")));
+        test("updated catalogue preserves prices permission chains and stable reward IDs",()->{
+            YamlConfiguration previous=readJar(sourceRoot.resolve("releases/TownyRebornProgression-2.0.0-beta.3.jar").toString());
+            require(config.getLong("journey.points-first")==150&&config.getLong("journey.points-increase")==30&&journey.threshold(116)==213900);
             var newGifts=config.getConfigurationSection("gifts");var oldGifts=previous.getConfigurationSection("gifts");
-            require(newGifts.getKeys(true).equals(oldGifts.getKeys(true)));
-            for(String key:oldGifts.getKeys(true))if(!oldGifts.isConfigurationSection(key))require(Objects.equals(oldGifts.get(key),newGifts.get(key)));
+            require(newGifts.getKeys(false).equals(oldGifts.getKeys(false)));
+            for(String id:oldGifts.getKeys(false))for(String key:List.of("level","permissions","legacy-ids"))require(Objects.equals(oldGifts.get(id+"."+key),newGifts.get(id+"."+key)));
             for(String id:journey.perks.keySet())for(String field:List.of("level","price","permissions","legacy-markers","requires"))
-                require(Objects.equals(config.get("perks."+id+"."+field),previous.get("perks."+id+"."+field)));
+                if(!id.equals("fly")||!field.equals("level"))require(Objects.equals(config.get("perks."+id+"."+field),previous.get("perks."+id+"."+field)));
         });
         test("startup reads existing configuration without rewriting it",()->{
             Path folder=root.resolve("manual-config");Files.createDirectories(folder);var old=read(config.saveToString());
@@ -145,7 +145,7 @@ public final class JourneyUpdateChecks {
         test("five ordered supporter feature tiers, with fly last",()->{
             require(journey.perkTiers().equals(List.of(Journey.Tier.SKELETON,Journey.Tier.CREEPER,Journey.Tier.BLAZE,Journey.Tier.DRAGON,Journey.Tier.WITHER)));
             var pages=journey.perkPages(0);require(pages.size()==5);
-            var last=pages.get(4).items();require(last.get(last.size()-1).id().equals("fly")&&journey.perks.get("fly").level()==18);
+            var last=pages.get(4).items();require(last.get(last.size()-1).id().equals("fly")&&journey.perks.get("fly").level()==116);
             require(pages.stream().flatMap(p->p.items().stream()).count()==43);
         });
         test("current level is yellow; future level is locked",()->{
@@ -156,7 +156,7 @@ public final class JourneyUpdateChecks {
         test("activity example combines into one total with cumulative thresholds",()->{
             State state=new State(UUID.randomUUID(),"Test");state.capped("A","playtime",10,100000);state.capped("A","fishing",15,300);state.advanceHighWater("mcmmo",300,5);
             state.capped("A","mcmmo",state.advanceHighWater("mcmmo",301,5),500);
-            require(state.points==30&&journey.level(state.points)==2&&journey.threshold(3)==75&&journey.threshold(4)==135);
+            require(state.points==30&&journey.level(state.points)==1&&journey.threshold(2)==150&&journey.threshold(3)==330&&journey.threshold(4)==540);
             require(!config.getBoolean("sources.quests.enabled"));
         });
         test("all beta1 gift IDs map to their original milestone",()->{
@@ -221,7 +221,7 @@ public final class JourneyUpdateChecks {
         });
         test("money receipt survives mixed cash-and-key reward",()->{
             Store s=store("mixed");State state=ready(s);Rewards b=new Rewards();var gift=journey.gifts.get("milestone_116");GiftClaims claims=new GiftClaims(journey,s,b);
-            claims.claim(state,gift,"",x->{});b.future.complete(null);claims.claim(state,gift,"",x->{});require(b.deposits==1&&b.commands==1&&b.money==10000);
+            claims.claim(state,gift,"",x->{});b.future.complete(null);claims.claim(state,gift,"",x->{});require(b.deposits==1&&b.commands==1&&b.money==100000);
         });
         test("malformed money receipt fails closed",()->{
             Store s=store("invalidmoney");UUID id=UUID.randomUUID();Files.writeString(root.resolve("invalidmoney/journeydata/"+id+".yml"),"schema: 2\nuuid: "+id+"\npending-gift-money: -1\n");
@@ -229,44 +229,45 @@ public final class JourneyUpdateChecks {
         });
         test("TAB ordered format preserves mcMMO, RGB display and AFK",()->{
             YamlConfiguration tab=new YamlConfiguration();tab.load(Path.of(args[3]).toFile());
-            for(String group:tab.getKeys(false)){String p=tab.getString(group+".tabprefix"),s=tab.getString(group+".tabsuffix");require(p.indexOf("%luckperms_prefix%")<p.indexOf("%reborn_short_title%")&&!p.contains("mcmmo")&&s.contains("mcmmo_power_level")&&s.contains("%essentials_afk%")&&!s.startsWith(" ")&&tab.getString(group+".customtabname").equals("%player_displayname%"));}
+            for(String group:tab.getKeys(false)){String p=tab.getString(group+".tabprefix"),s=tab.getString(group+".tabsuffix");require(p.indexOf("%luckperms_prefix%")<p.indexOf("%reborn_short_title_colored%")&&!p.contains("mcmmo")&&s.contains("mcmmo_power_level")&&s.contains("%essentials_afk%")&&!s.startsWith(" ")&&tab.getString(group+".customtabname").equals("%player_displayname%"));}
         });
         test("nametag has rank spacing and attached mcMMO on its Journey line",()->{
             var c=read(Files.readString(sourceRoot.resolve("ui/LyttleNametag-config.yml")));String[] lines=c.getString("nametag").split("\n");
-            require(lines.length==3&&lines[0].contains("town_unformatted")&&lines[0].contains("nation_unformatted")&&lines[1].contains("<luckperms_prefix>  <light_purple>")&&lines[1].contains("%reborn_title%</light_purple><gray>%string_replaceCharacters_small-numbers_{mcmmo_power_level}%")&&lines[2].equals("<displayname>")&&c.getInt("view_distance")==64);
+            require(lines.length==3&&lines[0].contains("town_unformatted")&&lines[0].contains("nation_unformatted")&&lines[1].contains("<luckperms_prefix>  %reborn_title_mini%")&&lines[1].contains("%reborn_title_mini%<gray>%string_replaceCharacters_small-numbers_{mcmmo_power_level}%")&&lines[2].equals("<displayname>")&&c.getInt("view_distance")==64);
         });
-        test("Quests shortcut is one slot right of the Nether Star",()->{
+        test("Quests screenshot layout retains shortcut two slots right of Nether Star",()->{
             var q=read(Files.readString(sourceRoot.resolve("ui/Quests-config.yml")));
             require(q.getString("custom-elements.categories.49.display.type").equals("NETHER_STAR"));
-            require(q.getStringList("custom-elements.categories.50.commands").equals(List.of("rebornadmin open {player}"))&&q.getString("custom-elements.categories.50.result").equals("CLOSE_MENU"));
+            require(q.getStringList("custom-elements.categories.51.commands").equals(List.of("rebornadmin open {player}"))&&q.getString("custom-elements.categories.51.result").equals("CLOSE_MENU"));
             require(q.getBoolean("options.categories-enabled")&&q.getInt("options.quest-limit.default")==6);
         });
         test("progression command alias keeps the normal access permission",()->{
             try(ZipFile z=new ZipFile(args[1])){var m=read(new String(z.getInputStream(z.getEntry("plugin.yml")).readAllBytes()));require(m.getStringList("commands.reborn.aliases").contains("progression")&&m.getString("commands.reborn.permission").equals(RebornPlugin.ACCESS));}
         });
         test("progress descriptions match actual source rates and daily limits",()->{
-            State s=new State(UUID.randomUUID(),"Test");s.day=LocalDate.now(ZoneId.of("Europe/Berlin")).toString();s.daily.put("fishing",120L);
+            State s=new State(UUID.randomUUID(),"Test");s.day=DailyTime.today();s.daily.put("fishing",120L);
             String guide=String.join("\n",ProgressInfo.source(config,s,"fishing","points-per-catch","Catch a fish"));require(guide.contains("+3 JP")&&guide.contains("120 JP")&&guide.contains("180 JP"));
         });
         try(Gui gui=new Gui()){
             test("inventory shows exact goal and remaining percent on bottle",()->{
-                gui.state().points=15;gui.menu.journey(gui.player,0);String text=gui.text(2);require(text.contains("Still remaining: &e50%")&&text.contains("15 more Journey Points")&&text.contains("mcMMO power level: &f300")&&text.contains("Fish caught: &f123"));
+                gui.state().points=75;gui.menu.journey(gui.player,0);String text=gui.text(2);require(text.contains("Still remaining: &e50%")&&text.contains("75 more Journey Points"));require(gui.text(4).contains("mcMMO power level: &f300")&&gui.text(4).contains("Fish caught: &f123"));
             });
             test("inventory legend and green yellow red status",()->{
                 gui.state().points=journey.threshold(2);gui.menu.journey(gui.player,0);
                 require(gui.text(7).contains("Green:")&&gui.text(7).contains("Yellow:")&&gui.text(7).contains("Red:"));
                 require(gui.tile(Journey.slot(0,0)).icon()==Material.LIME_STAINED_GLASS_PANE&&gui.tile(Journey.slot(0,1)).icon()==Material.YELLOW_STAINED_GLASS_PANE&&gui.tile(Journey.slot(0,2)).icon()==Material.RED_STAINED_GLASS_PANE);
-                require(gui.tile(Journey.slot(0,1)).name().startsWith("&e")&&gui.text(Journey.slot(0,1)).contains("current Journey")&&gui.text(Journey.slot(0,2)).contains("Still needed: &e45 JP"));
+                require(gui.tile(Journey.slot(0,1)).name().startsWith("&e")&&gui.text(Journey.slot(0,1)).contains("current Journey")&&gui.text(Journey.slot(0,2)).contains("Still needed: &e180 JP"));
             });
             test("second inventory page starts at bottom and continues upward",()->{
                 gui.menu.journey(gui.player,1);require(gui.text(45).contains("Level 30")&&gui.text(17).contains("Level 58")&&gui.text(8).contains("top row"));
             });
-            test("guide gives clear actions rates and server snapshot",()->{
-                gui.menu.guide(gui.player,0);require(gui.text(10).contains("+1 JP per active minute")&&gui.text(12).contains("+5 JP")&&gui.text(14).contains("+12 JP")&&gui.text(16).contains("+3 JP")&&gui.text(49).contains("19.8"));
-                require(gui.text(22).contains("same progress bar")&&gui.text(22).contains("30 JP"));
+            test("guide aligns all six sources with UTC limits and removes server snapshot",()->{
+                gui.menu.guide(gui.player,0);require(gui.text(10).contains("+1 JP")&&gui.text(13).contains("+5 JP")&&gui.text(16).contains("+12 JP")&&gui.text(19).contains("+3 JP")&&gui.text(22).contains("+8 JP")&&gui.text(25).contains("+15 JP"));
+                require(gui.text(28).contains("same progress bar")&&gui.text(28).contains("30 JP")&&gui.text(28).contains("150 total JP")&&gui.text(34).contains("00:00 UTC"));
+                for(int i=0;i<54;i++)require(!gui.text(i).contains("Server snapshot")&&!gui.text(i).contains("TPS")&&!gui.text(i).contains("Berlin"));
             });
             test("free rewards have actual item and money icons",()->{
-                gui.menu.step(gui.player,1);require(gui.tile(10).icon()==Material.GOLD_INGOT&&gui.text(10).contains("$550"));
+                gui.menu.step(gui.player,1);require(gui.tile(10).icon()==Material.GOLD_INGOT&&gui.text(10).contains("$2,000"));
                 gui.menu.step(gui.player,5);require(gui.tile(10).icon()==Material.TRIPWIRE_HOOK);
             });
             test("shop display cannot be mistaken for player warps",()->{

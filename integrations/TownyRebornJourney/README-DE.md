@@ -1,92 +1,53 @@
-# Towny Reborn Journey – 2.0.0-beta.3
+# Towny Reborn Journey 2.0.0-beta.4
 
 ## Einfügen
 
-1. Server vollständig stoppen.
-2. Die bisherige `TownyRebornProgression*.jar` aus `plugins/` entfernen. Nur eine Progression-Version dort liegen lassen.
-3. Den kompletten `plugins/`-Inhalt dieses Pakets über die vorhandenen Ordner kopieren und die mitgelieferten Configs ersetzen.
-4. **Die vorhandenen Plugin-Ordner behalten.** Spielerdateien, Quests-Definitionen und Datenbanken bleiben auf dem Server.
-5. Vollständig starten. Mit `/progression` oder `/reborn` öffnen und den neuen Button in `/quests` testen.
+1. Server vollständig stoppen und den bestehenden `TownyRebornProgression`-Ordner sichern.
+2. Die bisherige Progression-JAR entfernen. Nur eine Version laden.
+3. Den `plugins/`-Baum aus dieser ZIP über die bestehenden Plugin-Ordner kopieren und die mitgelieferten Configs ersetzen.
+4. Alle vorhandenen `playerdata`, `journeydata`, Quest-Dateien und Datenbanken behalten.
+5. Server vollständig starten. `/progression` öffnet die Journey; `/reborn perks` öffnet die Rank-Perks.
 
-Das Paket enthält die fertigen Dateien:
+Zugriff bleibt `townyreborn.progression.access`, standardmäßig aus. Bestehende LuckPerms-Zuweisungen gelten weiter. Es gibt keine neue Pflicht-Permission.
 
-```text
-plugins/TownyRebornProgression-2.0.0-beta.3.jar
-plugins/TownyRebornProgression/config.yml
-plugins/TAB/groups.yml
-plugins/LyttleNametag/config.yml
-plugins/Quests/config.yml
-plugins/Quests/categories.yml
-```
+## Einmaliger Neustart der Level
 
-Das Plugin schreibt keine bestehenden Configs mehr um und verändert keine TAB-, Nametag-, Quests-, TownyChat- oder DeluxeMenus-Dateien. Automatische Config-Updater und Menüentfernung sind vollständig ausgebaut. Änderungen werden künftig über die fertigen Dateien im Paket eingespielt. Beim ersten Installieren ohne eigene Config wird wie bei normalen Plugins die eigene Standard-Config angelegt.
+Diese Version setzt JP auf **0 / Level 1**, sobald ein bisheriges Profil erstmals geladen wird. Offline-Spieler werden beim nächsten Laden/Login umgestellt. Gekaufte permanente Perks, deren Vorgänger, direkte LP-Freischaltungen, bereits abgeholte Belohnungen, tägliche Zähler und offene Kauf-/Belohnungsbelege bleiben erhalten. Normale Quests, mcMMO, Jobs, Paid-Ränge und Geld werden durch den Level-Neustart nicht zurückgesetzt.
 
-## Perks und Farben
+Vor dem Reset wird die komplette Originaldatei unter `migration-backups/long-journey-2026-10-v1/` gesichert. Ohne erfolgreiche Sicherung und Speicherung wird kein teilweise umgestelltes Profil übernommen. Neue Profile beginnen ebenfalls bei Level 1.
 
-Die permanenten Features sind nach **Skeleton → Creeper → Blaze → Dragon → Wither** gruppiert. Oben im Perk-Menü kann man direkt einen Rangbereich auswählen. `/fly` steht ganz zuletzt im Wither-Bereich. **Sein bisheriges Freischalt-Level 18 und der Preis bleiben unverändert**; die Änderung betrifft die Sortierung. `/tfly` bleibt bei Level 12.
+**`journey.progress-revision: long-journey-2026-10-v1` unverändert lassen.** Der identische gespeicherte Wert verhindert, dass Relog, Neustart oder das erneute Einfügen dieser Version nochmals zurücksetzen. Bestehende Skill-/Jobs-Höchstwerte bleiben als Schutz gegen erneutes Farmen erhalten. Die erste gültige Messung nach der Umstellung wird als neuer Ausgangspunkt erfasst und gibt keine rückwirkenden JP.
 
-Jeder Kauf ist ein einzelnes permanentes Feature. Der nächste Journey-Level braucht keinen vorherigen Kauf. Preise, Berechtigungen, Kaufketten, Reward-IDs und Punktekurve bleiben gegenüber Beta.2 erhalten.
+Eine bereits gekaufte Flugfreischaltung bleibt nutzbar. Für einen neuen Kauf benötigt `/fly` jetzt **Level 116**, den letzten Level der Journey. `/tfly` ist ein eigener Towny-Perk mit seiner bisherigen Freischaltung.
 
-- **Grün:** früheres, abgeschlossenes Level.
-- **Gelb:** dein aktuelles Journey-Level.
-- **Rot:** zukünftiges, gesperrtes Level.
+## Journey und Oberfläche
 
-Die Prozentanzeige zeigt, wie weit du innerhalb des aktuellen Levels auf dem Weg zum nächsten bist. Belohnungen beim erreichten Level können weiterhin später abgeholt werden. Die Schlange bleibt über alle Seiten verbunden.
+- 116 Level mit jeweils einem eigenen englischen Rangnamen; im TAB kompakt `J001` bis `J116`.
+- Rangfarben verändern sich von Pink zu Lime, mit einem sanften Textgradienten. Der LP-Rang bleibt separat.
+- Vier durchgehende Snake-Seiten: Endet die vorige Seite unten, startet die nächste unten; entsprechend oben.
+- Grün: früherer abgeschlossener Level. Gelb: aktueller Level. Rot: zukünftiger gesperrter Level.
+- Die Fortschrittsflasche zeigt Ziel, Prozent und fehlende JP. Der persönliche Kopf zeigt Balance, Journey-/Spielzeit, mcMMO, Jobs, Fische, Quests und gekaufte Perks.
+- `How to progress` ordnet sechs Aktivitäten in zwei Reihen; darunter JP-Erklärung, persönliche Stats und Tageslimits. Kein Server-Snapshot.
+- Bei einem neuen Level: Titel, Nachricht mit Rang und verfügbaren Belohnungen/Perks sowie `minecraft:ui.toast.challenge_complete`.
+- Die fünf Köpfe im Perk-Menü sind klickbare Rank-Seiten. Blaze hat eine feste MHF-Blaze-Kopftextur; ein eigenes Buch erklärt das Blättern.
+- Quests übernimmt das aktuelle Layout aus `Quests(8).zip`. Experience-Quests belegen Slot 40, den früheren Steinplatz; die Progression-Verknüpfung bleibt wie im Screenshot auf Slot 51.
 
-## Anzeigen
+Das Plugin schreibt keine anderen Plugin-Configs um. Die statischen TAB-, LyttleNametag- und Quests-Dateien liegen bereits passend im Paket.
 
-| Anzeige | Layout |
-| --- | --- |
-| Nametag, Zeile 1 | Town · Nation |
-| Nametag, Zeile 2 | LP-Rang · Journey-Titel mit direkt angehängter kleiner mcMMO-Zahl |
-| Nametag, Zeile 3 | Displayname |
-| TAB | LP-Rang · Journey-Kürzel · Displayname mit direkt angehängter kleiner mcMMO-Zahl |
+## Grind und Belohnungen
 
-Zwischen dem LP-Rangbild und dem Journey-Titel wird der Abstand vergrößert. Die mcMMO-Zahl hat keinen zusätzlichen Abstand. TAB nutzt den direkten `%reborn_short_title%`-Placeholder, zum Beispiel `CIT` für Citizen. RGB-Namen, AFK-Marker und Rangbilder bleiben erhalten. Andere TAB-Einstellungen einschließlich Header, Sortierung, Scoreboard und Stresstest werden nicht ersetzt.
+Level 2: 150 JP; Level 3: 330 JP; Level 116: insgesamt **213.900 JP**. JP sind kumulativ und werden nicht ausgegeben. Jeder Aufstieg setzt den nächsten Rangnamen automatisch.
 
-## Quests
+Alle Tageslimits resetten um **00:00 UTC**, unabhängig von der lokalen JVM-/Host-Zeitzone. Aktive Spielzeit hat jetzt ebenfalls ein Budget: 360 JP/Tag. Die übrigen Quell-Limits bleiben bestehen. Das theoretische Maximum ist 2.160 JP pro UTC-Tag: Im normalen Spiel ist der letzte Level frühestens am 100. verschiedenen UTC-Tag möglich. Biome und Advancements sind einmalig und dieses Maximum damit nicht dauerhaft erreichbar; die tatsächliche Dauer hängt von Spielzeit und Aktivitäten ab.
 
-Das Kategorienfenster zeigt alle bisherigen 17 Kategorien in einem gleichmäßigen Raster, mit einer kleinen Bedienhilfe und einer Zustandslegende. Der Nether Star bleibt auf Slot 49. Direkt rechts davon liegt auf Slot 50 der Button **Reborn Progression**.
+Die gesamte Journey enthält einmalig 525.500 $, Ressourcenpakete, einige Minecraft-XP-Belohnungen, einzelne Crate-Keys und insgesamt 20 Town-Claim-Chunks. Die letzte Belohnung enthält 100.000 $ und 5 Supporter-Keys. Es gibt keine UltraCosmetics-Belohnungen und keinen täglichen Supporter-Key-Perk.
 
-Dieser Button öffnet dasselbe Menü wie `/progression`. Die Öffnung läuft im nächsten Tick, damit das Schließen des Quests-Fensters sie nicht überschreibt. Der Spieler braucht weiterhin seine Journey-Access-Permission. Das normale Quest-Limit bleibt bei sechs aktiven Quests; IDs, Aufgaben, Anforderungen und Spielerfortschritte bleiben erhalten.
+Erhöhte Belohnungen ersetzen keinen alten Auszahlungsbeleg: Bereits gelieferte Geschenke werden nicht nochmals ausgezahlt. Offene alte Belege behalten ihre damaligen Geldbeträge, Befehle und Town-Ziele. Details: `REWARDS.md`, `PERKS.md`, `JOURNEY-POINTS-DE.md`.
 
-## Journey Points
+## Nach dem Start prüfen
 
-Alle aktiven Quellen zahlen auf **ein gemeinsames JP-Konto** ein. Sie werden nicht ausgegeben. Mehr dazu mit Beispielen in `JOURNEY-POINTS-DE.md` und im Hilfemenü bei der XP-Flasche.
+Mit einem Testspieler `/progression` öffnen, Level 1 / 0 JP prüfen und einen zuvor gekauften Perk testen. Relog darf den Fortschritt nicht erneut löschen. In `/quests` sollen Experience-Quests auf dem früheren Steinplatz und die Progression-Verknüpfung an ihrer Screenshot-Position stehen. TAB/Nametag sollten die neue Rangfarbe und die angeschlossene kleine mcMMO-Zahl zeigen.
 
-| Aktivität | JP | Tageslimit |
-| --- | ---: | ---: |
-| Aktiv spielen | 1 je Minute | – |
-| Neues mcMMO-Powerlevel | 5 | 500 |
-| Neues persönliches Level in einem Job | 12 | 500 |
-| Fisch mit der Angel fangen | 3 | 300 |
-| Neues Biom besuchen | 8 | 200 |
-| Neues Advancement ohne Rezept | 15 | 300 |
+Owner-Status: `rebornadmin status <player>`. `rebornadmin addpoints <player> <amount>` umgeht den normalen Grind und ist ausschließlich für Owner-Tests/administrative Korrekturen gedacht. Offene Zahlungsbelege erst anhand der tatsächlichen Zahlung/Auslieferung prüfen; kein Geld und keine Keys automatisch nachzahlen.
 
-Normale Questabschlüsse sind aktuell als JP-Quelle ausgeschaltet. Der neue Quests-Button verbindet die Menüs. Minecraft-XP-Belohnungen und Ingame-Geld werden getrennt von JP verwaltet. Perks kosten Geld; das Level steigt über die gesammelten Punkte.
-
-## Zugriff und Daten
-
-Die Access-Permission bleibt standardmäßig aus. Bereits gesetzte Berechtigungen bleiben bestehen.
-
-```text
-lp user HZcgc_No2 permission set townyreborn.progression.access true server=smp
-lp user HZcgc_No2 permission set townyreborn.progression.admin true server=smp
-```
-
-Erst bei öffentlicher Freigabe:
-
-```text
-lp group default permission set townyreborn.progression.access true server=smp
-```
-
-Vorhandene `journeydata/`, `playerdata/` und LP-Reward-Marker behalten. Geld-/Key-Claims können nach einem Neustart nicht automatisch wiederholt werden. Bei einem unklaren Beleg nach Prüfung durch den Owner:
-
-```text
-rebornadmin status <Spieler>
-rebornadmin receipt <Spieler> grant
-rebornadmin receipt <Spieler> cancel
-rebornadmin gift <Spieler> delivered
-```
-
-Das Paket enthält keine hochgeladenen Spielerdateien. Alle Belohnungen stehen in `REWARDS.md`, die nach Rang sortierten Käufe in `PERKS.md`. Lokale Prüfungen stehen in `VERIFICATION.txt`; der Test im laufenden Minecraft-Server bleibt separat.
+Die mitgelieferten Prüfberichte unterscheiden kontrollierte Tests von einem Live-Test auf Paper/Minecraft. Diese Version wurde nicht auf dem laufenden Server installiert.

@@ -1,19 +1,15 @@
-TownyRebornProgression 2.0.0-beta.3 verification
+Towny Reborn Journey 2.0.0-beta.4
 
-PASS: 24 existing recovery scenarios on the current JAR.
-PASS: 45 layout, manual-config, permissions, point calculation, receipt and GUI scenarios.
-Reference: 24 recovery scenarios also pass on the preserved beta.1 binary.
+Current build: 89 scenarios passed (24 recovery + 45 menu/update + 20 long-Journey/migration).
+Preserved Beta.1 reference: the same 24 recovery scenarios passed independently.
+Java sources compile with --release 21; JVM verification runs with -Xverify:all.
 
-PASS: Quests gameplay options, IDs and nonvisual settings match the uploaded Quests(7).zip.
-PASS: all 17 categories have available GUI slots; progression shortcut is slot 50.
-PASS: existing configs are read without replacement; external config-writer classes are absent.
+Scope: controlled economy/LP, inventory registry and sound/title boundaries.
+No live Paper/client deployment or visual Minecraft test is claimed.
+Uploaded Quests player records and quest definitions are not packaged.
 
-Compiled with --release 21. Paper inventory/item registry, wallet and LP boundaries use controlled doubles.
-Live Minecraft server/client verification remains outstanding.
-
-Current JAR SHA-256: bc827c5a9b6045f9a9c3d8b3165b7ad5829bcf6be5aa6405d7cb4d4f73504465
-
-PASS default catalogue, pages and early flight
+REBUILT
+PASS default catalogue, pages and configured flight gate
 PASS all level boundaries and cap
 PASS snake is connected and unique
 PASS free level progression
@@ -39,6 +35,7 @@ PASS in-flight reward cannot be manually closed
 PASS command subjects are validated
 RESULT 24 recovery checks passed
 
+UPDATE
 PASS continuous snake across four and extended pages
 PASS whole 116-step catalogue has useful free rewards
 PASS no UltraCosmetics or cosmetic-crate rewards
@@ -47,7 +44,7 @@ PASS daily supporter perk removed, supporter keys only one-time gifts
 PASS warp limits are two and three, not trading-shop limits
 PASS remaining percentages and points at boundaries
 PASS abbreviations match title boundaries
-PASS manual config preserves beta2 prices, gates, reward IDs and point curve
+PASS updated catalogue preserves prices permission chains and stable reward IDs
 PASS startup reads existing configuration without rewriting it
 PASS incompatible old configuration fails without replacing it
 PASS external config writers and cleanup are absent from the JAR
@@ -70,13 +67,13 @@ PASS money receipt survives mixed cash-and-key reward
 PASS malformed money receipt fails closed
 PASS TAB ordered format preserves mcMMO, RGB display and AFK
 PASS nametag has rank spacing and attached mcMMO on its Journey line
-PASS Quests shortcut is one slot right of the Nether Star
+PASS Quests screenshot layout retains shortcut two slots right of Nether Star
 PASS progression command alias keeps the normal access permission
 PASS progress descriptions match actual source rates and daily limits
 PASS inventory shows exact goal and remaining percent on bottle
 PASS inventory legend and green yellow red status
 PASS second inventory page starts at bottom and continues upward
-PASS guide gives clear actions rates and server snapshot
+PASS guide aligns all six sources with UTC limits and removes server snapshot
 PASS free rewards have actual item and money icons
 PASS shop display cannot be mistaken for player warps
 PASS inventory presents rank tabs and fly as the last Wither perk
@@ -85,3 +82,26 @@ PASS Quests bridge opens on the next tick and checks target access
 PASS bottle click opens guide and cancels item movement
 PASS revoked access closes inventory and prevents further actions
 RESULT 45 journey update checks passed
+
+LONG
+PASS 116 distinct level titles and compact level IDs
+PASS maximum permitted earnings require the 100th UTC day
+PASS UTC midnight ignores JVM timezone and Berlin daylight-saving time
+PASS fresh profiles begin at level one without writing a read-only record
+PASS native reset keeps purchases claims limits achievements and exact backup
+PASS legacy quests and active time cannot pre-fill the restarted Journey
+PASS backup failure leaves old progress intact and no partially migrated cache
+PASS migration save failure is retryable and cannot discard the original profile
+PASS new first skill readings cannot import pre-update levels or farm old records
+PASS a debited flight receipt recovers at level one without another debit
+PASS larger reward amounts cannot replay old gift claims or ambiguous receipts
+PASS flight needs the final level for a new purchase; owned flight remains owned
+PASS rank colours move pink to lime and both render formats preserve titles
+PASS reward value rises without recurring keys or cosmetic rewards
+PASS Experience category occupies the stone slot and preserves screenshot positions
+PASS successful level gain saves before sound and sends the new-rank notification
+PASS failed level save sends no success sound or level notification
+PASS player head shows live personal stats while progress bottle stays focused
+PASS rank tabs use a Blaze head and explicit browsing instructions
+PASS Blaze tab sends a fixed Mojang skin profile rather than a Blaze rod
+RESULT 20 long Journey checks passed

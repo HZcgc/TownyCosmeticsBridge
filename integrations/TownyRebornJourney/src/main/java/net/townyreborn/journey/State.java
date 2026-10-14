@@ -12,6 +12,10 @@ public final class State {
    public String name;
    public volatile long points;
    public volatile long minutes;
+   public volatile long journeyMinutes;
+   public String progressRevision = "";
+   public long journeyStartedAt;
+   public final Set<String> baselineDue = new HashSet<>();
    public final Set<String> owned = new HashSet<>();
    public final Set<String> claimed = new HashSet<>();
    public final Set<String> achievements = new HashSet<>();
@@ -40,6 +44,11 @@ public final class State {
    public long advanceHighWater(String var1, long var2, long var4) {
       if (var2 >= 0L && var4 > 0L) {
          Long var6 = this.high.get(var1);
+         if (this.baselineDue.remove(var1)) {
+            this.high.put(var1, Math.max(var6 == null ? 0L : var6, var2));
+            this.dirty = true;
+            return 0L;
+         }
          if (var6 == null) {
             this.high.put(var1, var2);
             this.dirty = true;

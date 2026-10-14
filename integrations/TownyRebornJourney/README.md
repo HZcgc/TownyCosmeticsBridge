@@ -1,68 +1,55 @@
 # Standalone Reborn Journey
 
-Current version: **2.0.0-beta.3**. Install [the folder overlay](releases/TownyReborn-Journey-2.0.0-beta.3.zip). [German installation guide](README-DE.md), [JP explanation](JOURNEY-POINTS-DE.md), [rewards](REWARDS.md), [perks](PERKS.md).
+Current release: **2.0.0-beta.4**. Install [the folder overlay](releases/TownyReborn-Journey-2.0.0-beta.4.zip). [German installation guide](README-DE.md), [JP explanation](JOURNEY-POINTS-DE.md), [reward catalogue](REWARDS.md), [permanent features](PERKS.md).
 
-The plugin owns 116 Journey levels, four continuous snake pages, free milestone rewards and 43 optional permanent features. Access requires `townyreborn.progression.access`, default false. Buying or collecting a reward never blocks level progression.
+116 levels, four continuous snake pages, a distinct title per level and 43 optional permanent features. Access requires `townyreborn.progression.access`, default false. Paid feature purchases never gate normal levelling. Fly is the final Wither feature and now requires the final level 116 for a new purchase.
 
-## Folder-based installation
+## Folder installation and authorised progress restart
 
-Stop the server, remove the old Progression JAR, copy the supplied `plugins/` tree over existing plugin folders, replace only the supplied configs, and start fully. Keep all player records, quest definitions and databases.
+Stop the server, back up the existing Progression folder, remove the old JAR, copy the supplied `plugins/` files over the existing folders and restart fully. Keep player records, quest definitions and databases. The plugin does not rewrite external configs or existing own configs; only a missing own config receives the initial default.
 
-The matching files are included for Progression, TAB groups, LyttleNametag and the Quests category UI. The plugin **does not rewrite existing configs, patch external plugin files, remove menus or archive quests**. The old `ConfigUpgrade`, `DisplaySetup` and `LegacyCleanup` classes are no longer shipped. Only a missing own config receives the normal initial default file. An incompatible old config causes an error without replacing it.
+This release contains an explicitly requested **one-time points restart**. `journey.progress-revision: long-journey-2026-10-v1` is compared with the profile marker. On first load of an older native/legacy profile, Store backs up its exact original contents, resets only the JP counter and current-Journey minutes, retains purchased perks/claim receipts/daily usage/high-water history, and commits the marker atomically before caching the record. Offline profiles migrate on first load. A failure to back up or save stops that load without replacing the old record or caching a partial migration. New profiles start with the same marker and zero points. Repeating installation, restart or relog does not repeat the reset. **Keep this revision value unchanged in future configs.**
 
-The installed configuration is explicit and reviewable before server startup. Existing reward IDs/aliases, progress, purchase receipts, permission context, prices and unlock requirements are preserved from Beta.2. Later config changes are made in files and applied with a full restart.
+All pending receipts retain their original amounts, commands and town targets. A debited old purchase can finish permission delivery at level 1 without another debit. Previously claimed gift IDs and LP markers remain claimed even when this release increases reward value. No refund/top-up/replayed gift is inferred from the reset. Existing permanent permissions are repaired from owned features and original explicit LP markers. Temporary/inherited supporter group access does not become a permanent purchase.
 
-## Current layout
+High-water values and achievements remain. Each existing skill/Jobs key gets a persisted baseline-due marker: its next valid reading establishes the new baseline without retrospective points, retaining the higher old record. Invalid readings cannot consume that marker. New increases and all daily usage continue across restart.
 
-Permanent features have five tier tabs: Skeleton, Creeper, Blaze, Dragon and Wither. Each tier can extend to multiple pages. `/fly` is the final Wither entry, retaining its level-18 unlock and price. `/tfly` remains level 12. Tier labels describe the feature family; buying a feature never grants a paid parent group.
+## Points and pacing
 
-Path colours: **green = earlier completed level, yellow = current Journey level, red = future locked level**. The percentage bottle tracks progress within the current level towards the following level. A completed final level shows a completed path. Free gifts remain separately claimable at reached levels.
+All activity sources share one cumulative point balance: active minute +1 (360/day); new mcMMO power level +5 (500/day); new per-job high-water level +12 (500/day); fish catch +3 (300/day); first biome +8 (200/day); first non-recipe advancement +15 (300/day). Normal Quests remain disabled as a JP source. Buying perks uses game money, not JP.
 
-Nametag lines: Town/Nation; LP rank, spacing, Journey title and attached small mcMMO value; display name. TAB: LP rank, direct Journey abbreviation, display name and attached small mcMMO value. The supplied nametag template compensates the rank-image edge with two source spaces. No separator is added before the number. Existing display-name RGB, AFK suffixes, rank glyphs and unrelated TAB behavior are retained.
+All awards and UI daily calculations use the UTC calendar, resetting at **00:00 UTC** regardless of the host/JVM timezone. Activity/poll refresh is 30 seconds, with a 90-second idle timeout. Creative/Spectator/NPCs/test-name prefixes/ignored worlds do not earn points.
 
-Quests retains all 17 existing categories in a regular grid. Slot 49 remains the Nether Star; slot 50 opens Journey progression. Its console action `rebornadmin open {player}` schedules the same player menu as `/progression` for the next tick and checks target access both before scheduling and before opening. It does not bypass the access gate. The six-active-quest limit and gameplay settings remain intact.
+Level L requires `150 × (L−1) + 30 × (L−1) × (L−2) / 2` total points. L2=150, L3=330, L116=213900. The theoretical daily ceiling is 2160 JP: 99 days reach only 213840, so normal progression needs at least the 100th distinct UTC day. One-time biome/advancement sources cannot sustain that ceiling; this is a strict optimistic lower bound, not a promise about actual completion time. Owner `addpoints` intentionally bypasses ordinary pacing.
 
-## Points
+## UI and feedback
 
-Default sources share one cumulative JP counter: active minute +1; new mcMMO power level +5 (500/day); new per-job high-water level +12 (500/day); fish catch +3 (300/day); first recorded biome +8 (200/day); first non-recipe advancement +15 (300/day). Quests as a JP source remain disabled. The Quest UI link does not turn on quest-based point rewards.
+Every level has a distinct English title. TAB uses J001-J116; the rank palette transitions pink to lime and uses a subtle text gradient. `title`/`short_title` stay plain for compatibility; `title_colored`/`short_title_colored` supply legacy RGB, and `title_mini` supplies MiniMessage. Existing `chat_prefix` automatically uses the coloured full title. Supplied TAB and nametag files explicitly use the renderer-specific placeholders, preserve LP order, display-name RGB and attached small mcMMO.
 
-The first valid mcMMO/Jobs reading establishes the starting baseline. Previously recorded levels cannot be farmed again by resetting, job changes or relogging. AFK/ignored worlds, NPCs, test bots and Creative/Spectator players do not earn points. Daily limits reset at midnight Europe/Berlin. Polling and open-view refresh run every 30 seconds.
+Green is an earlier completed level, yellow is the current level, red is a future locked level. The progress bottle remains focused on goal/percent/missing JP. The player head supplies personal money/playtime/skills/Jobs/fish/quests/perk stats. How to progress has six numbered sources in two rows, followed by explanation, personal stats and UTC limits. No server snapshot/TPS item remains.
 
-Level L requires `30 × (L−1) + 15 × (L−1) × (L−2) / 2` total points. L2=30, L3=75, L4=135. Example: 10 active minutes + 5 fish + 1 new mcMMO level = 30 JP, assuming available daily allowance. Buying perks uses game money without subtracting JP. Minecraft XP gifts do not affect the Journey counter.
+Perk tiers are clickable Skeleton/Creeper/Blaze/Dragon/Wither head tabs, with a browsing-instruction book. The Blaze tab embeds the fixed skin returned by Mojang's MHF_Blaze profile, avoiding an asynchronous named-player lookup. Source: `https://sessionserver.mojang.com/session/minecraft/profile/4c38ed11596a4fd4ab1d26f386c1cbac`; skin hash `d06e342f90ec538aaa1552b224f264a040840902e126d91ece6139aa5b3c7cc3`.
 
-## Compatibility and receipts
+A level increase is saved before a title/chat notification and `minecraft:ui.toast.challenge_complete` sound. The notification names the final reached level/title and counts new available rewards/perks. It also handles owner-added points; no false success feedback is sent after a failed save. Free rewards still need an explicit claim; the sound does not create an actual Minecraft advancement.
 
-Legacy player profiles are read without replacement. Native profiles and pending receipts stay in `journeydata/`. Existing Beta.1 reward IDs/LP markers remain aliases of their canonical milestone, preventing replaced gifts from being claimed again. Pending old rewards retain their original commands/town/money amount. No player records are included in the installer.
+The Quests(8) screenshot layout retains all 17 category IDs and gameplay settings. Experience is the final category in YAML insertion order, placing it into free slot 40; slot 31 becomes filler. This also removes the malformed filler material that rendered as stone. The Journey shortcut stays at screenshot slot 51, with its access-gated next-tick `rebornadmin open {player}` bridge. Existing category slots other than Experience are retained.
 
-Purchases persist PREPARED before debit, then DEBITED before LP changes. Double/overlapping actions are blocked. Saved DEBITED receipts may complete permissions after restart without another debit. Ambiguous payments need review.
+## Receipts and owner review
 
-Free payouts save original side effects and a durable LP marker before attempting cash/commands/town claims. A failed/ambiguous side effect or final-save failure is never automatically replayed. UI callback failure cannot reopen a delivered receipt. Economy/inventory/Towny persistence does not share an atomic transaction with the profile; a hard crash can require manual repair.
+Purchases save PREPARED before debit, DEBITED before permission writes. Overlapping actions are blocked; DEBITED recovery does not charge again. Ambiguous payments need owner review. Gifts persist original side effects and durable LP markers before delivery; uncertain effects/final-save failures are never automatically replayed. Economy, inventory and Towny do not share a transaction with the profile: a hard crash can require manual reconciliation.
 
-Owner review, player online:
+Owner, player online: `rebornadmin status <player>`; `rebornadmin receipt <player> grant/cancel`; `rebornadmin gift <player> delivered`; `rebornadmin addpoints <player> <amount>`. Verify actual payment/delivery before resolving. Do not delete claims/receipts to retry. Rollback needs matching profile/permission/economy snapshots.
 
-```text
-rebornadmin status <player>
-rebornadmin receipt <player> grant
-rebornadmin receipt <player> cancel
-rebornadmin gift <player> delivered
-rebornadmin addpoints <player> <amount>
-```
+## Build and verification
 
-Verify original payment/delivery before resolving. In-flight receipts cannot be manually closed. Do not delete claim markers, player data or receipts to retry rewards. Rollback requires matching permission/profile/economy snapshots.
-
-## Build and validation
-
-Requires Paper, Java 21+, PlaceholderAPI, LuckPerms, Vault and a registered economy provider. Jobs/mcMMO are optional sources. There is no Quests/DeluxeMenus dependency or runtime external config writer.
+Requires Java 21+, Paper, PlaceholderAPI, LuckPerms and Vault with an economy provider. Jobs/mcMMO are optional. No Quests or DeluxeMenus runtime dependency.
 
 ```text
 python build.py --jdk <jdk-bin> --deps <dependency-directory> --output <output-jar>
 python verify.py --jdk <jdk-bin> --deps <dependency-directory> --jar <output-jar> --output <verification-directory>
+python package.py --jar <output-jar> --verification <verification-directory>
 ```
 
-Checks cover tier pages/fly order, current-level colours, cumulative point examples, unchanged config files, absence of external writers, old claims and uncertain payments, the Quests next-tick access-gated bridge and actual inventory actions. Paper registry/inventory creation, wallet and LP boundaries use controlled doubles. The live server/client check is separate.
+Core recovery scenarios run on both the preserved Beta.1 binary and this source build. Update checks cover actual menu inventory/actions, unchanged config files, old claims and failed/uncertain payments. Additional long-path checks cover one-time native/legacy migration, byte-identical backups, failed backup/save, paid recovery after reset, baseline persistence, UTC boundaries, pacing, unique renderable titles, notifications, Blaze skin and live-stat placement. Inventory registries, wallet/LP and client sound/title boundaries use controlled doubles. Live Paper/Minecraft verification is separate.
 
-Current report: `verification/JOURNEY-UPDATE-VERIFICATION.txt`. Historical Beta.1/Beta.2 binaries and their recorded reports are retained. Release hashes are in `releases/SHA256SUMS.txt`.
-
-Placeholders retain `level`, `title`, `short_title`, `points`, `percent`, `remaining_percent`, `remaining_points`, `next_required`, `playtime_hours`, `access` and the `trprogress` compatibility identifier. Commands: `/progression`, `/reborn`, `/reborn perks`.
-
-[Quests custom GUI item documentation](https://quests.leonardobishop.com/configuration/custom-gui-items) describes zero-based slots, command actions and player substitution.
+Report: `verification/JOURNEY-UPDATE-VERIFICATION.txt`. Historical release binaries/packages and their original checksums are retained. No player records or database exports are shipped.
