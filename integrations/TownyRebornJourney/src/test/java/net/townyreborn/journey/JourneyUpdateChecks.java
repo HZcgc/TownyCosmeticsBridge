@@ -89,7 +89,7 @@ public final class JourneyUpdateChecks {
             }
         });
         test("whole 116-step catalogue has useful free rewards",()->{
-            require(journey.gifts.size()==116&&journey.perks.size()==43);
+            require(journey.gifts.size()==116&&journey.perks.size()==44);
             for(int level=1;level<=116;level++){int l=level;require(journey.gifts.values().stream().filter(g->g.level()==l).count()==1);}
         });
         test("no UltraCosmetics or cosmetic-crate rewards",()->{
@@ -122,7 +122,10 @@ public final class JourneyUpdateChecks {
             var newGifts=config.getConfigurationSection("gifts");var oldGifts=previous.getConfigurationSection("gifts");
             require(newGifts.getKeys(false).equals(oldGifts.getKeys(false)));
             for(String id:oldGifts.getKeys(false))for(String key:List.of("level","permissions","legacy-ids"))require(Objects.equals(oldGifts.get(id+"."+key),newGifts.get(id+"."+key)));
-            for(String id:journey.perks.keySet()) {
+            Set<String> added = new HashSet<>(journey.perks.keySet());
+            added.removeAll(previous.getConfigurationSection("perks").getKeys(false));
+            require(added.equals(Set.of("eglow")));
+            for(String id:previous.getConfigurationSection("perks").getKeys(false)) {
                 require(config.getDouble("perks."+id+".price")<previous.getDouble("perks."+id+".price"));
                 for(String field:List.of("level","permissions","legacy-markers","requires"))
                     if(!(id.equals("fly")&&field.equals("level"))&&!(id.equals("town_flight_bypass")&&field.equals("permissions")))
@@ -150,7 +153,7 @@ public final class JourneyUpdateChecks {
             require(journey.perkTiers().equals(List.of(Journey.Tier.SKELETON,Journey.Tier.CREEPER,Journey.Tier.BLAZE,Journey.Tier.DRAGON,Journey.Tier.WITHER)));
             var pages=journey.perkPages(0);require(pages.size()==5);
             var last=pages.get(4).items();require(last.get(last.size()-1).id().equals("fly")&&journey.perks.get("fly").level()==116);
-            require(pages.stream().flatMap(p->p.items().stream()).count()==43);
+            require(pages.stream().flatMap(p->p.items().stream()).count()==44);
         });
         test("current level is yellow; future level is locked",()->{
             long points=journey.threshold(13)+100;
@@ -161,7 +164,8 @@ public final class JourneyUpdateChecks {
             State state=new State(UUID.randomUUID(),"Test");state.capped("A","playtime",10,100000);state.capped("A","fishing",15,300);state.advanceHighWater("mcmmo",300,5);
             state.capped("A","mcmmo",state.advanceHighWater("mcmmo",301,5),500);
             require(state.points==30&&journey.level(state.points)==1&&journey.threshold(2)==150&&journey.threshold(3)==330&&journey.threshold(4)==540);
-            require(!config.getBoolean("sources.quests.enabled"));
+            require(config.getBoolean("sources.quests.enabled"));
+            state.capped("A","quests",config.getLong("sources.quests.points-per-completion"),config.getLong("sources.quests.daily-cap"));require(state.points==40);
         });
         test("all beta1 gift IDs map to their original milestone",()->{
             for(String id:original.getConfigurationSection("gifts").getKeys(false)){
@@ -265,9 +269,10 @@ public final class JourneyUpdateChecks {
             test("second inventory page starts at bottom and continues upward",()->{
                 gui.menu.journey(gui.player,1);require(gui.text(45).contains("Level 30")&&gui.text(17).contains("Level 58")&&gui.text(8).contains("top row"));
             });
-            test("guide aligns all six sources with UTC limits and removes server snapshot",()->{
+            test("guide aligns all seven sources with UTC limits and removes server snapshot",()->{
                 gui.menu.guide(gui.player,0);require(gui.text(10).contains("+1 JP")&&gui.text(13).contains("+5 JP")&&gui.text(16).contains("+12 JP")&&gui.text(19).contains("+3 JP")&&gui.text(22).contains("+8 JP")&&gui.text(25).contains("+15 JP"));
                 require(gui.text(28).contains("same progress bar")&&gui.text(28).contains("30 JP")&&gui.text(28).contains("150 total JP")&&gui.text(34).contains("00:00 UTC"));
+                require(gui.text(40).contains("+10 JP")&&gui.text(40).contains("300 JP")&&gui.text(40).contains("including repeats")&&!gui.text(40).contains("starting baseline"));
                 for(int i=0;i<54;i++)require(!gui.text(i).contains("Server snapshot")&&!gui.text(i).contains("TPS")&&!gui.text(i).contains("Berlin"));
             });
             test("free rewards have actual item and money icons",()->{
@@ -278,11 +283,12 @@ public final class JourneyUpdateChecks {
                 gui.menu.perks(gui.player,0,62);require(gui.text(9).contains("200 QuickShop trading shops")&&gui.text(9).contains("Trading shops; separate from player warps")&&!gui.text(9).contains("/shops"));
             });
             test("inventory presents rank tabs and fly as the last Wither perk",()->{
-                gui.menu.perks(gui.player,4,0);require(gui.text(0).contains("Skeleton")&&gui.text(4).contains("Wither")&&gui.text(16).contains("Personal flight")&&gui.view().actions.get(16).id().equals("fly"));
+                gui.menu.perks(gui.player,4,0);require(gui.text(0).contains("Skeleton")&&gui.text(4).contains("Wither")&&gui.text(17).contains("Personal flight")&&gui.view().actions.get(17).id().equals("fly"));
+                require(gui.text(16).contains("Glow colours and effects")&&gui.text(16).contains("20,000")&&gui.text(16).contains("Level &d88"));
             });
             test("rank tab click opens the selected tier",()->{
                 gui.menu.perks(gui.player,0,0);var event=mock(InventoryClickEvent.class);InventoryView open=gui.player.getOpenInventory();when(event.getView()).thenReturn(open);when(event.getWhoClicked()).thenReturn(gui.player);when(event.getRawSlot()).thenReturn(4);gui.menu.click(event);
-                require(gui.view().page==4&&gui.text(16).contains("Personal flight"));
+                require(gui.view().page==4&&gui.text(17).contains("Personal flight"));
             });
             test("Quests bridge opens on the next tick and checks target access",()->{
                 gui.bukkit.when(()->Bukkit.getPlayerExact("TestPlayer")).thenReturn(gui.player);

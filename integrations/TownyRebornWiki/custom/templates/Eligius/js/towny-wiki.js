@@ -1,4 +1,4 @@
-/* Towny Reborn Wiki update 20261014-journey-beta7 */
+/* Towny Reborn Wiki update 20261014-journey-beta8 */
 (function () {
   'use strict';
   var root = document.getElementById('towny-reborn-wiki');

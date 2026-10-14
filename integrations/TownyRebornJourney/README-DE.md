@@ -1,8 +1,16 @@
-# Towny Reborn Journey 2.0.0-beta.7
+# Towny Reborn Journey 2.0.0-beta.8
 
-## Fortschritt übernehmen (Beta.4 bis Beta.6)
+## Update: Quests und eGlow (Beta.8)
 
-Server stoppen, den bestehenden Progression-Ordner sichern, die bisherige JAR entfernen und aus `TownyReborn-Journey-Hotfix-2.0.0-beta.7.zip` den `plugins/`-Baum einfügen. Er enthält die neue JAR und die neue Progression-Config. **Beide ersetzen**, damit die Fortschrittsübernahme aktiviert ist. `playerdata`, `journeydata`, `migration-backups` und der neue Ordner `history-credits` bleiben im bestehenden Ordner. Vollständig starten. Offline-Spieler werden beim nächsten Laden/Login übernommen. Die ausführliche ZIP enthält zusätzlich die bisherigen statischen TAB-, Nametag- und Quests-Configs.
+Neue Quests-Abschlüsse geben 10 JP, bis 300 JP pro UTC-Tag. Wiederholbare Quests zählen bei jedem tatsächlichen neuen Abschluss. Alte Abschlüsse werden nicht nachträglich erneut bezahlt; die historischen JP bleiben erhalten. Quests ist eine optionale Integration und der eigenständige Journey-Pfad bleibt getrennt. Die neue Quest-Kachel steht unter den übrigen Aktivitäten in `How to progress`.
+
+Auf der Wither-Perk-Seite ist **Glow colours and effects** für **$20.000 ab Level 88** hinzugekommen, direkt vor dem letzten Fly-Eintrag. Der permanente Kauf gewährt persönliche eGlow-Menüs, Farben, Blinken, Rainbow und eigene Effekte. Verwaltung anderer Spieler, Debug und Reload bleiben separate Staff-Rechte. Nutzung: `/eglow`, ausschalten: `/eglow off`. Der Eintrag kauft keinen monatlichen Wither-Rang und ändert keine LuckPerms-Gruppe.
+
+**Einfügen:** Server stoppen und Progression-Ordner sichern, alte JAR entfernen, JAR und eigene `config.yml` aus dem Beta.8-Hotfix einfügen, vollständig starten. `playerdata`, `journeydata`, `migration-backups` und `history-credits` behalten; beide bisherigen Revisionsmarker bleiben gleich. Keine Quest- oder TAB-Dateien für diesen Hotfix ersetzen.
+
+## Fortschritt übernehmen (Beta.4 bis Beta.7)
+
+Server stoppen, den bestehenden Progression-Ordner sichern, die bisherige JAR entfernen und aus `TownyReborn-Journey-Hotfix-2.0.0-beta.8.zip` den `plugins/`-Baum einfügen. Er enthält die neue JAR und die neue Progression-Config. **Beide ersetzen**, damit die Fortschrittsübernahme aktiviert ist. `playerdata`, `journeydata`, `migration-backups` und der neue Ordner `history-credits` bleiben im bestehenden Ordner. Vollständig starten. Offline-Spieler werden beim nächsten Laden/Login übernommen. Die ausführliche ZIP enthält zusätzlich die bisherigen statischen TAB-, Nametag- und Quests-Configs.
 
 Beta.7 rechnet den früher verdienten Fortschritt auf die längere Journey um: **alte belegte JP + seit Beta.4 verdiente JP**. Der aktuelle Stand wird nicht durch eine alte Spielerdatei ersetzt. Bereits gezahlte Perks, offene Transaktionen, abgeholte Belohnungen, Tageszähler, Skill-Höchststände und mcMMO-/Jobs-Daten bleiben erhalten.
 
@@ -21,7 +29,7 @@ Owner-/Supporter-Rechte werden nicht als individuelle Käufe gespeichert. Besteh
 
 ## Günstigere Perks und Flug-Erklärung
 
-Alle 43 optionalen Perk-Preise bleiben gegenüber Beta.4 gesenkt: insgesamt rund 25 %. Die JP-Kurve und Belohnungen bleiben gleich. Käufe werden nicht erneut berechnet; offene Belege behalten auch bei einem Speicherfehler ihren tatsächlich bezahlten alten Betrag. Die neue `config.yml` muss ausdrücklich eingefügt werden, damit die Town-Flug-Erweiterung und Preise gelten; das Plugin schreibt vorhandene Configs weiterhin nicht um.
+Die bestehenden 43 optionalen Perk-Preise bleiben gegenüber Beta.4 gesenkt: insgesamt rund 25 %. Die JP-Kurve und Belohnungen bleiben gleich. Käufe werden nicht erneut berechnet; offene Belege behalten auch bei einem Speicherfehler ihren tatsächlich bezahlten alten Betrag. Die neue `config.yml` muss ausdrücklich eingefügt werden, damit die Town-Flug-Erweiterung und Preise gelten; das Plugin schreibt vorhandene Configs weiterhin nicht um.
 
 | Bisher | Jetzt |
 |---:|---:|
@@ -86,7 +94,7 @@ Die Gutschrift zahlt keine Items, Keys, Geld oder bereits gelieferten Belohnunge
 - Vier durchgehende Snake-Seiten: Endet die vorige Seite unten, startet die nächste unten; entsprechend oben.
 - Grün: früherer abgeschlossener Level. Gelb: aktueller Level. Rot: zukünftiger gesperrter Level.
 - Die Fortschrittsflasche zeigt Ziel, Prozent und fehlende JP. Der persönliche Kopf zeigt Balance, Journey-/Spielzeit, mcMMO, Jobs, Fische, Quests und gekaufte Perks.
-- `How to progress` ordnet sechs Aktivitäten in zwei Reihen; darunter JP-Erklärung, persönliche Stats und Tageslimits. Kein Server-Snapshot.
+- `How to progress` ordnet sieben Aktivitäten in zwei Reihen; darunter JP-Erklärung, persönliche Stats und Tageslimits. Kein Server-Snapshot.
 - Bei einem neuen Level: Titel, Nachricht mit Rang und verfügbaren Belohnungen/Perks sowie `minecraft:ui.toast.challenge_complete`.
 - Die fünf Köpfe im Perk-Menü sind klickbare Rank-Seiten. Blaze hat eine feste MHF-Blaze-Kopftextur; ein eigenes Buch erklärt das Blättern.
 - Quests übernimmt das aktuelle Layout aus `Quests(8).zip`. Experience-Quests belegen Slot 40, den früheren Steinplatz; die Progression-Verknüpfung bleibt wie im Screenshot auf Slot 51.
@@ -97,7 +105,7 @@ Das Plugin schreibt keine anderen Plugin-Configs um. Die statischen TAB-, Lyttle
 
 Level 2: 150 JP; Level 3: 330 JP; Level 116: insgesamt **213.900 JP**. JP sind kumulativ und werden nicht ausgegeben. Jeder Aufstieg setzt den nächsten Rangnamen automatisch.
 
-Alle Tageslimits resetten um **00:00 UTC**, unabhängig von der lokalen JVM-/Host-Zeitzone. Aktive Spielzeit hat jetzt ebenfalls ein Budget: 360 JP/Tag. Die übrigen Quell-Limits bleiben bestehen. Das theoretische Maximum ist 2.160 JP pro UTC-Tag: Für neue Spieler ab 0 JP ist der letzte Level frühestens am 100. verschiedenen UTC-Tag möglich; alte Spieler bekommen ihren belegten Vorsprung zurück. Biome und Advancements sind einmalig und dieses Maximum damit nicht dauerhaft erreichbar; die tatsächliche Dauer hängt von Spielzeit und Aktivitäten ab.
+Alle Tageslimits resetten um **00:00 UTC**, unabhängig von der lokalen JVM-/Host-Zeitzone. Aktive Spielzeit hat jetzt ebenfalls ein Budget: 360 JP/Tag. Die übrigen Quell-Limits bleiben bestehen. Das theoretische Maximum ist 2.460 JP pro UTC-Tag: Für neue Spieler ab 0 JP ist der letzte Level frühestens am 87. verschiedenen UTC-Tag möglich; alte Spieler bekommen ihren belegten Vorsprung zurück. Biome und Advancements sind einmalig und dieses Maximum damit nicht dauerhaft erreichbar; die tatsächliche Dauer hängt von Spielzeit und Aktivitäten ab.
 
 Die gesamte Journey enthält einmalig 525.500 $, Ressourcenpakete, einige Minecraft-XP-Belohnungen, einzelne Crate-Keys und insgesamt 20 Town-Claim-Chunks. Die letzte Belohnung enthält 100.000 $ und 5 Supporter-Keys. Es gibt keine UltraCosmetics-Belohnungen und keinen täglichen Supporter-Key-Perk.
 

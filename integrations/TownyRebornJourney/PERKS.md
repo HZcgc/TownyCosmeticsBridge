@@ -1,7 +1,7 @@
-# Permanent rank features — beta.7
+# Permanent rank features — beta.8
 
 Features are individual permanent purchases. Already owned features remain owned after historical points restoration. Fly needs the last Journey level for new eligibility; previous purchase unlocks survive the restart. Tier tabs are labels, not paid LP groups.
-Prices remain around 25% lower in aggregate than Beta.4. Existing purchases remain paid; historical receipts retain their original amounts. `Flight in all towns` grants only `townyflight.alltowns`: `/tfly` works inside towns and ends on entering wilderness. It unlocks at Level 86 and costs $110,000; unrestricted `/fly` remains Level 116. The internal `town_flight_bypass` ID is retained for purchase continuity. Existing direct permanent perk bypass grants are migrated to town-only access; independent staff/supporter group and `/fly` access are preserved. Own-town `/tfly` remains Level 12.
+The existing 43 prices remain around 25% lower in aggregate than Beta.4; the new eGlow feature costs $20,000. Existing purchases remain paid; historical receipts retain their original amounts. `Flight in all towns` grants only `townyflight.alltowns`: `/tfly` works inside towns and ends on entering wilderness. It unlocks at Level 86 and costs $110,000; unrestricted `/fly` remains Level 116. The internal `town_flight_bypass` ID is retained for purchase continuity. Existing direct permanent perk bypass grants are migrated to town-only access; independent staff/supporter group and `/fly` access are preserved. Own-town `/tfly` remains Level 12.
 
 | Rank page | ID | Feature | Level | Price | Usage |
 |---|---|---|---:|---:|---|
@@ -47,4 +47,5 @@ Prices remain around 25% lower in aggregate than Beta.4. Existing purchases rema
 | Wither | `redstone` | Redstone kit every 72 hours | 82 | $55,000 | /kit redstone |
 | Wither | `enderchest` | Portable ender chest | 84 | $55,000 | /enderchest |
 | Wither | `town_flight_bypass` | Flight in all towns | 86 | $110,000 | /tfly |
+| Wither | `eglow` | Glow colours and effects | 88 | $20,000 | /eglow; /eglow off; /eglow rainbow; Personal colours, blinking and custom effects |
 | Wither | `fly` | Personal flight | 116 | $150,000 | /fly |

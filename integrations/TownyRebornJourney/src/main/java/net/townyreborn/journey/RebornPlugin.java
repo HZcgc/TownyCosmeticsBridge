@@ -48,6 +48,7 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
          Objects.requireNonNull(this.getCommand("rebornadmin")).setExecutor(this);
          this.getServer().getPluginManager().registerEvents(this.menu, this);
          this.getServer().getPluginManager().registerEvents(this.sources, this);
+         new QuestPoints(this).register();
          this.expansion = new RebornExpansion(this, "reborn");
          this.compatibility = new RebornExpansion(this, "trprogress");
          if (!this.expansion.register() || !this.compatibility.register()) {
@@ -67,7 +68,7 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
             .info(
                "Standalone Reborn journey ready: "
                   + this.journey.steps
-                  + " levels; player access requires townyreborn.progression.access. No Quests dependency or global pause."
+                  + " levels; player access requires townyreborn.progression.access. Optional Quests completion source; no global pause."
             );
       } catch (Exception var3) {
          this.getLogger().log(Level.SEVERE, "Could not enable standalone Reborn progression", var3);

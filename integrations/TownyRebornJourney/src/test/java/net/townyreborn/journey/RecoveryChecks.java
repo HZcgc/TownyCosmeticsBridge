@@ -32,7 +32,7 @@ public final class RecoveryChecks {
         root=Path.of(args[0]);Files.createDirectories(root);
         YamlConfiguration config=new YamlConfiguration();config.loadFromString(Files.readString(Path.of(args[1])));journey=new Journey(config);
         var fly=journey.perks.get("fly");var key=journey.gifts.getOrDefault("daily_key_5",journey.gifts.get("milestone_005"));
-        int expectedPerks=config.getInt("catalogue-version",0)>=3?43:44;
+        int expectedPerks=config.getInt("catalogue-version",0)>=7?44:config.getInt("catalogue-version",0)>=3?43:44;
         test("default catalogue, pages and configured flight gate",()->require(journey.steps==116&&journey.pages()==4&&journey.perks.size()==expectedPerks&&journey.gifts.size()==116&&fly.level()==(config.getInt("catalogue-version",0)>=5?116:18)));
         test("all level boundaries and cap",()->{for(int level=1;level<=116;level++){require(journey.level(journey.threshold(level))==level);if(level>1)require(journey.level(journey.threshold(level)-1)==level-1);}require(journey.level(Long.MAX_VALUE)==116);});
         test("snake is connected and unique",()->{Set<Integer> slots=new HashSet<>();int last=-1;for(int slot:Journey.PATH){require(slot>=9&&slot<54&&slots.add(slot));if(last>=0)require(Math.abs(last/9-slot/9)+Math.abs(last%9-slot%9)==1);last=slot;}require(slots.size()==29);});

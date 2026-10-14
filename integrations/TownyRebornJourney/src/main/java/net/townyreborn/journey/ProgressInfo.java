@@ -42,7 +42,7 @@ final class ProgressInfo {
             "&71 new mcMMO level &8= &a" + skill + " JP", "&7Combined: &a" + (time + fish + skill) + " JP", "",
             "&7Level 2 needs &f" + journey.threshold(2) + " total JP&7.", "&7Level 3 needs &f" + journey.threshold(3) + " total JP&7.",
             "&7Points are cumulative and never spent.", "&7Perks use money; rewards are optional.",
-            config.getBoolean("sources.quests.enabled", false) ? "&7Quests can also earn JP on this server." : "&7Normal Quests give their own rewards, not JP.");
+            config.getBoolean("sources.quests.enabled", false) ? "&7Each finished quest also earns JP, within its daily cap." : "&7Normal Quests give their own rewards, not JP.");
     }
     static List<String> requirement(Journey journey, State state, int target) {
         long missing = journey.remaining(state.points, target);
@@ -59,9 +59,12 @@ final class ProgressInfo {
             "&7Earned today: &f" + earned + " JP", "&7Available today: &e" + Math.max(0, cap - earned) + " JP"));
         lines.add("");
         lines.add("&7Daily reset: &f00:00 UTC &8(server time)");
-        if (id.equals("mcmmo") || id.equals("jobs") || id.equals("quests")) {
+        if (id.equals("mcmmo") || id.equals("jobs")) {
             lines.add("&7Only new personal highest levels count.");
             lines.add("&7Existing levels are your starting baseline.");
+        } else if (id.equals("quests")) {
+            lines.add("&7Each actual completion counts, including repeats.");
+            lines.add("&7Old completed quests are not credited again.");
         } else if (id.equals("exploration")) lines.add("&7Each new biome counts once per player.");
         else if (id.equals("advancements")) lines.add("&7Each advancement once; recipes excluded.");
         return lines;

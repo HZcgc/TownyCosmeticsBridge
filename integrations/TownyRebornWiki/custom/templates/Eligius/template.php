@@ -107,10 +107,10 @@ class Eligius_Template extends SmartyTemplateBase
         // Custom pages may use a different route/name. Assets are scoped to .trwiki
         // and the script exits when no wiki root exists, so load them consistently.
         $this->addCSSFiles([
-            $this->_template['path'] . 'css/towny-wiki.css?v=20261014-journey-beta7' => [],
+            $this->_template['path'] . 'css/towny-wiki.css?v=20261014-journey-beta8' => [],
         ]);
         $this->addJSFiles([
-            $this->_template['path'] . 'js/towny-wiki.js?v=20261014-journey-beta7' => [],
+            $this->_template['path'] . 'js/towny-wiki.js?v=20261014-journey-beta8' => [],
         ]);
 
         $primary_colour = $this->colour($this->setting('customColor', '#ff2bbd'), '#ff2bbd');

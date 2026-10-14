@@ -1,4 +1,4 @@
-# Towny Reborn Journey beta.7. Install with the matching JAR while the server is stopped.
+# Towny Reborn Journey beta.8. Install with the matching JAR while the server is stopped.
 # No external config changes. Access: townyreborn.progression.access.
 # Restore pre-reset earned JP once; retain post-reset points, paid perks and delivery receipts.
 # Keep both revision values unchanged. Keep history-credits and migration-backups to prevent a repeated credit.
@@ -282,7 +282,7 @@ sources:
     points-per-advancement: 15
     daily-cap: 300
   quests:
-    enabled: false
+    enabled: true
     points-per-completion: 10
     daily-cap: 300
   playtime:
@@ -875,6 +875,23 @@ perks:
     - Flight ends when you enter the wilderness.
     rank-tier: WITHER
     menu-order: 6
+  eglow:
+    name: Glow colours and effects
+    level: 88
+    price: 20000
+    permissions:
+    - eglow.user.*
+    - eglow.color.*
+    - eglow.blink.*
+    - eglow.effect.*
+    legacy-markers: []
+    help-commands:
+    - /eglow
+    - /eglow off
+    - /eglow rainbow
+    - All personal colours, blinking and custom glow effects.
+    rank-tier: WITHER
+    menu-order: 7
   fly:
     name: Personal flight
     level: 116
@@ -887,7 +904,7 @@ perks:
     help-commands:
     - /fly
     rank-tier: WITHER
-    menu-order: 7
+    menu-order: 8
 gifts:
   milestone_001:
     level: 1

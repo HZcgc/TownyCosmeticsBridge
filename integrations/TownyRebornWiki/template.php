@@ -100,10 +100,10 @@ class Eligius_Template extends SmartyTemplateBase
                 if ($wiki_content !== false) {
                     $this->getEngine()->addVariable('CONTENT', $wiki_content);
                     $this->addCSSFiles([
-                        $this->_template['path'] . 'css/towny-wiki.css?v=20261014-journey-beta7' => [],
+                        $this->_template['path'] . 'css/towny-wiki.css?v=20261014-journey-beta8' => [],
                     ]);
                     $this->addJSFiles([
-                        $this->_template['path'] . 'js/towny-wiki.js?v=20261014-journey-beta7' => [],
+                        $this->_template['path'] . 'js/towny-wiki.js?v=20261014-journey-beta8' => [],
                     ]);
                 }
             }

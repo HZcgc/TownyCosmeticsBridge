@@ -331,7 +331,7 @@ final class Menu implements Listener {
       this.sourceButton(view, state, 22, Material.COMPASS, "5. Exploration", "exploration", "points-per-biome", "Visit a biome you have not recorded yet.");
       this.sourceButton(view, state, 25, Material.KNOWLEDGE_BOOK, "6. Advancements", "advancements", "points-per-advancement", "Complete a new non-recipe advancement.");
       if (this.plugin.getConfig().getBoolean("sources.quests.enabled", false))
-         this.sourceButton(view, state, 40, Material.BOOK, "Optional Quests", "quests", "points-per-completion", "Complete another quest.");
+         this.sourceButton(view, state, 40, Material.BOOK, "7. Quests", "quests", "points-per-completion", "Finish a quest; new repeat completions also count.");
       this.button(view, 28, Material.NETHER_STAR, "&dHow Journey Points work", ProgressInfo.explanation(this.plugin.journey, this.plugin.getConfig()), null);
       this.button(view, 31, Material.MAP, "&dYour live stats", this.liveStats(player, state), null);
       this.button(view, 34, Material.CLOCK, "&dDaily limits &8• &f00:00 UTC",

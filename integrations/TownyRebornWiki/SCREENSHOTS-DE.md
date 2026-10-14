@@ -1,13 +1,13 @@
 # Screenshots für die aktuelle Journey-Anleitung
 
-Bitte von **Beta.7 mit der aktuellen Config** aufnehmen. Ganze Menüs in Originalauflösung, ohne nachträgliches Skalieren; Tooltips müssen vollständig lesbar sein. Die folgenden Namen dienen der eindeutigen Zuordnung beim Einbauen.
+Bitte von **Beta.8 mit der aktuellen Config** aufnehmen. Ganze Menüs in Originalauflösung, ohne nachträgliches Skalieren; Tooltips müssen vollständig lesbar sein. Die folgenden Namen dienen der eindeutigen Zuordnung beim Einbauen.
 
 | Datei | Was darauf zu sehen sein soll |
 |---|---|
 | `journey-01-main.png` | `/progression`: ganze Hauptseite mit grünen, gelben und roten Leveln, Flasche, Guide-Buch, Spieler-Kopf und Permanent-Perks-Chest. |
 | `journey-02-progress-tooltip.png` | Dasselbe Menü, Maus über **Your progress**: aktuelle und nächste Level, Gesamt-/Schritt-JP, Prozent abgeschlossen/übrig und fehlende JP. |
 | `journey-03-level-tooltip.png` | Maus über einen Level: Rangname, kumulative Anforderung, einmalige Belohnung und optionale Kauf-Perks. |
-| `journey-04-how-to-progress.png` | Die geöffnete **How to progress**-Seite mit den sechs Aktivitäten, Erklärungen und Tageslimits. |
+| `journey-04-how-to-progress.png` | Die geöffnete **How to progress**-Seite mit den sieben Aktivitäten, Erklärungen und Tageslimits. |
 | `journey-05-source-budget.png` | Dort Maus über z. B. Fishing oder Jobs: Rate, Tageslimit, heute verdient und heute noch verfügbar. |
 | `journey-06-skeleton-perks.png` | `/reborn perks`, Skeleton-Seite, mit allen fünf klickbaren Rank-Köpfen und lesbaren Perks. Ideal sind ein grüner gekaufter Perk, eine verfügbare Chest und ein roter gesperrter Perk. |
 | `journey-07-blaze-perks.png` | Nach Klick auf den Blaze-Kopf: Blaze-Seite einschließlich Kopftextur. |

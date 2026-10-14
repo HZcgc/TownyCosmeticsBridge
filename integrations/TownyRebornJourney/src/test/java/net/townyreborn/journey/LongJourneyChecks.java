@@ -50,15 +50,17 @@ public final class LongJourneyChecks {
             for(int l=1;l<=116;l++)require(names.add(journey.title(l))&&shorts.add(journey.abbreviation(l)));
             require(names.size()==116&&journey.title(1).equals("Newcomer")&&journey.title(116).equals("Reborn Legend"));
         });
-        test("maximum permitted earnings require the 100th UTC day",()->{
+        test("seven source budgets require at least the 87th UTC day",()->{
             State s=new State(UUID.randomUUID(),"Test");long cap=0;
             for(String id:config.getConfigurationSection("sources").getKeys(false))
                 if(config.isConfigurationSection("sources."+id)&&config.getBoolean("sources."+id+".enabled"))cap+=config.getLong("sources."+id+".daily-cap");
-            require(cap==2160&&journey.threshold(116)==213900&&99*cap<journey.threshold(116)&&100*cap>=journey.threshold(116));
-            for(int day=1;day<=99;day++)for(String id:List.of("playtime","mcmmo","jobs","fishing","exploration","advancements"))
+            require(cap==2460&&journey.threshold(116)==213900&&86*cap<journey.threshold(116)&&87*cap>=journey.threshold(116));
+            for(int day=1;day<=86;day++)for(String id:List.of("playtime","mcmmo","jobs","fishing","exploration","advancements","quests"))
                 s.capped("day"+day,id,100000,config.getLong("sources."+id+".daily-cap"));
-            require(s.points==213840&&journey.level(s.points)==115);
-            s.capped("day100","playtime",60,360);require(journey.level(s.points)==116);
+            require(s.points==211560&&journey.level(s.points)==115);
+            for(String id:List.of("playtime","mcmmo","jobs","fishing","exploration","advancements","quests"))
+                s.capped("day87",id,Math.max(0,journey.threshold(116)-s.points),config.getLong("sources."+id+".daily-cap"));
+            require(s.points==213900&&journey.level(s.points)==116);
         });
         test("UTC midnight ignores JVM timezone and Berlin daylight-saving time",()->{
             Clock before=Clock.fixed(Instant.parse("2026-10-14T23:59:59Z"),ZoneId.of("Europe/Berlin"));
@@ -166,15 +168,19 @@ public final class LongJourneyChecks {
             s.points=journey.threshold(86);require(journey.purchasable(s,journey.perks.get("town_flight_bypass"))&&!journey.purchasable(s,journey.perks.get("fly")));
             s.points=0;s.unlocked.add("town_flight_bypass");require(journey.purchasable(s,journey.perks.get("town_flight_bypass")));
         });
-        test("all permanent feature prices fall moderately while rewards and point requirements stay unchanged",()->{
+        test("existing price reductions and rewards stay unchanged while Quests and one eGlow perk are added",()->{
             var previous=JourneyUpdateChecks.readJar(Path.of(args[2]).resolve("releases/TownyRebornProgression-2.0.0-beta.4.jar").toString());
             Journey oldJourney=new Journey(previous);double oldTotal=0,newTotal=0;
             for(String section:List.of("journey","sources"))for(String key:previous.getConfigurationSection(section).getKeys(true)) {
-                String path=section+"."+key;if(!previous.isConfigurationSection(path))require(Objects.equals(config.get(path),previous.get(path)));}
+                String path=section+"."+key;if(!previous.isConfigurationSection(path)) {
+                    if(path.equals("sources.quests.enabled"))require(config.getBoolean(path));
+                    else require(Objects.equals(config.get(path),previous.get(path)));}}
             require(journey.gifts.equals(oldJourney.gifts));
-            for(var p:journey.perks.values()) {var old=oldJourney.perks.get(p.id());double ratio=p.price()/old.price();
+            Set<String> added=new HashSet<>(journey.perks.keySet());added.removeAll(oldJourney.perks.keySet());require(added.equals(Set.of("eglow")));
+            for(var old:oldJourney.perks.values()) {var p=journey.perks.get(old.id());double ratio=p.price()/old.price();
                 require(ratio>=0.65&&ratio<=0.80&&(p.id().equals("town_flight_bypass")||p.permissions().equals(old.permissions()))&&p.requires().equals(old.requires()));oldTotal+=old.price();newTotal+=p.price();}
             require(oldTotal==2350000&&newTotal==1755000&&journey.perks.get("fly").price()==150000&&journey.perks.get("tfly").price()==150000);
+            require(journey.perks.get("eglow").price()==20000);
         });
         test("permission delivery save failure retains the original paid receipt after a price reduction",()->{
             UUID id=UUID.randomUUID();var c=oldProfile(id);c.set("owned-perks",List.of());c.set("pending-purchase.perk","fly");
@@ -233,11 +239,11 @@ public final class LongJourneyChecks {
             });
             test("retained unlock appears purchasable at level one, with a clear retained-unlock label",()->{
                 gui.state().points=4;gui.state().unlocked.add("fly");gui.menu.perks(gui.player,4,0);
-                require(gui.tile(16).icon()==Material.CHEST&&gui.text(16).contains("earlier purchase unlock is retained"));
+                require(gui.tile(17).icon()==Material.CHEST&&gui.text(17).contains("earlier purchase unlock is retained"));
             });
             test("rank access is visible without falsely recording a permanent purchase",()->{
                 when(gui.plugin.integrations.hasFeatureAccess(gui.player,journey.perks.get("fly"))).thenReturn(true);gui.menu.perks(gui.player,4,0);
-                require(gui.tile(16).icon()==Material.LIGHT_BLUE_DYE&&gui.text(16).contains("Your rank currently provides")&&!gui.state().owned.contains("fly"));
+                require(gui.tile(17).icon()==Material.LIGHT_BLUE_DYE&&gui.text(17).contains("Your rank currently provides")&&!gui.state().owned.contains("fly"));
             });
             test("town flight scope is explained before confirming a purchase",()->{
                 gui.menu.perks(gui.player,4,0);require(gui.text(15).contains("Fly within your own town and other towns"));

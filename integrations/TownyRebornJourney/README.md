@@ -1,8 +1,8 @@
 # Standalone Reborn Journey
 
-Current release: **2.0.0-beta.7**. Install [the folder overlay](releases/TownyReborn-Journey-2.0.0-beta.7.zip). [German installation guide](README-DE.md), [JP explanation](JOURNEY-POINTS-DE.md), [reward catalogue](REWARDS.md), [permanent features](PERKS.md).
+Current release: **2.0.0-beta.8**. Install [the folder overlay](releases/TownyReborn-Journey-2.0.0-beta.8.zip). [German installation guide](README-DE.md), [JP explanation](JOURNEY-POINTS-DE.md), [reward catalogue](REWARDS.md), [permanent features](PERKS.md).
 
-116 levels, four continuous snake pages, a distinct title per level and 43 optional permanent features. Access requires `townyreborn.progression.access`, default false. Paid feature purchases never gate normal levelling. Fly is the final Wither feature and requires level 116 for new eligibility; previously reached purchase unlocks are retained.
+116 levels, four continuous snake pages, a distinct title per level and 44 optional permanent features. Access requires `townyreborn.progression.access`, default false. Paid feature purchases never gate normal levelling. Fly is the final Wither feature and requires level 116 for new eligibility; previously reached purchase unlocks are retained.
 
 ## Beta.7 historical progress restoration
 
@@ -46,7 +46,7 @@ Level L requires `150 × (L−1) + 30 × (L−1) × (L−2) / 2` total points. L
 
 Every level has a distinct English title. TAB uses J001-J116; the rank palette transitions pink to lime and uses a subtle text gradient. `title`/`short_title` stay plain for compatibility; `title_colored`/`short_title_colored` supply legacy RGB, and `title_mini` supplies MiniMessage. Existing `chat_prefix` automatically uses the coloured full title. Supplied TAB and nametag files explicitly use the renderer-specific placeholders, preserve LP order, display-name RGB and attached small mcMMO.
 
-Green is an earlier completed level, yellow is the current level, red is a future locked level. The progress bottle remains focused on goal/percent/missing JP. The player head supplies personal money/playtime/skills/Jobs/fish/quests/perk stats. How to progress has six numbered sources in two rows, followed by explanation, personal stats and UTC limits. No server snapshot/TPS item remains.
+Green is an earlier completed level, yellow is the current level, red is a future locked level. The progress bottle remains focused on goal/percent/missing JP. The player head supplies personal money/playtime/skills/Jobs/fish/quests/perk stats. How to progress has six numbered sources in two rows plus the seventh Quest-completion source below, with explanation, personal stats and UTC limits. No server snapshot/TPS item remains.
 
 Perk tiers are clickable Skeleton/Creeper/Blaze/Dragon/Wither head tabs, with a browsing-instruction book. The Blaze tab embeds the fixed skin returned by Mojang's MHF_Blaze profile, avoiding an asynchronous named-player lookup. Source: `https://sessionserver.mojang.com/session/minecraft/profile/4c38ed11596a4fd4ab1d26f386c1cbac`; skin hash `d06e342f90ec538aaa1552b224f264a040840902e126d91ece6139aa5b3c7cc3`.
 
@@ -62,7 +62,7 @@ Owner, player online: `rebornadmin status <player>`; `rebornadmin receipt <playe
 
 ## Build and verification
 
-Requires Java 21+, Paper, PlaceholderAPI, LuckPerms and Vault with an economy provider. Jobs/mcMMO are optional. No Quests or DeluxeMenus runtime dependency.
+Requires Java 21+, Paper, PlaceholderAPI, LuckPerms and Vault with an economy provider. Jobs, mcMMO and LMB Quests are optional. Quests uses a soft dependency for the completion-event hook; the Journey remains usable without it. No DeluxeMenus runtime dependency.
 
 ```text
 python build.py --jdk <jdk-bin> --deps <dependency-directory> --output <output-jar>
@@ -73,3 +73,9 @@ python package.py --jar <output-jar> --verification <verification-directory>
 Core recovery scenarios run on both the preserved Beta.1 binary and this source build. Update checks cover actual menu inventory/actions, unchanged config files, old claims and failed/uncertain payments. Additional historical checks cover exact prior-point/legacy conversion, proof priority, real backup/journal files, failed writes, uncertain recovery, downgrade/revision replay protection and uploaded profile cases. Long-path checks cover one-time native/legacy migration, byte-identical backups, failed backup/save, paid recovery after reset, baseline persistence, UTC boundaries, pacing, unique renderable titles, notifications, Blaze skin and live-stat placement. Inventory registries, wallet/LP and client sound/title boundaries use controlled doubles. Live Paper/Minecraft verification is separate.
 
 Report: `verification/JOURNEY-UPDATE-VERIFICATION.txt`. Historical release binaries/packages and their original checksums are retained. No player records or database exports are shipped.
+
+## Beta.8 quest completion source and personal eGlow
+
+The optional Quests hook reflects `PlayerFinishQuestEvent` and snapshots the public QuestProgress getters verified in [LMB Quests](https://github.com/LMBishop/Quests/tree/master/bukkit/src/main/java/com/leonardobishop/quests/bukkit/api/event). It awards actual successful completions rather than the falling `%quests_completed%` display count. There is no retrospective completion scan or aggregate award fallback. Quest IDs use stable SHA-256 keys to preserve YAML-safe per-quest completion timestamps. Points, daily cap and timestamp are saved atomically; duplicate/older events are skipped, repeat runs count, capped completions are acknowledged and storage errors block further profile writes until review. Async callbacks snapshot values before scheduling the award on the main thread.
+
+Wither-page `eglow` unlocks at level 88 for $20,000. Its four grants are `eglow.user.*`, `eglow.color.*`, `eglow.blink.*`, `eglow.effect.*`; there are no eGlow admin grants or generic legacy purchase markers. Group permissions are not modified. Fly remains level 116 and the last Wither item.

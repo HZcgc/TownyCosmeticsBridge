@@ -4,9 +4,11 @@ c7c8a5cc112d47515688ad9d7d4b113b88e6a917ae938f5bb444d517549b57eb  TownyReborn-Jo
 094267a7e0c2a63bff4bad15d62f57ae8e099428b291a47b5a7b9bd443034f8c  TownyReborn-Journey-2.0.0-beta.5.zip
 8586e6d3042de19caaa47f20d732841360a8e409be0d264800f88c1a0296a574  TownyReborn-Journey-2.0.0-beta.6.zip
 70979a52b0b94a2049f69f967b04b28657c512c59ea36c420d8e6f0f8f6316ed  TownyReborn-Journey-2.0.0-beta.7.zip
+d8a2e87bc614886bcba896709e3873088bd1af987a772be19390e9095fb79188  TownyReborn-Journey-2.0.0-beta.8.zip
 f8a47ad0f6841d91e55c11ffe6f84a6110369291cf3a5cec3060e0e7eb3c5b95  TownyReborn-Journey-Hotfix-2.0.0-beta.5.zip
 8ca23b9d64317df6b4131f8ac1805846936e0a65974247339985db8eb894f6a4  TownyReborn-Journey-Hotfix-2.0.0-beta.6.zip
 88fd391275ffcae06d2be774696ebd235ed7a079d36069e843caf0d88381d0d2  TownyReborn-Journey-Hotfix-2.0.0-beta.7.zip
+d2fa9803ce9c29d9f5165288198f3b23e2b265039448dcc3990cf4d174deb5ef  TownyReborn-Journey-Hotfix-2.0.0-beta.8.zip
 b7637076c6eeae7bfc82960ad57d75f6bd6c8e577fe7687a70c57f49b1ca05c6  TownyReborn-Standalone-Journey.zip
 4e42da5b144d63307d70f6f6ca4d3b34ef6e503ee794dd1c6d0461e4b4c47bfa  TownyRebornProgression-2.0.0-beta.1.jar
 a7d100a5a905c1af5eb8dc2303ceb17b831a3d203eac3f16fa4db0c78401fe56  TownyRebornProgression-2.0.0-beta.2.jar
@@ -15,3 +17,4 @@ df542934e7b5867b5170a4ab801008d8fa0b9f9cc4e1af548aaa6ea4c0e1a887  TownyRebornPro
 fff0837dfe98f492d5c777c79df6cba8555ffceb4db1423b62d638a44e2335a5  TownyRebornProgression-2.0.0-beta.5.jar
 d01536405e5900bb0ed97d479567c3f0e84c785846ed2d65acedb0b6dfeb81ac  TownyRebornProgression-2.0.0-beta.6.jar
 ac32884ece557d747b0fe5c4f0e1dd18c01c817e61983b822fe14a953a053aea  TownyRebornProgression-2.0.0-beta.7.jar
+744a24d7711bc935539e0aa874fe2e830a5b338812d9f46986d4628c7cf5974e  TownyRebornProgression-2.0.0-beta.8.jar

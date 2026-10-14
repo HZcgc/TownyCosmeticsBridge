@@ -69,6 +69,7 @@ public final class Store {
          var4.claimed.addAll(var6.getStringList("claimed-gifts"));
          var4.achievements.addAll(var6.getStringList("achievements"));
          loadNumbers(var6, "high-water", var4.high);
+         loadNumbers(var6, "quest-completions", var4.questCompletions);
          loadNumbers(var6, "daily-awards", var4.daily);
          var4.day = var6.getString("day", "");
          var4.pendingGift = var6.getString("pending-gift", "");
@@ -182,6 +183,7 @@ public final class Store {
       var2.set("claimed-gifts", var1.claimed.stream().sorted().toList());
       var2.set("achievements", var1.achievements.stream().sorted().toList());
       var2.set("high-water", new TreeMap<>(var1.high));
+      var2.set("quest-completions", new TreeMap<>(var1.questCompletions));
       var2.set("daily-awards", new TreeMap<>(var1.daily));
       var2.set("day", var1.day);
       if (!var1.pendingGift.isEmpty()) {

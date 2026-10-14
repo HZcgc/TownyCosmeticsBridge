@@ -1,4 +1,4 @@
-# Journey rewards — beta.7
+# Journey rewards — beta.8
 
 One free reward per level. Gifts and original legacy aliases retain their stable IDs; increased values never re-award completed receipts. Existing pending receipts retain their original delivery amounts. No UltraCosmetics or recurring supporter keys.
 
@@ -89,9 +89,9 @@ One free reward per level. Gifts and original legacy aliases retain their stable
 | 83 | Astronomer | 111,930 | 48 lanterns | — |
 | 84 | Celestial | 114,540 | 96 copper ingots | Portable ender chest |
 | 85 | Moonwalker | 117,180 | +6 town claim chunks | — |
-| 86 | Dawnbringer | 119,850 | 48 golden carrots | Expanded town flight access |
+| 86 | Dawnbringer | 119,850 | 48 golden carrots | Flight in all towns |
 | 87 | Sunseeker | 122,550 | 3 Supporter Crate Keys | — |
-| 88 | Radiant | 125,280 | 192 oak logs | — |
+| 88 | Radiant | 125,280 | 192 oak logs | Glow colours and effects |
 | 89 | Emberkeeper | 128,040 | $24,000 | — |
 | 90 | Flamewarden | 130,830 | 64 iron ingots | — |
 | 91 | Phoenix | 133,650 | 64 lanterns | — |

@@ -2,6 +2,8 @@
 
 The wiki now explains the standalone Reborn Journey instead of the retired quest-based Perk Path. Players can immediately find how to open the menus, earn JP, read the colour legends, claim rewards and buy optional permanent features.
 
-Added all 116 levels and titles, reward and eligibility tables, all 43 current perk prices and prerequisites, daily limits, historical progress restoration, and the possibility of future level extensions. An interactive calculator shows the current level, step percentage, missing JP and a daily activity estimate with separate source caps.
+Added all 116 levels and titles, reward and eligibility tables, all 44 current perk prices and prerequisites, daily limits, historical progress restoration, and the possibility of future level extensions. An interactive calculator shows the current level, step percentage, missing JP and a daily activity estimate with separate source caps.
 
 Mobile Journey tables become labelled cards. Existing guides and images stay linked; outdated Perk Path walkthroughs are retired. The root and Eligius copies are synchronized and the asset cache versions are updated.
+
+Beta.8: Successful quest completions now add 10 JP (300/day), including new repeat completions. The calculator includes the seventh source and its new 2,460-JP theoretical daily ceiling. Added the optional Wither-page personal eGlow perk at Level 88 for $20,000; free flight remains the last level.

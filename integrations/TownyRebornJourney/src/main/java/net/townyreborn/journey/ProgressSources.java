@@ -127,12 +127,8 @@ final class ProgressSources implements Listener {
                      }
                   }
 
-                  if (this.plugin.getConfig().getBoolean("sources.quests.enabled", false)) {
-                     long var14 = var5.advanceHighWater(
-                        "quests", this.number(var4, "%quests_completed%"), this.plugin.getConfig().getLong("sources.quests.points-per-completion", 10L)
-                     );
-                     this.award(var4, "quests", var14, this.plugin.getConfig().getLong("sources.quests.daily-cap", 300L));
-                  }
+                  // Quests completion events award each actual run, including repeatable quests.
+                  // The display counter falls when a quest is restarted and must not award JP.
 
                   if (this.plugin.getConfig().getBoolean("sources.exploration.enabled", true)) {
                      String var15 = "biome:" + var4.getLocation().getBlock().getBiome().getKey();

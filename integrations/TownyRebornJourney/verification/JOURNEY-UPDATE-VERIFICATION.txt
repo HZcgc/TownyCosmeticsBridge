@@ -1,6 +1,6 @@
-Towny Reborn Journey 2.0.0-beta.7
+Towny Reborn Journey 2.0.0-beta.8
 
-Current build: 183 scenarios passed (24 recovery + 45 menu/update + 32 long-Journey/migration + 17 permission-import + 65 historical-credit).
+Current build: 202 scenarios passed (24 recovery + 45 menu/update + 32 long-Journey/migration + 17 permission-import + 65 historical-credit + 19 quest/eGlow).
 Preserved Beta.1 reference: the same 24 recovery scenarios passed independently.
 Java sources compile with --release 21; JVM verification runs with -Xverify:all.
 
@@ -73,7 +73,7 @@ PASS progress descriptions match actual source rates and daily limits
 PASS inventory shows exact goal and remaining percent on bottle
 PASS inventory legend and green yellow red status
 PASS second inventory page starts at bottom and continues upward
-PASS guide aligns all six sources with UTC limits and removes server snapshot
+PASS guide aligns all seven sources with UTC limits and removes server snapshot
 PASS free rewards have actual item and money icons
 PASS shop display cannot be mistaken for player warps
 PASS inventory presents rank tabs and fly as the last Wither perk
@@ -85,7 +85,7 @@ RESULT 45 journey update checks passed
 
 LONG
 PASS 116 distinct level titles and compact level IDs
-PASS maximum permitted earnings require the 100th UTC day
+PASS seven source budgets require at least the 87th UTC day
 PASS UTC midnight ignores JVM timezone and Berlin daylight-saving time
 PASS fresh profiles begin at level one without writing a read-only record
 PASS previous 5052 JP retain exactly 13 purchase unlocks without granting ownership
@@ -103,7 +103,7 @@ PASS a debited flight receipt recovers at level one without another debit
 PASS larger reward amounts cannot replay old gift claims or ambiguous receipts
 PASS flight needs the final level for a new purchase; owned flight remains owned
 PASS all-town flight is scoped to towns and available before unrestricted flight
-PASS all permanent feature prices fall moderately while rewards and point requirements stay unchanged
+PASS existing price reductions and rewards stay unchanged while Quests and one eGlow perk are added
 PASS permission delivery save failure retains the original paid receipt after a price reduction
 PASS rank colours move pink to lime and both render formats preserve titles
 PASS reward value rises without recurring keys or cosmetic rewards
@@ -205,3 +205,25 @@ PASS anonymous uploaded historical profile 35 keeps its expected converted progr
 PASS anonymous uploaded historical profile 36 keeps its expected converted progress
 PASS anonymous uploaded historical profile 37 keeps its expected converted progress
 RESULT 65 historical credit checks passed
+
+QUESTS
+PASS Quests enabled at 10 JP with 300 daily JP and unchanged migration revisions
+PASS first new quest completion earns JP without an aggregate baseline
+PASS repeat completion counts even when the displayed quest count never increases
+PASS duplicate and older completion events do not credit twice
+PASS same-time completions of different quest IDs count independently
+PASS repeat timestamp receipt persists through a fresh Store and restart
+PASS quest IDs with dots and unicode retain stable independent receipts
+PASS full quest budget records excess completions without queuing tomorrow's JP
+PASS quest awards preserve purchases delivered gifts and source high-water records
+PASS blocked offline and inaccessible players earn no quest JP
+PASS Creative and AFK-world completions earn no JP
+PASS disabled quest source registers no listener and awards nothing
+PASS missing Quests plugin is optional and reported once
+PASS registered real API-shaped completion routes to the saved quest award
+PASS async finish snapshots values before the mutable Quests record changes
+PASS failed profile save blocks further awards and sends no premature level notification
+PASS successful level crossing notifies only after its saved point and completion record
+PASS Wither eGlow costs 20000 at level 88 and grants only personal use
+PASS actual eGlow purchase charges 20000 once and keeps JP plus durable ownership
+RESULT 19 quest/eGlow checks passed

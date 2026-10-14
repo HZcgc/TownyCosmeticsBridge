@@ -1,6 +1,6 @@
 # Journey Points: Punkte, Grind und tägliche Limits
 
-Alle sechs Quellen erhöhen denselben JP-Gesamtstand. Er wird nicht durch Geldkäufe oder Belohnungen verbraucht. Minecraft-XP ist ein eigener Wert.
+Alle sieben Quellen erhöhen denselben JP-Gesamtstand. Er wird nicht durch Geldkäufe oder Belohnungen verbraucht. Minecraft-XP ist ein eigener Wert.
 
 | Aktivität | JP | Tageslimit |
 |---|---:|---:|
@@ -10,8 +10,9 @@ Alle sechs Quellen erhöhen denselben JP-Gesamtstand. Er wird nicht durch Geldk�
 | Mit der Angel gefangener Fisch | 3 | 300 |
 | Neu erfasstes Biom | 8 einmalig | 200 |
 | Neuer Advancement, ohne Rezepte | 15 einmalig | 300 |
+| Erfolgreich abgeschlossene Quest, auch Wiederholungen | 10 | 300 |
 
-Normal abgeschlossene Quests geben aktuell keine JP. Ihre eigenen Aufgaben und Belohnungen bleiben im Quests-Plugin. Die Verknüpfung zu `/progression` verbindet die Menüs.
+Neue Quest-Abschlüsse geben zusätzlich **10 JP**, maximal **300 JP pro UTC-Tag**. Auch jeder neue Abschluss einer regulär wiederholbaren Quest zählt. Der native Quests-Abschluss-Event wird verwendet; der schwankende Gesamtzähler ist nur eine Anzeige. Bereits früher abgeschlossene Quests werden nicht erneut als neue Abschlüsse importiert. Ihre eigenen Aufgaben und Belohnungen bleiben im Quests-Plugin. Die Verknüpfung zu `/progression` verbindet die Menüs.
 
 ## Beispiel
 
@@ -34,13 +35,15 @@ Der Preis des nächsten Aufstiegs steigt um 30 JP: 150, 180, 210 usw. Die Formel
 
 ## Reset und Schutz vor wiederholten Punkten
 
-Die Quell-Budgets erneuern sich um **00:00 UTC**. Der Gesamtstand bleibt dabei erhalten; ungenutzte Tagesbudgets werden nicht angespart. Die Punkte-/Menü-Aktualisierung läuft alle 30 Sekunden; Fische und Advancements lösen zusätzlich eigene Events aus.
+Die Quell-Budgets erneuern sich um **00:00 UTC**. Der Gesamtstand bleibt dabei erhalten; ungenutzte Tagesbudgets werden nicht angespart. Die Punkte-/Menü-Aktualisierung läuft alle 30 Sekunden; Fische, Advancements und Quest-Abschlüsse lösen zusätzlich eigene Events aus.
 
 Aktive Spielzeit verlangt Bewegung, Bauen oder Interaktion. Nach 90 Sekunden ohne Aktivität läuft keine Zeitvergütung weiter. Creative, Spectator, NPCs, Test-Bots und die ignorierten Welten `afk`/`hub` geben keine JP. Quellen-Limits gelten getrennt: Ist Fischen voll, kann man durch andere Quellen weiterkommen.
 
 Die erste gültige mcMMO-/Job-Messung ist ein Ausgangspunkt. Nur neue persönliche Höchststände darüber werden belohnt. Ein Relog oder Job-/Skill-Reset gibt bereits verdiente Levels nicht erneut. Biome und Advancements zählen nur einmal pro Spieler. Bei ausgeschöpfter Tagesgrenze werden zusätzliche Punkte dieser Quelle nicht für morgen gesammelt.
 
-Das theoretische Gesamtmaximum ist 2.160 JP pro UTC-Tag. 99 solche Tage liefern 213.840 JP, noch unter dem finalen Ziel von 213.900. Neue Spieler ab 0 JP benötigen deshalb mindestens 100 unterschiedliche UTC-Tage im normalen Spiel. Historisch übernommene JP zählen als bereits verdienter Vorsprung. Einmalige Quellen sind endlich; für die tatsächliche Dauer sind Spielweise und Spielzeit ausschlaggebend.
+Das theoretische Gesamtmaximum ist 2.460 JP pro UTC-Tag. 86 solche Tage liefern 211.560 JP, noch unter dem finalen Ziel von 213.900. Neue Spieler ab 0 JP benötigen deshalb mindestens 87 unterschiedliche UTC-Tage im normalen Spiel. Historisch übernommene JP zählen als bereits verdienter Vorsprung. Einmalige Quellen sind endlich; für die tatsächliche Dauer sind Spielweise und Spielzeit ausschlaggebend.
+
+Quest-Abschlüsse werden mit Quest-ID und letztem Abschlusszeitpunkt im Profil gespeichert. Derselbe oder ein älterer Event gibt keine zweite Gutschrift. Das gilt auch nach Relog und Neustart; bei vollem Tagesbudget wird der Abschluss verbucht, ohne Punkte für morgen zu sammeln. Punkte und Abschlussbeleg werden gemeinsam atomar gespeichert. Bei einem Speicherfehler wird das Profil zur Prüfung angehalten.
 
 ## Früheren Fortschritt übernehmen
 

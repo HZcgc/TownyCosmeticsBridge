@@ -14,7 +14,7 @@ with zipfile.ZipFile(a.jar) as jar:
     version = meta['version']
     assert jar.read('config.yml') == (ROOT/'src/main/resources/config.yml').read_bytes(), 'JAR/config mismatch'
 
-logs = {name: (a.verification/(name+'.log')).read_text() for name in ['original', 'rebuilt', 'update', 'long', 'permissions', 'history']}
+logs = {name: (a.verification/(name+'.log')).read_text() for name in ['original', 'rebuilt', 'update', 'long', 'permissions', 'history', 'quests']}
 counts = {}
 for name, log in logs.items():
     result = re.findall(r'^RESULT (\d+) .*checks passed$', log, re.M)
@@ -22,10 +22,10 @@ for name, log in logs.items():
     counts[name] = int(result[0])
     assert sum(line.startswith('PASS ') for line in log.splitlines()) == counts[name]
 assert logs['original'].split('RESULT')[0] == logs['rebuilt'].split('RESULT')[0], 'Reference/core scenarios disagree'
-total = counts['rebuilt'] + counts['update'] + counts['long'] + counts['permissions'] + counts['history']
+total = counts['rebuilt'] + counts['update'] + counts['long'] + counts['permissions'] + counts['history'] + counts['quests']
 report = f'''Towny Reborn Journey {version}
 
-Current build: {total} scenarios passed ({counts['rebuilt']} recovery + {counts['update']} menu/update + {counts['long']} long-Journey/migration + {counts['permissions']} permission-import + {counts['history']} historical-credit).
+Current build: {total} scenarios passed ({counts['rebuilt']} recovery + {counts['update']} menu/update + {counts['long']} long-Journey/migration + {counts['permissions']} permission-import + {counts['history']} historical-credit + {counts['quests']} quest/eGlow).
 Preserved Beta.1 reference: the same {counts['original']} recovery scenarios passed independently.
 Java sources compile with --release 21; JVM verification runs with -Xverify:all.
 
@@ -34,7 +34,7 @@ No live Paper/client deployment or visual Minecraft test is claimed.
 Uploaded Quests player records and quest definitions are not packaged.
 
 '''
-for name in ['rebuilt', 'update', 'long', 'permissions', 'history']:
+for name in ['rebuilt', 'update', 'long', 'permissions', 'history', 'quests']:
     report += name.upper()+'\n'+'\n'.join(line for line in logs[name].splitlines() if line.startswith(('PASS ', 'RESULT ')))+'\n\n'
 report = report.rstrip()+'\n'
 (ROOT/'verification/JOURNEY-UPDATE-VERIFICATION.txt').write_text(report)

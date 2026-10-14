@@ -28,6 +28,7 @@ public final class State {
    public final Set<String> claimed = new HashSet<>();
    public final Set<String> achievements = new HashSet<>();
    public final Map<String, Long> high = new HashMap<>();
+   public final Map<String, Long> questCompletions = new HashMap<>();
    public final Map<String, Long> daily = new HashMap<>();
    public String day = "";
    public String pendingGift = "";
