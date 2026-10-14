@@ -6,6 +6,8 @@ import java.time.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.zip.ZipFile;
+import org.bukkit.command.CommandSender;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -113,23 +115,58 @@ public final class JourneyUpdateChecks {
         test("abbreviations match title boundaries",()->{
             require(journey.abbreviation(1).equals("NEW")&&journey.abbreviation(4).equals("SET")&&journey.abbreviation(17).equals("CIT")&&journey.abbreviation(116).equals("LEG"));
         });
-        test("config upgrade preserves curve, source rates, prices and context",()->{
-            var old=read(original.saveToString());old.set("journey.points-increase",19);old.set("sources.jobs.points-per-level",26);old.set("perks.homes8.price",12345);old.set("permission-context-server","custom");
-            var upgraded=ConfigUpgrade.upgrade(old,config);
-            require(upgraded.getLong("journey.points-increase")==19&&upgraded.getInt("sources.jobs.points-per-level")==26&&upgraded.getInt("perks.homes8.price")==12345&&upgraded.getString("permission-context-server").equals("custom"));
-            require(!upgraded.contains("perks.daily_supporter")&&upgraded.getInt("catalogue-version")==3&&new Journey(upgraded).gifts.size()==116);
+        Path sourceRoot=Path.of(args[4]);
+        test("manual config preserves beta2 prices, gates, reward IDs and point curve",()->{
+            YamlConfiguration previous=readJar(sourceRoot.resolve("releases/TownyRebornProgression-2.0.0-beta.2.jar").toString());
+            require(config.get("journey.points-first").equals(previous.get("journey.points-first"))&&config.get("journey.points-increase").equals(previous.get("journey.points-increase")));
+            var newGifts=config.getConfigurationSection("gifts");var oldGifts=previous.getConfigurationSection("gifts");
+            require(newGifts.getKeys(true).equals(oldGifts.getKeys(true)));
+            for(String key:oldGifts.getKeys(true))if(!oldGifts.isConfigurationSection(key))require(Objects.equals(oldGifts.get(key),newGifts.get(key)));
+            for(String id:journey.perks.keySet())for(String field:List.of("level","price","permissions","legacy-markers","requires"))
+                require(Objects.equals(config.get("perks."+id+"."+field),previous.get("perks."+id+"."+field)));
         });
-        test("config upgrade is idempotent and retains custom v3 edits",()->{
-            var edited=read(config.saveToString());edited.set("gifts.milestone_001.money",777);require(ConfigUpgrade.upgrade(edited,config)==edited);
+        test("startup reads existing configuration without rewriting it",()->{
+            Path folder=root.resolve("manual-config");Files.createDirectories(folder);var old=read(config.saveToString());
+            old.set("catalogue-version",1);old.set("legacy-cleanup.enabled",true);old.set("display.auto-configure",true);old.set("sources.jobs.points-per-level",26);
+            String text="# custom owner comments\n"+old.saveToString();Path file=folder.resolve("config.yml");Files.writeString(file,text);
+            RebornPlugin plugin=mock(RebornPlugin.class,CALLS_REAL_METHODS);doNothing().when(plugin).saveDefaultConfig();doReturn(folder.toFile()).when(plugin).getDataFolder();
+            var method=RebornPlugin.class.getDeclaredMethod("prepareConfig");method.setAccessible(true);method.invoke(plugin);require(Files.readString(file).equals(text));
+            require(!Files.exists(folder.resolve("legacy-backup")));
+        });
+        test("incompatible old configuration fails without replacing it",()->{
+            Path folder=root.resolve("invalid-config");Files.createDirectories(folder);Path file=folder.resolve("config.yml");String text="progression:\n  paused: true\n";Files.writeString(file,text);
+            RebornPlugin plugin=mock(RebornPlugin.class,CALLS_REAL_METHODS);doNothing().when(plugin).saveDefaultConfig();doReturn(folder.toFile()).when(plugin).getDataFolder();
+            var method=RebornPlugin.class.getDeclaredMethod("prepareConfig");method.setAccessible(true);boolean failed=false;try{method.invoke(plugin);}catch(java.lang.reflect.InvocationTargetException expected){failed=true;}
+            require(failed&&Files.readString(file).equals(text));
+        });
+        test("external config writers and cleanup are absent from the JAR",()->{
+            try(ZipFile z=new ZipFile(args[1])){for(String name:List.of("ConfigUpgrade","DisplaySetup","LegacyCleanup"))require(z.getEntry("net/townyreborn/journey/"+name+".class")==null);}
+        });
+        test("five ordered supporter feature tiers, with fly last",()->{
+            require(journey.perkTiers().equals(List.of(Journey.Tier.SKELETON,Journey.Tier.CREEPER,Journey.Tier.BLAZE,Journey.Tier.DRAGON,Journey.Tier.WITHER)));
+            var pages=journey.perkPages(0);require(pages.size()==5);
+            var last=pages.get(4).items();require(last.get(last.size()-1).id().equals("fly")&&journey.perks.get("fly").level()==18);
+            require(pages.stream().flatMap(p->p.items().stream()).count()==43);
+        });
+        test("current level is yellow; future level is locked",()->{
+            long points=journey.threshold(13)+100;
+            require(journey.status(points,12)==Journey.StepStatus.COMPLETED&&journey.status(points,13)==Journey.StepStatus.CURRENT&&journey.status(points,14)==Journey.StepStatus.LOCKED);
+            require(journey.status(journey.threshold(116),116)==Journey.StepStatus.COMPLETED);
+        });
+        test("activity example combines into one total with cumulative thresholds",()->{
+            State state=new State(UUID.randomUUID(),"Test");state.capped("A","playtime",10,100000);state.capped("A","fishing",15,300);state.advanceHighWater("mcmmo",300,5);
+            state.capped("A","mcmmo",state.advanceHighWater("mcmmo",301,5),500);
+            require(state.points==30&&journey.level(state.points)==2&&journey.threshold(3)==75&&journey.threshold(4)==135);
+            require(!config.getBoolean("sources.quests.enabled"));
         });
         test("all beta1 gift IDs map to their original milestone",()->{
             for(String id:original.getConfigurationSection("gifts").getKeys(false)){
                 int level=original.getInt("gifts."+id+".level");require(journey.canonicalGift(id).equals(String.format(Locale.ROOT,"milestone_%03d",level)));
             }
         });
-        test("custom old reward aliases survive catalogue upgrade",()->{
-            var old=read(original.saveToString());old.createSection("gifts.special_old_reward",Map.of("level",4,"commands",List.of("test original")));
-            require(new Journey(ConfigUpgrade.upgrade(old,config)).canonicalGift("special_old_reward").equals("milestone_004"));
+        test("explicit owner-defined old reward aliases remain supported",()->{
+            var edited=read(config.saveToString());var aliases=new ArrayList<>(edited.getStringList("gifts.milestone_004.legacy-ids"));aliases.add("special_old_reward");edited.set("gifts.milestone_004.legacy-ids",aliases);
+            require(new Journey(edited).canonicalGift("special_old_reward").equals("milestone_004"));
         });
         test("old completed receipts retain points and paid upgrades",()->{
             Store s=store("claimed");State state=ready(s);long points=state.points;state.owned.add("homes30");state.minutes=456;state.claimed.addAll(List.of("cosmetic_hats_chicken","vanilla_xp_1","daily_key_5"));s.save(state);
@@ -191,25 +228,21 @@ public final class JourneyUpdateChecks {
             boolean failed=false;try{s.get(id,"Test");}catch(IOException expected){failed=true;}require(failed);
         });
         test("TAB ordered format preserves mcMMO, RGB display and AFK",()->{
-            YamlConfiguration tab=new YamlConfiguration();tab.load(Path.of(args[3]).toFile());require(!DisplaySetup.tab(tab));
-            for(String group:tab.getKeys(false)){String p=tab.getString(group+".tabprefix"),s=tab.getString(group+".tabsuffix");require(p.indexOf("%luckperms_prefix%")<p.indexOf("%reborn_tab_prefix%")&&!p.contains("mcmmo")&&s.contains("mcmmo_power_level")&&s.contains("%essentials_afk%")&&tab.getString(group+".customtabname").equals("%player_displayname%"));}
+            YamlConfiguration tab=new YamlConfiguration();tab.load(Path.of(args[3]).toFile());
+            for(String group:tab.getKeys(false)){String p=tab.getString(group+".tabprefix"),s=tab.getString(group+".tabsuffix");require(p.indexOf("%luckperms_prefix%")<p.indexOf("%reborn_short_title%")&&!p.contains("mcmmo")&&s.contains("mcmmo_power_level")&&s.contains("%essentials_afk%")&&!s.startsWith(" ")&&tab.getString(group+".customtabname").equals("%player_displayname%"));}
         });
-        test("TAB migration preserves unrelated settings and styled suffix",()->{
-            var tab=read("Owner:\n  tabprefix: old\n  tabsuffix: '&cAFK'\n  tagprefix: 'keep'\nother: unchanged\n");require(DisplaySetup.tab(tab));require(tab.getString("Owner.tabsuffix").endsWith("&cAFK")&&tab.getString("Owner.tagprefix").equals("keep")&&tab.getString("other").equals("unchanged"));require(!DisplaySetup.tab(tab));
+        test("nametag has rank spacing and attached mcMMO on its Journey line",()->{
+            var c=read(Files.readString(sourceRoot.resolve("ui/LyttleNametag-config.yml")));String[] lines=c.getString("nametag").split("\n");
+            require(lines.length==3&&lines[0].contains("town_unformatted")&&lines[0].contains("nation_unformatted")&&lines[1].contains("<luckperms_prefix>  <light_purple>")&&lines[1].contains("%reborn_title%</light_purple><gray>%string_replaceCharacters_small-numbers_{mcmmo_power_level}%")&&lines[2].equals("<displayname>")&&c.getInt("view_distance")==64);
         });
-        test("TownyChat order and existing mcMMO style and channels",()->{
-            String old="{channelTag} {townytag} &f%string_replaceCharacters_small-numbers_{mcmmo_power_level}% {permprefix}{modplayername}{permsuffix}&7: {msgcolour}{msg}";
-            String updated=DisplaySetup.chatFormat(old);require(updated.indexOf("{permprefix}")<updated.indexOf("%reborn_chat_prefix%")&&updated.indexOf("%reborn_chat_prefix%")<updated.indexOf("{modplayername}")&&updated.indexOf("{modplayername}")<updated.indexOf("mcmmo_power_level"));
-            require(updated.contains("{channelTag}")&&updated.contains("{townytag}")&&updated.contains("{permsuffix}")&&updated.contains("{msgcolour}{msg}")&&DisplaySetup.chatFormat(updated).equals(updated));
+        test("Quests shortcut is one slot right of the Nether Star",()->{
+            var q=read(Files.readString(sourceRoot.resolve("ui/Quests-config.yml")));
+            require(q.getString("custom-elements.categories.49.display.type").equals("NETHER_STAR"));
+            require(q.getStringList("custom-elements.categories.50.commands").equals(List.of("rebornadmin open {player}"))&&q.getString("custom-elements.categories.50.result").equals("CLOSE_MENU"));
+            require(q.getBoolean("options.categories-enabled")&&q.getInt("options.quest-limit.default")==6);
         });
-        test("TownyChat global, staff and per-world formats are patched independently",()->{
-            var chat=read("channel_formats:\n  global: '{channelTag} {permprefix}{playername}&7: {msg}'\n  staff: '{channelTag} {permprefix}{modplayername}: {msg}'\nworlds:\n  earth:\n    town: '{channelTag} {permprefix}{modplayername}: {msg}'\nmodify_chat:\n  listener_priority: high\n");
-            require(DisplaySetup.chat(chat)&&chat.getString("worlds.earth.town").contains("%reborn_chat_prefix%")&&chat.getString("channel_formats.staff").contains("%reborn_chat_prefix%")&&chat.getString("modify_chat.listener_priority").equals("high"));require(!DisplaySetup.chat(chat));
-        });
-        test("unsupported chat format is preserved",()->require(DisplaySetup.chatFormat("{external_formatter}").equals("{external_formatter}")));
-        test("nametag is Town Nation, LP Journey, display name",()->{
-            var c=read("nametag: old\nview_distance: 64\ninterval: 0.5\n");require(DisplaySetup.nametag(c));
-            String[] lines=c.getString("nametag").split("\n");require(lines.length==3&&lines[0].contains("town_unformatted")&&lines[0].contains("nation_unformatted")&&lines[1].indexOf("<luckperms_prefix>")<lines[1].indexOf("%reborn_title%")&&lines[2].equals("<displayname>")&&c.getInt("view_distance")==64);require(!DisplaySetup.nametag(c));
+        test("progression command alias keeps the normal access permission",()->{
+            try(ZipFile z=new ZipFile(args[1])){var m=read(new String(z.getInputStream(z.getEntry("plugin.yml")).readAllBytes()));require(m.getStringList("commands.reborn.aliases").contains("progression")&&m.getString("commands.reborn.permission").equals(RebornPlugin.ACCESS));}
         });
         test("progress descriptions match actual source rates and daily limits",()->{
             State s=new State(UUID.randomUUID(),"Test");s.day=LocalDate.now(ZoneId.of("Europe/Berlin")).toString();s.daily.put("fishing",120L);
@@ -220,15 +253,17 @@ public final class JourneyUpdateChecks {
                 gui.state().points=15;gui.menu.journey(gui.player,0);String text=gui.text(2);require(text.contains("Still remaining: &e50%")&&text.contains("15 more Journey Points")&&text.contains("mcMMO power level: &f300")&&text.contains("Fish caught: &f123"));
             });
             test("inventory legend and green yellow red status",()->{
+                gui.state().points=journey.threshold(2);gui.menu.journey(gui.player,0);
                 require(gui.text(7).contains("Green:")&&gui.text(7).contains("Yellow:")&&gui.text(7).contains("Red:"));
                 require(gui.tile(Journey.slot(0,0)).icon()==Material.LIME_STAINED_GLASS_PANE&&gui.tile(Journey.slot(0,1)).icon()==Material.YELLOW_STAINED_GLASS_PANE&&gui.tile(Journey.slot(0,2)).icon()==Material.RED_STAINED_GLASS_PANE);
-                require(gui.tile(Journey.slot(0,1)).name().startsWith("&e")&&gui.text(Journey.slot(0,1)).contains("Still needed: &e15 JP"));
+                require(gui.tile(Journey.slot(0,1)).name().startsWith("&e")&&gui.text(Journey.slot(0,1)).contains("current Journey")&&gui.text(Journey.slot(0,2)).contains("Still needed: &e45 JP"));
             });
             test("second inventory page starts at bottom and continues upward",()->{
                 gui.menu.journey(gui.player,1);require(gui.text(45).contains("Level 30")&&gui.text(17).contains("Level 58")&&gui.text(8).contains("top row"));
             });
             test("guide gives clear actions rates and server snapshot",()->{
                 gui.menu.guide(gui.player,0);require(gui.text(10).contains("+1 JP per active minute")&&gui.text(12).contains("+5 JP")&&gui.text(14).contains("+12 JP")&&gui.text(16).contains("+3 JP")&&gui.text(49).contains("19.8"));
+                require(gui.text(22).contains("same progress bar")&&gui.text(22).contains("30 JP"));
             });
             test("free rewards have actual item and money icons",()->{
                 gui.menu.step(gui.player,1);require(gui.tile(10).icon()==Material.GOLD_INGOT&&gui.text(10).contains("$550"));
@@ -236,6 +271,22 @@ public final class JourneyUpdateChecks {
             });
             test("shop display cannot be mistaken for player warps",()->{
                 gui.menu.perks(gui.player,0,62);require(gui.text(9).contains("200 QuickShop trading shops")&&gui.text(9).contains("Trading shops; separate from player warps")&&!gui.text(9).contains("/shops"));
+            });
+            test("inventory presents rank tabs and fly as the last Wither perk",()->{
+                gui.menu.perks(gui.player,4,0);require(gui.text(0).contains("Skeleton")&&gui.text(4).contains("Wither")&&gui.text(16).contains("Personal flight")&&gui.view().actions.get(16).id().equals("fly"));
+            });
+            test("rank tab click opens the selected tier",()->{
+                gui.menu.perks(gui.player,0,0);var event=mock(InventoryClickEvent.class);InventoryView open=gui.player.getOpenInventory();when(event.getView()).thenReturn(open);when(event.getWhoClicked()).thenReturn(gui.player);when(event.getRawSlot()).thenReturn(4);gui.menu.click(event);
+                require(gui.view().page==4&&gui.text(16).contains("Personal flight"));
+            });
+            test("Quests bridge opens on the next tick and checks target access",()->{
+                gui.bukkit.when(()->Bukkit.getPlayerExact("TestPlayer")).thenReturn(gui.player);
+                CommandSender console=mock(CommandSender.class);when(console.hasPermission("townyreborn.progression.admin")).thenReturn(true);
+                Server server=gui.plugin.getServer();BukkitScheduler scheduler=mock(BukkitScheduler.class);when(server.getScheduler()).thenReturn(scheduler);
+                final Runnable[] task={null};doAnswer(a->{task[0]=a.getArgument(1);return null;}).when(scheduler).runTask(eq(gui.plugin),any(Runnable.class));
+                doCallRealMethod().when(gui.plugin).admin(any(CommandSender.class),any(String[].class));
+                gui.plugin.admin(console,new String[]{"open","TestPlayer"});require(task[0]!=null);task[0].run();require(gui.view().type.equals("journey"));
+                task[0]=null;when(gui.plugin.access(gui.player)).thenReturn(false);gui.plugin.admin(console,new String[]{"open","TestPlayer"});require(task[0]==null);when(gui.plugin.access(gui.player)).thenReturn(true);
             });
             test("bottle click opens guide and cancels item movement",()->{
                 gui.menu.journey(gui.player,0);var event=mock(InventoryClickEvent.class);InventoryView open=gui.player.getOpenInventory();when(event.getView()).thenReturn(open);when(event.getWhoClicked()).thenReturn(gui.player);when(event.getRawSlot()).thenReturn(2);

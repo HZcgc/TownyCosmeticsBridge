@@ -16,7 +16,8 @@ final class ProgressInfo {
         } else {
             long earned = state.points - journey.threshold(level);
             long needed = journey.threshold(level + 1) - journey.threshold(level);
-            lines.add("&7Next goal: &eLevel " + (level + 1));
+            lines.add("&7Current level: &e" + level);
+            lines.add("&7Working towards: &fLevel " + (level + 1));
             lines.add("&7Completed: &a" + journey.percent(state.points) + "%");
             lines.add("&7Still remaining: &e" + journey.remainingPercent(state.points) + "%");
             lines.add("&7This step: &f" + earned + " / " + needed + " JP");
@@ -24,14 +25,21 @@ final class ProgressInfo {
         }
         lines.add("");
         lines.add("&7Choose any of the point-earning activities.");
+        lines.add("&7All activities add to the same JP total.");
         lines.add("&7Your level increases automatically.");
         lines.add("&7Click for rates, limits and your stats.");
         return lines;
     }
 
     static List<String> legend() {
-        return List.of("&aGreen: milestone reached", "&eYellow: your next level goal", "&cRed: later, locked milestone", "",
+        return List.of("&aGreen: earlier, completed level", "&eYellow: your current Journey level", "&cRed: future, locked level", "",
             "&7Reached rewards can be claimed later.", "&7Purchases never block the next level.");
+    }
+    static List<String> explanation() {
+        return List.of("&7Journey Points combine your activities.", "&7They all fill the same progress bar.", "",
+            "&fExample:", "&710 active minutes &8= &a10 JP", "&75 fish catches &8= &a15 JP", "&71 new mcMMO level &8= &a5 JP",
+            "&7Total: &a30 JP &8→ &fLevel 2", "", "&7Level 3 needs 75 JP in total.",
+            "&7Perks cost game money, never JP.", "&7Claiming rewards is optional.");
     }
     static List<String> requirement(Journey journey, State state, int target) {
         long missing = journey.remaining(state.points, target);

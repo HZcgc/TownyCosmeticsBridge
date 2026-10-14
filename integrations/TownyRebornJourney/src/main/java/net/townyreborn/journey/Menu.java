@@ -125,7 +125,12 @@ final class Menu implements Listener {
             }
 
             ArrayList<String> var9 = new ArrayList<>(ProgressInfo.requirement(this.plugin.journey, var3, var13));
-            var9.add(var13 <= var4 ? "&aReached" : var13 == var4 + 1 ? "&eYour next goal" : "&cLater milestone");
+            Journey.StepStatus status = this.plugin.journey.status(var3.points, var13);
+            var9.add(switch (status) {
+               case COMPLETED -> "&aCompleted level";
+               case CURRENT -> "&eYour current Journey level";
+               case LOCKED -> "&cFuture, locked level";
+            });
             var9.add("&7Rank: &f" + this.plugin.journey.title(var13));
             this.plugin
                .journey
@@ -143,11 +148,14 @@ final class Menu implements Listener {
                .forEach(var2x -> var9.add((var3.claimed.contains(var2x.id()) ? "&a✓ " : "&aFree reward: &f") + var2x.name()));
             var9.add("");
             var9.add(var13 <= var4 ? "&aClick to view this milestone." : "&7Keep earning points to reach this milestone.");
-            Material var10 = var13 <= var4
-               ? Material.LIME_STAINED_GLASS_PANE
-               : (var13 == var4 + 1 ? Material.YELLOW_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE);
+            Material var10 = switch (status) {
+               case COMPLETED -> Material.LIME_STAINED_GLASS_PANE;
+               case CURRENT -> Material.YELLOW_STAINED_GLASS_PANE;
+               case LOCKED -> Material.RED_STAINED_GLASS_PANE;
+            };
             this.button(var5, Journey.slot(var2, var12), var10,
-               (var13 <= var4 ? "&a" : var13 == var4 + 1 ? "&e" : "&c") + "Level " + var13, var9, new Menu.Action("step", "", 0, var13));
+               (status == Journey.StepStatus.COMPLETED ? "&a" : status == Journey.StepStatus.CURRENT ? "&e" : "&c") + "Level " + var13,
+               var9, new Menu.Action("step", "", 0, var13));
          }
 
          this.show(var1, var5);
@@ -157,13 +165,26 @@ final class Menu implements Listener {
    void perks(Player var1, int var2, int var3) throws Exception {
       if (var1.isOnline() && this.plugin.access(var1)) {
          State var4 = this.plugin.state(var1);
-         List var5 = this.plugin.journey.perks.values().stream().filter(var1x -> var3 == 0 || var1x.level() == var3).toList();
-         int var6 = Math.max(1, (var5.size() + 35) / 36);
+         List<Journey.PerkPage> pages = this.plugin.journey.perkPages(var3);
+         int var6 = pages.size();
          var2 = Math.max(0, Math.min(var6 - 1, var2));
-         Menu.View var7 = this.create("perks", var2, var3, "", "&d&lREBORN &8| &fPermanent perks");
+         Journey.PerkPage selected = pages.get(var2);
+         List<Journey.Perk> var5 = selected.items();
+         Menu.View var7 = this.create("perks", var2, var3, "", "&d&lREBORN &8| &f" + (var3 == 0 ? selected.tier().label + " perks" : "Level " + var3 + " perks"));
+         if (var3 == 0) {
+            int slot = 0;
+            for (Journey.Tier tier : this.plugin.journey.perkTiers()) {
+               int targetPage = 0;
+               while (pages.get(targetPage).tier() != tier) targetPage++;
+               this.button(var7, slot++, tierIcon(tier),
+                  (tier == selected.tier() ? "&a✓ " : "&d") + tier.label,
+                  List.of("&7Browse " + tier.label + " supporter features.", "&7Purchases are individual and optional."),
+                  new Menu.Action("perks", "", targetPage, 0));
+            }
+         }
 
          for (int var8 = 0; var8 < 36; var8++) {
-            int var9 = var2 * 36 + var8;
+            int var9 = var8;
             if (var9 >= var5.size()) {
                break;
             }
@@ -172,7 +193,7 @@ final class Menu implements Listener {
             boolean var11 = var4.owned.contains(var10.id());
             boolean var12 = this.plugin.journey.level(var4.points) >= var10.level();
             ArrayList var13 = new ArrayList<>(
-               List.of("&7Available at Level &d" + var10.level(), "&7Price: &a$" + money(var10.price()), "&7Unlock: &fPermanent")
+               List.of("&7Feature tier: &f" + var10.tier().label, "&7Available at Level &d" + var10.level(), "&7Price: &a$" + money(var10.price()), "&7Unlock: &fPermanent")
             );
             if (!var10.requires().isEmpty()) {
                var13.add("&7Previous upgrade: &f" + this.plugin.journey.perks.get(var10.requires()).name());
@@ -196,7 +217,7 @@ final class Menu implements Listener {
 
          this.button(
             var7,
-            4,
+            7,
             Material.GOLD_INGOT,
             "&a$" + money(this.plugin.integrations.balance(var1.getUniqueId())),
             List.of("&7Purchases are optional.", "&7Your Journey Points are never spent."),
@@ -220,6 +241,17 @@ final class Menu implements Listener {
          );
          this.show(var1, var7);
       }
+   }
+
+   private static Material tierIcon(Journey.Tier tier) {
+      return switch (tier) {
+         case SKELETON -> Material.SKELETON_SKULL;
+         case CREEPER -> Material.CREEPER_HEAD;
+         case BLAZE -> Material.BLAZE_ROD;
+         case DRAGON -> Material.DRAGON_HEAD;
+         case WITHER -> Material.WITHER_SKELETON_SKULL;
+         case EXTRA -> Material.CHEST;
+      };
    }
 
    private List<String> progressLore(Player player, State state) {
@@ -251,9 +283,7 @@ final class Menu implements Listener {
       this.sourceButton(view, state, 30, Material.KNOWLEDGE_BOOK, "Advancements", "advancements", "points-per-advancement", "Complete a new non-recipe advancement.");
       if (this.plugin.getConfig().getBoolean("sources.quests.enabled", false))
          this.sourceButton(view, state, 32, Material.BOOK, "Optional Quests", "quests", "points-per-completion", "Complete another quest.");
-      this.button(view, 22, Material.NETHER_STAR, "&fOne path, your choice",
-         List.of("&7Combine activities or choose your favourites.", "&7Reach the displayed Journey Point goal.", "&7Level up automatically and claim free rewards.",
-            "&7Reached supporter features become purchasable.", "&7No purchase is required for the next level."), null);
+      this.button(view, 22, Material.NETHER_STAR, "&fHow Journey Points work", ProgressInfo.explanation(), null);
       this.button(view, 45, Material.ARROW, "&dBack to journey", List.of(), new Action("journey", "", page, 0));
       this.button(view, 49, Material.CLOCK, "&dServer snapshot",
          List.of("&7Online: &f" + this.plugin.getServer().getOnlinePlayers().size(),

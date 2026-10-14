@@ -30,7 +30,7 @@ assert outputs[0]==outputs[1], 'Release and source rebuild disagree'
 print('Original beta and updated source pass the same 24 core recovery scenarios.')
 subprocess.run([str(a.jdk/'javac'),'--release','21','-cp',str(a.jar)+':'+cp,'-d',str(classes),str(ROOT/'src/test/java/net/townyreborn/journey/JourneyUpdateChecks.java')],check=True)
 jar_arg='-javaagent:'+str((a.deps/'mockito-core.jar').resolve())
-r=subprocess.run([str(a.jdk/'java'),'-Xverify:all',jar_arg,'-Dnet.bytebuddy.experimental=true','-cp',str(classes)+':'+str(a.jar)+':'+cp,'net.townyreborn.journey.JourneyUpdateChecks',str(a.output/'update-data'),str(a.jar),str(ROOT/'releases/TownyRebornProgression-2.0.0-beta.1.jar'),str(ROOT/'ui/TAB-groups.yml')],capture_output=True,text=True)
+r=subprocess.run([str(a.jdk/'java'),'-Xverify:all',jar_arg,'-Dnet.bytebuddy.experimental=true','-cp',str(classes)+':'+str(a.jar)+':'+cp,'net.townyreborn.journey.JourneyUpdateChecks',str(a.output/'update-data'),str(a.jar),str(ROOT/'releases/TownyRebornProgression-2.0.0-beta.1.jar'),str(ROOT/'ui/TAB-groups.yml'),str(ROOT)],capture_output=True,text=True)
 (a.output/'update.log').write_text(r.stdout+r.stderr)
 print(r.stdout)
 if r.returncode:print(r.stderr);raise SystemExit(r.returncode)

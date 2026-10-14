@@ -1,5 +1,5 @@
 name: TownyRebornProgression
-version: 2.0.0-beta.2
+version: 2.0.0-beta.3
 main: net.townyreborn.journey.RebornPlugin
 api-version: '1.21'
 authors:
@@ -13,12 +13,6 @@ depend:
 softdepend:
 - Jobs
 - mcMMO
-loadbefore:
-- Quests
-- DeluxeMenus
-- LyttleNametag
-- TAB
-- TownyChat
 commands:
   reborn:
     description: Open the Reborn journey.
@@ -28,6 +22,7 @@ commands:
     - progress
     - journey
     - fortschritt
+    - progression
     permission: townyreborn.progression.access
     permission-message: You do not have access to Reborn progression yet.
   rebornadmin:
@@ -42,3 +37,5 @@ permissions:
   townyreborn.progression.admin:
     description: Owner controls for Reborn progression and receipt review.
     default: op
+loadbefore:
+- TAB

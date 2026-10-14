@@ -1,0 +1,78 @@
+TownyRebornProgression 2.0.0-beta.2 verification
+
+PASS: 24 existing recovery scenarios on the current JAR.
+PASS: 39 catalogue, config/receipt migration, payout safety, layout and display scenarios.
+Reference: the same 24 recovery scenarios also pass on the preserved beta.1 binary.
+
+Runtime: JDK 25, compiled with --release 21; Paper API/YAML, Vault and LuckPerms interfaces.
+Wallet, LP, native inventory creation and item registry boundaries use controlled test doubles.
+Live Minecraft server/client verification remains outstanding.
+
+Current JAR SHA-256: a7d100a5a905c1af5eb8dc2303ceb17b831a3d203eac3f16fa4db0c78401fe56
+
+PASS default catalogue, pages and early flight
+PASS all level boundaries and cap
+PASS snake is connected and unique
+PASS free level progression
+PASS permanent tier closure
+PASS legacy point mapping
+PASS read-only profile has no persisted player file
+PASS native state round trip
+PASS corrupt profiles fail closed
+PASS high-water and job rejoin protection
+PASS daily limits
+PASS purchase and duplicate click
+PASS in-flight receipt cannot be cleared
+PASS insufficient funds and prerequisite do not charge
+PASS declined payment grants nothing
+PASS uncertain payment stays PREPARED and never repeats
+PASS paid restart recovery does not debit
+PASS LP failure retains paid recovery receipt
+PASS free key grant waits for durable LP save
+PASS failed reward cannot replay after restart
+PASS reward receipt serializes purchases
+PASS town claim can be deferred and cannot be farmed by changing town
+PASS in-flight reward cannot be manually closed
+PASS command subjects are validated
+RESULT 24 recovery checks passed
+
+PASS continuous snake across four and extended pages
+PASS whole 116-step catalogue has useful free rewards
+PASS no UltraCosmetics or cosmetic-crate rewards
+PASS only three occasional Minecraft XP rewards
+PASS daily supporter perk removed, supporter keys only one-time gifts
+PASS warp limits are two and three, not trading-shop limits
+PASS remaining percentages and points at boundaries
+PASS abbreviations match title boundaries
+PASS config upgrade preserves curve, source rates, prices and context
+PASS config upgrade is idempotent and retains custom v3 edits
+PASS all beta1 gift IDs map to their original milestone
+PASS custom old reward aliases survive catalogue upgrade
+PASS old completed receipts retain points and paid upgrades
+PASS old LP markers import as claimed without replacement payouts
+PASS old pending receipt retains original commands and town
+PASS money deposited once after durable LP save
+PASS uncertain deposit and restart cannot duplicate money
+PASS declined deposit leaves review receipt and no item effects
+PASS post-deposit profile save failure cannot replay
+PASS UI callback failure cannot reopen delivered reward
+PASS LP save failure gives no money and cannot replay
+PASS manual receipt closure never pays again
+PASS money receipt survives mixed cash-and-key reward
+PASS malformed money receipt fails closed
+PASS TAB ordered format preserves mcMMO, RGB display and AFK
+PASS TAB migration preserves unrelated settings and styled suffix
+PASS TownyChat order and existing mcMMO style and channels
+PASS TownyChat global, staff and per-world formats are patched independently
+PASS unsupported chat format is preserved
+PASS nametag is Town Nation, LP Journey, display name
+PASS progress descriptions match actual source rates and daily limits
+PASS inventory shows exact goal and remaining percent on bottle
+PASS inventory legend and green yellow red status
+PASS second inventory page starts at bottom and continues upward
+PASS guide gives clear actions rates and server snapshot
+PASS free rewards have actual item and money icons
+PASS shop display cannot be mistaken for player warps
+PASS bottle click opens guide and cancels item movement
+PASS revoked access closes inventory and prevents further actions
+RESULT 39 journey update checks passed

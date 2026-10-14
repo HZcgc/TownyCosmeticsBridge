@@ -1,0 +1,393 @@
+# Existing quest categories; only display styling is changed.
+categories:
+  farming:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fFarming'
+    display:
+      name: '&d&lFarming'
+      lore:
+      - '&7Harvest crops and develop your farm.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:farming_completed%&8/&f%quests_category:farming_all%'
+      - '&7Active: &e%quests_category:farming_started%'
+      - '&7Difficulty: &eMedium &8→ &cHard'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: WHEAT
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  mining:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fMining'
+    display:
+      name: '&b&lMining'
+      lore:
+      - '&7Break stone, ores and rare materials.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:mining_completed%&8/&f%quests_category:mining_all%'
+      - '&7Active: &e%quests_category:mining_started%'
+      - '&7Difficulty: &aEasy &8→ &cHard'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: GOLDEN_PICKAXE
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  woodcutting:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fWoodcutting'
+    display:
+      name: '&6&lWoodcutting'
+      lore:
+      - '&7Chop every type of log and stem.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:woodcutting_completed%&8/&f%quests_category:woodcutting_all%'
+      - '&7Active: &e%quests_category:woodcutting_started%'
+      - '&7Difficulty: &aEasy &8→ &eMedium'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: GOLDEN_AXE
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  digging:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fDigging'
+    display:
+      name: '&e&lDigging'
+      lore:
+      - '&7Clear soil, sand and natural terrain.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:digging_completed%&8/&f%quests_category:digging_all%'
+      - '&7Active: &e%quests_category:digging_started%'
+      - '&7Difficulty: &aEasy &8→ &eMedium'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: GOLDEN_SHOVEL
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  building:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fBuilding'
+    display:
+      name: '&2&lBuilding'
+      lore:
+      - '&7Place materials and shape the world.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:building_completed%&8/&f%quests_category:building_all%'
+      - '&7Active: &e%quests_category:building_started%'
+      - '&7Difficulty: &eMedium &8→ &cHard'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: QUARTZ_BLOCK
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  crafting:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fCrafting'
+    display:
+      name: '&f&lCrafting'
+      lore:
+      - '&7Create tools, blocks and useful items.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:crafting_completed%&8/&f%quests_category:crafting_all%'
+      - '&7Active: &e%quests_category:crafting_started%'
+      - '&7Difficulty: &aEasy &8→ &eMedium'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: CRAFTING_TABLE
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  collecting:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fCollecting'
+    display:
+      name: '&a&lCollecting'
+      lore:
+      - '&7Gather resources from across the world.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:collecting_completed%&8/&f%quests_category:collecting_all%'
+      - '&7Active: &e%quests_category:collecting_started%'
+      - '&7Difficulty: &eMedium &8→ &cHard'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: HOPPER
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  fishing:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fFishing'
+    display:
+      name: '&3&lPyroFishing'
+      lore:
+      - '&7Catch custom fish and master every rarity.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:fishing_completed%&8/&f%quests_category:fishing_all%'
+      - '&7Active: &e%quests_category:fishing_started%'
+      - '&7Difficulty: &aEasy &8→ &5Mythical'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: FISHING_ROD
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  hunter:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fHunting'
+    display:
+      name: '&c&lHunting'
+      lore:
+      - '&7Track and defeat creatures of every kind.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:hunter_completed%&8/&f%quests_category:hunter_all%'
+      - '&7Active: &e%quests_category:hunter_started%'
+      - '&7Difficulty: &eMedium &8→ &cHard'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: GOLDEN_SWORD
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  activities:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fActivities'
+    display:
+      name: '&9&lActivities'
+      lore:
+      - '&7Trade, tame, breed and explore.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:activities_completed%&8/&f%quests_category:activities_all%'
+      - '&7Active: &e%quests_category:activities_started%'
+      - '&7Difficulty: &aEasy &8→ &cHard'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: LEAD
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  smelting:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fSmelting'
+    display:
+      name: '&6&lSmelting'
+      lore:
+      - '&7Cook food and refine raw materials.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:smelting_completed%&8/&f%quests_category:smelting_all%'
+      - '&7Active: &e%quests_category:smelting_started%'
+      - '&7Difficulty: &aEasy &8→ &eMedium'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: BLAST_FURNACE
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  enchanting:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fEnchanting'
+    display:
+      name: '&5&lEnchanting'
+      lore:
+      - '&7Empower equipment with enchantments.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:enchanting_completed%&8/&f%quests_category:enchanting_all%'
+      - '&7Active: &e%quests_category:enchanting_started%'
+      - '&7Difficulty: &aEasy &8→ &eMedium'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: ENCHANTING_TABLE
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  brewing:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fBrewing'
+    display:
+      name: '&e&lBrewing'
+      lore:
+      - '&7Brew potions and master alchemy.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:brewing_completed%&8/&f%quests_category:brewing_all%'
+      - '&7Active: &e%quests_category:brewing_started%'
+      - '&7Difficulty: &aEasy &8→ &eMedium'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: BREWING_STAND
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  weaponsmith:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fWeaponsmith'
+    display:
+      name: '&f&lWeaponsmith'
+      lore:
+      - '&7Forge and obtain tools, armor and weapons.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:weaponsmith_completed%&8/&f%quests_category:weaponsmith_all%'
+      - '&7Active: &e%quests_category:weaponsmith_started%'
+      - '&7Difficulty: &aEasy &8→ &eMedium'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: ANVIL
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  expquests:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fExperience'
+    display:
+      name: '&a&lExperience'
+      lore:
+      - '&7Earn experience through varied challenges.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:expquests_completed%&8/&f%quests_category:expquests_all%'
+      - '&7Active: &e%quests_category:expquests_started%'
+      - '&7Difficulty: &aEasy &8→ &cHard'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: EXPERIENCE_BOTTLE
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  misc:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fMiscellaneous'
+    display:
+      name: '&6&lMiscellaneous'
+      lore:
+      - '&7Complete unusual tasks and discoveries.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:misc_completed%&8/&f%quests_category:misc_all%'
+      - '&7Active: &e%quests_category:misc_started%'
+      - '&7Difficulty: &eMedium &8→ &cHard'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: SADDLE
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE
+  impossible:
+    gui-name: '&d&lTOWNY &a&lREBORN &8• &fImpossible'
+    display:
+      name: '&4&lImpossible'
+      lore:
+      - '&7Face the longest and toughest challenges.'
+      - ''
+      - '&8Progress'
+      - '&7Completed: &a%quests_category:impossible_completed%&8/&f%quests_category:impossible_all%'
+      - '&7Active: &e%quests_category:impossible_started%'
+      - '&7Difficulty: &cHard &8→ &4Impossible'
+      - ''
+      - '&d▶ &fClick to browse'
+      type: ENDER_EYE
+      itemflags:
+      - HIDE_ARMOR_TRIM
+      - HIDE_ATTRIBUTES
+      - HIDE_DESTROYS
+      - HIDE_DYE
+      - HIDE_ENCHANTS
+      - HIDE_PLACED_ON
+      - HIDE_POTION_EFFECTS
+      - HIDE_UNBREAKABLE

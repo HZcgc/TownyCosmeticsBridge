@@ -2,3 +2,5 @@
 b7637076c6eeae7bfc82960ad57d75f6bd6c8e577fe7687a70c57f49b1ca05c6  TownyReborn-Standalone-Journey.zip
 a7d100a5a905c1af5eb8dc2303ceb17b831a3d203eac3f16fa4db0c78401fe56  TownyRebornProgression-2.0.0-beta.2.jar
 33fa3190d4d1c54ab9c40e512303e955f6c76d7ae6a9f376c77bbdcc6599127c  TownyReborn-Journey-2.0.0-beta.2.zip
+bc827c5a9b6045f9a9c3d8b3165b7ad5829bcf6be5aa6405d7cb4d4f73504465  TownyRebornProgression-2.0.0-beta.3.jar
+251a83d3d81523af097503979c042b9b1212e5dff694f99c2a4ffa7c3c95e65a  TownyReborn-Journey-2.0.0-beta.3.zip

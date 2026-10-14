@@ -1,7 +1,5 @@
 package net.townyreborn.journey;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -45,9 +43,6 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
          this.menu = new Menu(this);
          this.gifts = new Gifts(this);
          this.sources = new ProgressSources(this);
-         if (this.getConfig().getBoolean("legacy-cleanup.enabled", true)) {
-            LegacyCleanup.run(this);
-         }
 
          Objects.requireNonNull(this.getCommand("reborn")).setExecutor(this);
          Objects.requireNonNull(this.getCommand("rebornadmin")).setExecutor(this);
@@ -58,8 +53,6 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
          if (!this.expansion.register() || !this.compatibility.register()) {
             throw new IllegalStateException("Placeholder registration failed");
          }
-
-         DisplaySetup.run(this);
 
          this.getServer().getScheduler().runTaskTimer(this, this.sources::poll, 600L, 600L);
 
@@ -106,36 +99,11 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
 
    private void prepareConfig() throws Exception {
       this.saveDefaultConfig();
-      Path var1 = this.getDataFolder().toPath().resolve("config.yml");
-      YamlConfiguration var2 = LegacyCleanup.load(var1);
-      if (!var2.isConfigurationSection("journey")) {
-         Path var3 = this.getDataFolder().toPath().resolve("legacy-backup/config-pre-standalone.yml");
-         Files.createDirectories(var3.getParent());
-         if (!Files.exists(var3)) {
-            Files.copy(var1, var3);
-         }
-
-         try (InputStream var4 = Objects.requireNonNull(this.getResource("config.yml"))) {
-            Store.atomic(var1, new String(var4.readAllBytes(), StandardCharsets.UTF_8));
-         }
-
-         this.reloadConfig();
-         this.getLogger().info("Legacy settings archived; standalone configuration installed. Player data preserved.");
-      }
-      var2 = LegacyCleanup.load(var1);
-      if (var2.getInt("catalogue-version", 0) < ConfigUpgrade.VERSION) {
-         YamlConfiguration defaults = new YamlConfiguration();
-         try (InputStream input = Objects.requireNonNull(this.getResource("config.yml"))) {
-            defaults.loadFromString(new String(input.readAllBytes(), StandardCharsets.UTF_8));
-         }
-         YamlConfiguration updated = ConfigUpgrade.upgrade(var2, defaults);
-         Path backup = this.getDataFolder().toPath().resolve("legacy-backup/config-before-catalogue-v3.yml");
-         Files.createDirectories(backup.getParent());
-         if (!Files.exists(backup)) Files.copy(var1, backup);
-         Store.atomic(var1, updated.saveToString());
-         this.reloadConfig();
-         this.getLogger().info("Journey rewards updated; old reward receipts, points and permanent perks are preserved.");
-      }
+      Path file = this.getDataFolder().toPath().resolve("config.yml");
+      YamlConfiguration raw = new YamlConfiguration();
+      raw.loadFromString(Files.readString(file));
+      if (!raw.isConfigurationSection("journey"))
+         throw new IllegalArgumentException("Install the supplied TownyRebornProgression/config.yml; existing configuration was not changed.");
    }
 
    boolean access(Player var1) {
@@ -234,7 +202,7 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
       }
 
       if (var2.length < 2) {
-         this.message(var1, "/rebornadmin status <player> | receipt <player> grant/cancel | gift <player> delivered | addpoints <player> <amount>");
+         this.message(var1, "/rebornadmin open <player> | status <player> | receipt <player> grant/cancel | gift <player> delivered | addpoints <player> <amount>");
          return true;
       }
 
@@ -247,6 +215,21 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
       try {
          State var4 = this.state(var3);
          switch (var2[0].toLowerCase(Locale.ROOT)) {
+            case "open":
+               if (!this.access(var3)) {
+                  this.message(var3, "You do not have access to Reborn progression yet.");
+                  break;
+               }
+               this.getServer().getScheduler().runTask(this, () -> {
+                  if (!var3.isOnline() || !this.access(var3)) return;
+                  try {
+                     State target = this.state(var3);
+                     this.menu.journey(var3, this.journey.page(this.journey.level(target.points)));
+                  } catch (Exception error) {
+                     this.profileError(var3, error);
+                  }
+               });
+               break;
             case "status":
                this.message(
                   var1,

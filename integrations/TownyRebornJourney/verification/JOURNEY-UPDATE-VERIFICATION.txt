@@ -1,14 +1,17 @@
-TownyRebornProgression 2.0.0-beta.2 verification
+TownyRebornProgression 2.0.0-beta.3 verification
 
 PASS: 24 existing recovery scenarios on the current JAR.
-PASS: 39 catalogue, config/receipt migration, payout safety, layout and display scenarios.
-Reference: the same 24 recovery scenarios also pass on the preserved beta.1 binary.
+PASS: 45 layout, manual-config, permissions, point calculation, receipt and GUI scenarios.
+Reference: 24 recovery scenarios also pass on the preserved beta.1 binary.
 
-Runtime: JDK 25, compiled with --release 21; Paper API/YAML, Vault and LuckPerms interfaces.
-Wallet, LP, native inventory creation and item registry boundaries use controlled test doubles.
+PASS: Quests gameplay options, IDs and nonvisual settings match the uploaded Quests(7).zip.
+PASS: all 17 categories have available GUI slots; progression shortcut is slot 50.
+PASS: existing configs are read without replacement; external config-writer classes are absent.
+
+Compiled with --release 21. Paper inventory/item registry, wallet and LP boundaries use controlled doubles.
 Live Minecraft server/client verification remains outstanding.
 
-Current JAR SHA-256: a7d100a5a905c1af5eb8dc2303ceb17b831a3d203eac3f16fa4db0c78401fe56
+Current JAR SHA-256: bc827c5a9b6045f9a9c3d8b3165b7ad5829bcf6be5aa6405d7cb4d4f73504465
 
 PASS default catalogue, pages and early flight
 PASS all level boundaries and cap
@@ -44,10 +47,15 @@ PASS daily supporter perk removed, supporter keys only one-time gifts
 PASS warp limits are two and three, not trading-shop limits
 PASS remaining percentages and points at boundaries
 PASS abbreviations match title boundaries
-PASS config upgrade preserves curve, source rates, prices and context
-PASS config upgrade is idempotent and retains custom v3 edits
+PASS manual config preserves beta2 prices, gates, reward IDs and point curve
+PASS startup reads existing configuration without rewriting it
+PASS incompatible old configuration fails without replacing it
+PASS external config writers and cleanup are absent from the JAR
+PASS five ordered supporter feature tiers, with fly last
+PASS current level is yellow; future level is locked
+PASS activity example combines into one total with cumulative thresholds
 PASS all beta1 gift IDs map to their original milestone
-PASS custom old reward aliases survive catalogue upgrade
+PASS explicit owner-defined old reward aliases remain supported
 PASS old completed receipts retain points and paid upgrades
 PASS old LP markers import as claimed without replacement payouts
 PASS old pending receipt retains original commands and town
@@ -61,11 +69,9 @@ PASS manual receipt closure never pays again
 PASS money receipt survives mixed cash-and-key reward
 PASS malformed money receipt fails closed
 PASS TAB ordered format preserves mcMMO, RGB display and AFK
-PASS TAB migration preserves unrelated settings and styled suffix
-PASS TownyChat order and existing mcMMO style and channels
-PASS TownyChat global, staff and per-world formats are patched independently
-PASS unsupported chat format is preserved
-PASS nametag is Town Nation, LP Journey, display name
+PASS nametag has rank spacing and attached mcMMO on its Journey line
+PASS Quests shortcut is one slot right of the Nether Star
+PASS progression command alias keeps the normal access permission
 PASS progress descriptions match actual source rates and daily limits
 PASS inventory shows exact goal and remaining percent on bottle
 PASS inventory legend and green yellow red status
@@ -73,6 +79,9 @@ PASS second inventory page starts at bottom and continues upward
 PASS guide gives clear actions rates and server snapshot
 PASS free rewards have actual item and money icons
 PASS shop display cannot be mistaken for player warps
+PASS inventory presents rank tabs and fly as the last Wither perk
+PASS rank tab click opens the selected tier
+PASS Quests bridge opens on the next tick and checks target access
 PASS bottle click opens guide and cancels item movement
 PASS revoked access closes inventory and prevents further actions
-RESULT 39 journey update checks passed
+RESULT 45 journey update checks passed

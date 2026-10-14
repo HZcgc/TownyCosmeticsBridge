@@ -1,15 +1,11 @@
-# Towny Reborn standalone Journey; player access requires townyreborn.progression.access.
-# Pages form one continuous snake; completed/next target/future = green/yellow/red.
-# Levels depend only on Journey Points. Perk purchases and reward claims are optional.
-# Reward IDs must remain stable; legacy-ids preserve previously claimed beta rewards.
-# Free rewards are claimed once. Money uses Vault with a durable receipt; never replay receipts.
-# No UltraCosmetics grants or permanent daily Supporter-key perk in this catalogue.
-# Existing paid rank subscriptions are handled by their own bridge.
-# Town rewards go to the town at claim time. All crate-key rewards below are one-time.
-# Sources track new personal mcMMO/Jobs highs; first valid value establishes a baseline.
+# Towny Reborn Journey. Copy this file with the matching JAR while the server is stopped.
+# No startup config rewrites, external plugin edits or automatic menu removal.
+# Access requires townyreborn.progression.access (default false).
+# Main-line colours: green = earlier completed levels; yellow = current level; red = future locked levels.
+# Perks are grouped by supporter feature tier; fly is the final Wither entry, still unlocked at level 18.
+# All activities add to one Journey Point total. Purchases use money and never spend JP.
+# Keep reward IDs, legacy-ids and player receipts; each reward is claimable once.
 permission-context-server: smp
-legacy-cleanup:
-  enabled: true
 journey:
   steps: 116
   points-first: 30
@@ -91,6 +87,8 @@ perks:
     help-commands:
     - /sethome <name>
     - /home <name>
+    rank-tier: SKELETON
+    menu-order: 0
   vaults4:
     name: 4 writable player vaults
     level: 3
@@ -103,6 +101,8 @@ perks:
     - townyreborn.perk.vaults.4
     help-commands:
     - /pv
+    rank-tier: SKELETON
+    menu-order: 1
   shops50:
     name: 50 QuickShop trading shops
     level: 4
@@ -115,6 +115,8 @@ perks:
     help-commands:
     - Left-click a chest/barrel with the item
     - Trading shops; separate from player warps
+    rank-tier: SKELETON
+    menu-order: 2
   jobs2:
     name: 2 active jobs
     level: 6
@@ -126,6 +128,8 @@ perks:
     - townyreborn.perk.jobs.2
     help-commands:
     - /jobs browse
+    rank-tier: SKELETON
+    menu-order: 3
   trash:
     name: Trash menu
     level: 7
@@ -137,6 +141,8 @@ perks:
     - townyreborn.perk.trash
     help-commands:
     - /trash
+    rank-tier: SKELETON
+    menu-order: 4
   seeds:
     name: Seeds kit every 72 hours
     level: 8
@@ -148,6 +154,8 @@ perks:
     - townyreborn.perk.kit.seeds
     help-commands:
     - /kit seeds
+    rank-tier: SKELETON
+    menu-order: 5
   ptime:
     name: Personal time
     level: 9
@@ -160,6 +168,8 @@ perks:
     - /ptime day
     - /ptime night
     - /ptime reset
+    rank-tier: SKELETON
+    menu-order: 6
   pweather:
     name: Personal weather
     level: 10
@@ -172,49 +182,8 @@ perks:
     - /pweather sun
     - /pweather storm
     - /pweather reset
-  craft:
-    name: Portable crafting table
-    level: 11
-    price: 25000
-    permissions:
-    - essentials.workbench
-    legacy-markers:
-    - essentials.workbench
-    help-commands:
-    - /craft
-  tfly:
-    name: Town flight
-    level: 12
-    price: 200000
-    permissions:
-    - townyflight.command.tfly
-    - townyreborn.perk.tfly
-    legacy-markers:
-    - townyreborn.perk.tfly
-    help-commands:
-    - /tfly
-  frames_invisible:
-    name: Invisible item frames
-    level: 14
-    price: 15000
-    permissions:
-    - invisibleitemframes.command.toggle.visibility
-    - invisibleitemframes.command.togglemode.visibility
-    legacy-markers:
-    - invisibleitemframes.command.toggle.visibility
-    help-commands:
-    - /itf toggle visibility
-  fly:
-    name: Personal flight
-    level: 18
-    price: 200000
-    permissions:
-    - essentials.fly
-    - townyreborn.perk.fly
-    legacy-markers:
-    - townyreborn.perk.fly
-    help-commands:
-    - /fly
+    rank-tier: SKELETON
+    menu-order: 7
   homes12:
     name: 12 homes
     level: 24
@@ -229,6 +198,8 @@ perks:
     help-commands:
     - /sethome <name>
     - /home <name>
+    rank-tier: CREEPER
+    menu-order: 0
   vaults6:
     name: 6 writable player vaults
     level: 26
@@ -242,6 +213,8 @@ perks:
     requires: vaults4
     help-commands:
     - /pv
+    rank-tier: CREEPER
+    menu-order: 1
   shops100:
     name: 100 QuickShop trading shops
     level: 28
@@ -255,6 +228,8 @@ perks:
     help-commands:
     - Left-click a chest/barrel with the item
     - Trading shops; separate from player warps
+    rank-tier: CREEPER
+    menu-order: 2
   warps2:
     name: 2 Player Warps
     level: 30
@@ -268,6 +243,8 @@ perks:
     - /pwarp
     - /shops
     - 'Limit: 2 personal warp destinations'
+    rank-tier: CREEPER
+    menu-order: 3
   loom:
     name: Portable loom
     level: 32
@@ -278,6 +255,8 @@ perks:
     - essentials.loom
     help-commands:
     - /loom
+    rank-tier: CREEPER
+    menu-order: 4
   cartography:
     name: Portable cartography table
     level: 34
@@ -288,6 +267,8 @@ perks:
     - essentials.cartographytable
     help-commands:
     - /cartographytable
+    rank-tier: CREEPER
+    menu-order: 5
   grindstone:
     name: Portable grindstone
     level: 36
@@ -298,6 +279,8 @@ perks:
     - essentials.grindstone
     help-commands:
     - /grindstone
+    rank-tier: CREEPER
+    menu-order: 6
   stonecutter:
     name: Portable stonecutter
     level: 38
@@ -308,6 +291,8 @@ perks:
     - essentials.stonecutter
     help-commands:
     - /stonecutter
+    rank-tier: CREEPER
+    menu-order: 7
   homes16:
     name: 16 homes
     level: 40
@@ -322,6 +307,8 @@ perks:
     help-commands:
     - /sethome <name>
     - /home <name>
+    rank-tier: BLAZE
+    menu-order: 0
   vaults8:
     name: 8 writable player vaults
     level: 42
@@ -335,6 +322,8 @@ perks:
     requires: vaults6
     help-commands:
     - /pv
+    rank-tier: BLAZE
+    menu-order: 1
   shops150:
     name: 150 QuickShop trading shops
     level: 44
@@ -348,6 +337,8 @@ perks:
     help-commands:
     - Left-click a chest/barrel with the item
     - Trading shops; separate from player warps
+    rank-tier: BLAZE
+    menu-order: 2
   jobs3:
     name: 3 active jobs
     level: 46
@@ -360,6 +351,33 @@ perks:
     requires: jobs2
     help-commands:
     - /jobs browse
+    rank-tier: BLAZE
+    menu-order: 3
+  craft:
+    name: Portable crafting table
+    level: 11
+    price: 25000
+    permissions:
+    - essentials.workbench
+    legacy-markers:
+    - essentials.workbench
+    help-commands:
+    - /craft
+    rank-tier: BLAZE
+    menu-order: 4
+  tfly:
+    name: Town flight
+    level: 12
+    price: 200000
+    permissions:
+    - townyflight.command.tfly
+    - townyreborn.perk.tfly
+    legacy-markers:
+    - townyreborn.perk.tfly
+    help-commands:
+    - /tfly
+    rank-tier: BLAZE
+    menu-order: 5
   lights:
     name: Lights kit every 72 hours
     level: 48
@@ -371,18 +389,21 @@ perks:
     - townyreborn.perk.kit.lights
     help-commands:
     - /kit lights
-  name_color:
-    name: Nickname colours
-    level: 50
-    price: 50000
+    rank-tier: BLAZE
+    menu-order: 6
+  frames_invisible:
+    name: Invisible item frames
+    level: 14
+    price: 15000
     permissions:
-    - namecolor.set
-    - townyreborn.perk.namecolor.color
+    - invisibleitemframes.command.toggle.visibility
+    - invisibleitemframes.command.togglemode.visibility
     legacy-markers:
-    - townyreborn.perk.namecolor.color
+    - invisibleitemframes.command.toggle.visibility
     help-commands:
-    - /namecolor
-    - /nickname <name>
+    - /itf toggle visibility
+    rank-tier: BLAZE
+    menu-order: 7
   headdb:
     name: Decorative Head Database
     level: 52
@@ -393,6 +414,8 @@ perks:
     - headdb.basic
     help-commands:
     - /hdb
+    rank-tier: BLAZE
+    menu-order: 8
   frames_glow:
     name: Glowing item frames
     level: 54
@@ -404,6 +427,8 @@ perks:
     - invisibleitemframes.command.toggle.glow
     help-commands:
     - /itf toggle glow
+    rank-tier: BLAZE
+    menu-order: 9
   homes22:
     name: 22 homes
     level: 58
@@ -418,6 +443,8 @@ perks:
     help-commands:
     - /sethome <name>
     - /home <name>
+    rank-tier: DRAGON
+    menu-order: 0
   vaults12:
     name: 12 writable player vaults
     level: 60
@@ -431,6 +458,8 @@ perks:
     requires: vaults8
     help-commands:
     - /pv
+    rank-tier: DRAGON
+    menu-order: 1
   shops200:
     name: 200 QuickShop trading shops
     level: 62
@@ -444,6 +473,8 @@ perks:
     help-commands:
     - Left-click a chest/barrel with the item
     - Trading shops; separate from player warps
+    rank-tier: DRAGON
+    menu-order: 2
   warps3:
     name: 3 Player Warps
     level: 64
@@ -458,6 +489,22 @@ perks:
     - /pwarp
     - /shops
     - 'Limit: 3 personal warp destinations'
+    rank-tier: DRAGON
+    menu-order: 3
+  name_color:
+    name: Nickname colours
+    level: 50
+    price: 50000
+    permissions:
+    - namecolor.set
+    - townyreborn.perk.namecolor.color
+    legacy-markers:
+    - townyreborn.perk.namecolor.color
+    help-commands:
+    - /namecolor
+    - /nickname <name>
+    rank-tier: DRAGON
+    menu-order: 4
   name_gradient:
     name: Nickname RGB gradients
     level: 66
@@ -471,26 +518,8 @@ perks:
     help-commands:
     - /namecolor
     - /nickname <RGB text>
-  anvil:
-    name: Portable anvil
-    level: 68
-    price: 35000
-    permissions:
-    - essentials.anvil
-    legacy-markers:
-    - essentials.anvil
-    help-commands:
-    - /anvil
-  smithing:
-    name: Portable smithing table
-    level: 70
-    price: 35000
-    permissions:
-    - essentials.smithingtable
-    legacy-markers:
-    - essentials.smithingtable
-    help-commands:
-    - /smithingtable
+    rank-tier: DRAGON
+    menu-order: 5
   name_style:
     name: Nickname text styles
     level: 72
@@ -503,6 +532,32 @@ perks:
     requires: name_gradient
     help-commands:
     - /namecolor
+    rank-tier: DRAGON
+    menu-order: 6
+  anvil:
+    name: Portable anvil
+    level: 68
+    price: 35000
+    permissions:
+    - essentials.anvil
+    legacy-markers:
+    - essentials.anvil
+    help-commands:
+    - /anvil
+    rank-tier: DRAGON
+    menu-order: 7
+  smithing:
+    name: Portable smithing table
+    level: 70
+    price: 35000
+    permissions:
+    - essentials.smithingtable
+    legacy-markers:
+    - essentials.smithingtable
+    help-commands:
+    - /smithingtable
+    rank-tier: DRAGON
+    menu-order: 8
   homes30:
     name: 30 homes
     level: 74
@@ -517,6 +572,8 @@ perks:
     help-commands:
     - /sethome <name>
     - /home <name>
+    rank-tier: WITHER
+    menu-order: 0
   vaults16:
     name: 16 writable player vaults
     level: 76
@@ -530,6 +587,8 @@ perks:
     requires: vaults12
     help-commands:
     - /pv
+    rank-tier: WITHER
+    menu-order: 1
   shops240:
     name: 240 QuickShop trading shops
     level: 78
@@ -543,6 +602,8 @@ perks:
     help-commands:
     - Left-click a chest/barrel with the item
     - Trading shops; separate from player warps
+    rank-tier: WITHER
+    menu-order: 2
   jobs4:
     name: 4 active jobs
     level: 80
@@ -555,6 +616,8 @@ perks:
     requires: jobs3
     help-commands:
     - /jobs browse
+    rank-tier: WITHER
+    menu-order: 3
   redstone:
     name: Redstone kit every 72 hours
     level: 82
@@ -566,6 +629,8 @@ perks:
     - townyreborn.perk.kit.redstone
     help-commands:
     - /kit redstone
+    rank-tier: WITHER
+    menu-order: 4
   enderchest:
     name: Portable ender chest
     level: 84
@@ -576,6 +641,8 @@ perks:
     - essentials.enderchest
     help-commands:
     - /enderchest
+    rank-tier: WITHER
+    menu-order: 5
   town_flight_bypass:
     name: Expanded town flight access
     level: 86
@@ -587,6 +654,21 @@ perks:
     requires: tfly
     help-commands:
     - /tfly
+    rank-tier: WITHER
+    menu-order: 6
+  fly:
+    name: Personal flight
+    level: 18
+    price: 200000
+    permissions:
+    - essentials.fly
+    - townyreborn.perk.fly
+    legacy-markers:
+    - townyreborn.perk.fly
+    help-commands:
+    - /fly
+    rank-tier: WITHER
+    menu-order: 7
 gifts:
   milestone_001:
     level: 1
@@ -1637,6 +1719,4 @@ gifts:
     name: 'Legend reward: $10,000 + 3 Supporter Keys (one-time)'
     icon: TRIPWIRE_HOOK
     money: 10000
-catalogue-version: 3
-display:
-  auto-configure: true
+catalogue-version: 4

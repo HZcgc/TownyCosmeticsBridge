@@ -43,7 +43,8 @@ public final class Journey {
             if (level < 1 || level > steps || !Double.isFinite(price) || price <= 0 || p.getStringList("permissions").isEmpty())
                 throw new IllegalArgumentException("Invalid perk " + id);
             perks.put(id, new Perk(id, p.getString("name", id), level, price, List.copyOf(p.getStringList("permissions")),
-                List.copyOf(p.getStringList("legacy-markers")), p.getString("requires", ""), List.copyOf(p.getStringList("help-commands"))));
+                List.copyOf(p.getStringList("legacy-markers")), p.getString("requires", ""), List.copyOf(p.getStringList("help-commands")),
+                Tier.valueOf(p.getString("rank-tier", "EXTRA").toUpperCase(Locale.ROOT)), p.getInt("menu-order", level)));
         }
         for (Perk perk : perks.values()) {
             if (!perk.requires().isEmpty() && (!perks.containsKey(perk.requires()) || perks.get(perk.requires()).level() > perk.level()))
@@ -94,6 +95,27 @@ public final class Journey {
     public String abbreviation(int level) { var e = abbreviations.floorEntry(level); return e == null ? "NEW" : e.getValue(); }
     public int pages() { return (steps + PATH.length - 1) / PATH.length; }
     public int page(int level) { return (Math.max(1, level) - 1) / PATH.length; }
+    public StepStatus status(long points, int target) {
+        int current = level(points);
+        return target < current || current == steps && target <= current ? StepStatus.COMPLETED :
+            target == current ? StepStatus.CURRENT : StepStatus.LOCKED;
+    }
+    public List<Tier> perkTiers() {
+        return perks.values().stream().map(Perk::tier).distinct().sorted().toList();
+    }
+    public List<Perk> sortedPerks(int level, Tier tier) {
+        return perks.values().stream().filter(p -> level == 0 ? p.tier() == tier : p.level() == level)
+            .sorted(Comparator.comparing(Perk::tier).thenComparingInt(Perk::menuOrder).thenComparing(Perk::id)).toList();
+    }
+    public List<PerkPage> perkPages(int level) {
+        List<PerkPage> pages = new ArrayList<>();
+        for (Tier tier : level == 0 ? perkTiers() : List.of(Tier.EXTRA)) {
+            List<Perk> items = sortedPerks(level, tier);
+            for (int start = 0; start < items.size(); start += 36)
+                pages.add(new PerkPage(level == 0 ? tier : items.get(0).tier(), List.copyOf(items.subList(start, Math.min(items.size(), start + 36)))));
+        }
+        return pages.isEmpty() ? List.of(new PerkPage(Tier.EXTRA, List.of())) : List.copyOf(pages);
+    }
     /** Mirror the five path rows on alternate pages, preserving the header. */
     public static int slot(int page, int index) {
         int slot = PATH[index];
@@ -141,5 +163,17 @@ public final class Journey {
             this(id, name, level, permissions, commands, townRequired, townBlocks, 0, "CHEST", List.of());
         }
     }
-    public record Perk(String id, String name, int level, double price, List<String> permissions, List<String> legacy, String requires, List<String> commands) {}
+    public enum StepStatus { COMPLETED, CURRENT, LOCKED }
+    public record PerkPage(Tier tier, List<Perk> items) {}
+    public enum Tier {
+        SKELETON("Skeleton"), CREEPER("Creeper"), BLAZE("Blaze"), DRAGON("Dragon"), WITHER("Wither"), EXTRA("Extra");
+        public final String label;
+        Tier(String label) { this.label = label; }
+    }
+    public record Perk(String id, String name, int level, double price, List<String> permissions, List<String> legacy, String requires, List<String> commands,
+                       Tier tier, int menuOrder) {
+        public Perk(String id, String name, int level, double price, List<String> permissions, List<String> legacy, String requires, List<String> commands) {
+            this(id, name, level, price, permissions, legacy, requires, commands, Tier.EXTRA, level);
+        }
+    }
 }
