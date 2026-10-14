@@ -1,0 +1,48 @@
+# Frozen previous catalogue; used only to recover pre-reset purchase eligibility.
+points-first: 30
+points-increase: 15
+steps: 116
+perks:
+  homes8: 2
+  vaults4: 3
+  shops50: 4
+  jobs2: 6
+  trash: 7
+  seeds: 8
+  ptime: 9
+  pweather: 10
+  homes12: 24
+  vaults6: 26
+  shops100: 28
+  warps2: 30
+  loom: 32
+  cartography: 34
+  grindstone: 36
+  stonecutter: 38
+  homes16: 40
+  vaults8: 42
+  shops150: 44
+  jobs3: 46
+  craft: 11
+  tfly: 12
+  lights: 48
+  frames_invisible: 14
+  headdb: 52
+  frames_glow: 54
+  homes22: 58
+  vaults12: 60
+  shops200: 62
+  warps3: 64
+  name_color: 50
+  name_gradient: 66
+  name_style: 72
+  anvil: 68
+  smithing: 70
+  homes30: 74
+  vaults16: 76
+  shops240: 78
+  jobs4: 80
+  redstone: 82
+  enderchest: 84
+  town_flight_bypass: 86
+  fly: 18

@@ -292,7 +292,7 @@ perks:
   homes8:
     name: 8 homes
     level: 2
-    price: 10000
+    price: 7500
     permissions:
     - essentials.sethome.multiple.skeleton
     - townysmp.subscriptions.homes.8
@@ -307,7 +307,7 @@ perks:
   vaults4:
     name: 4 writable player vaults
     level: 3
-    price: 10000
+    price: 7500
     permissions:
     - axvaults.vault.4
     - townysmp.subscriptions.vaults.write.4
@@ -321,7 +321,7 @@ perks:
   shops50:
     name: 50 QuickShop trading shops
     level: 4
-    price: 10000
+    price: 7500
     permissions:
     - townyreborn.perk.shops.30
     - quickshop.limit.skeleton
@@ -335,7 +335,7 @@ perks:
   jobs2:
     name: 2 active jobs
     level: 6
-    price: 25000
+    price: 20000
     permissions:
     - jobs.max.2
     - townyreborn.perk.jobs.2
@@ -348,7 +348,7 @@ perks:
   trash:
     name: Trash menu
     level: 7
-    price: 10000
+    price: 7500
     permissions:
     - essentials.disposal
     - townyreborn.perk.trash
@@ -361,7 +361,7 @@ perks:
   seeds:
     name: Seeds kit every 72 hours
     level: 8
-    price: 25000
+    price: 20000
     permissions:
     - essentials.kits.seeds
     - townyreborn.perk.kit.seeds
@@ -374,7 +374,7 @@ perks:
   ptime:
     name: Personal time
     level: 9
-    price: 10000
+    price: 7500
     permissions:
     - essentials.ptime
     legacy-markers:
@@ -388,7 +388,7 @@ perks:
   pweather:
     name: Personal weather
     level: 10
-    price: 10000
+    price: 7500
     permissions:
     - essentials.pweather
     legacy-markers:
@@ -402,7 +402,7 @@ perks:
   homes12:
     name: 12 homes
     level: 24
-    price: 25000
+    price: 20000
     permissions:
     - essentials.sethome.multiple.creeper
     - townysmp.subscriptions.homes.12
@@ -418,7 +418,7 @@ perks:
   vaults6:
     name: 6 writable player vaults
     level: 26
-    price: 25000
+    price: 20000
     permissions:
     - axvaults.vault.6
     - townysmp.subscriptions.vaults.write.6
@@ -433,7 +433,7 @@ perks:
   shops100:
     name: 100 QuickShop trading shops
     level: 28
-    price: 25000
+    price: 20000
     permissions:
     - townyreborn.perk.shops.50
     - quickshop.limit.creeper
@@ -448,7 +448,7 @@ perks:
   warps2:
     name: 2 Player Warps
     level: 30
-    price: 50000
+    price: 37500
     permissions:
     - axplayerwarps.warps.2
     - townyreborn.perk.warps.2
@@ -463,7 +463,7 @@ perks:
   loom:
     name: Portable loom
     level: 32
-    price: 15000
+    price: 10000
     permissions:
     - essentials.loom
     legacy-markers:
@@ -475,7 +475,7 @@ perks:
   cartography:
     name: Portable cartography table
     level: 34
-    price: 15000
+    price: 10000
     permissions:
     - essentials.cartographytable
     legacy-markers:
@@ -487,7 +487,7 @@ perks:
   grindstone:
     name: Portable grindstone
     level: 36
-    price: 25000
+    price: 20000
     permissions:
     - essentials.grindstone
     legacy-markers:
@@ -499,7 +499,7 @@ perks:
   stonecutter:
     name: Portable stonecutter
     level: 38
-    price: 25000
+    price: 20000
     permissions:
     - essentials.stonecutter
     legacy-markers:
@@ -511,7 +511,7 @@ perks:
   homes16:
     name: 16 homes
     level: 40
-    price: 50000
+    price: 37500
     permissions:
     - essentials.sethome.multiple.blaze
     - townysmp.subscriptions.homes.16
@@ -527,7 +527,7 @@ perks:
   vaults8:
     name: 8 writable player vaults
     level: 42
-    price: 50000
+    price: 37500
     permissions:
     - axvaults.vault.8
     - townysmp.subscriptions.vaults.write.8
@@ -542,7 +542,7 @@ perks:
   shops150:
     name: 150 QuickShop trading shops
     level: 44
-    price: 50000
+    price: 37500
     permissions:
     - townyreborn.perk.shops.80
     - quickshop.limit.blaze
@@ -557,7 +557,7 @@ perks:
   jobs3:
     name: 3 active jobs
     level: 46
-    price: 50000
+    price: 37500
     permissions:
     - jobs.max.3
     - townyreborn.perk.jobs.3
@@ -571,7 +571,7 @@ perks:
   craft:
     name: Portable crafting table
     level: 11
-    price: 25000
+    price: 20000
     permissions:
     - essentials.workbench
     legacy-markers:
@@ -583,7 +583,7 @@ perks:
   tfly:
     name: Town flight
     level: 12
-    price: 200000
+    price: 150000
     permissions:
     - townyflight.command.tfly
     - townyreborn.perk.tfly
@@ -591,12 +591,13 @@ perks:
     - townyreborn.perk.tfly
     help-commands:
     - /tfly
+    - Flight within your own town.
     rank-tier: BLAZE
     menu-order: 5
   lights:
     name: Lights kit every 72 hours
     level: 48
-    price: 50000
+    price: 37500
     permissions:
     - essentials.kits.lights
     - townyreborn.perk.kit.lights
@@ -609,7 +610,7 @@ perks:
   frames_invisible:
     name: Invisible item frames
     level: 14
-    price: 15000
+    price: 10000
     permissions:
     - invisibleitemframes.command.toggle.visibility
     - invisibleitemframes.command.togglemode.visibility
@@ -622,7 +623,7 @@ perks:
   headdb:
     name: Decorative Head Database
     level: 52
-    price: 50000
+    price: 37500
     permissions:
     - headdb.basic
     legacy-markers:
@@ -634,7 +635,7 @@ perks:
   frames_glow:
     name: Glowing item frames
     level: 54
-    price: 25000
+    price: 20000
     permissions:
     - invisibleitemframes.command.toggle.glow
     - invisibleitemframes.command.togglemode.glow
@@ -647,7 +648,7 @@ perks:
   homes22:
     name: 22 homes
     level: 58
-    price: 75000
+    price: 55000
     permissions:
     - essentials.sethome.multiple.dragon
     - townysmp.subscriptions.homes.22
@@ -663,7 +664,7 @@ perks:
   vaults12:
     name: 12 writable player vaults
     level: 60
-    price: 75000
+    price: 55000
     permissions:
     - axvaults.vault.12
     - townysmp.subscriptions.vaults.write.12
@@ -678,7 +679,7 @@ perks:
   shops200:
     name: 200 QuickShop trading shops
     level: 62
-    price: 75000
+    price: 55000
     permissions:
     - townyreborn.perk.shops.120
     - quickshop.limit.dragon
@@ -693,7 +694,7 @@ perks:
   warps3:
     name: 3 Player Warps
     level: 64
-    price: 75000
+    price: 55000
     permissions:
     - axplayerwarps.warps.3
     - townyreborn.perk.warps.3
@@ -709,7 +710,7 @@ perks:
   name_color:
     name: Nickname colours
     level: 50
-    price: 50000
+    price: 37500
     permissions:
     - namecolor.set
     - townyreborn.perk.namecolor.color
@@ -723,7 +724,7 @@ perks:
   name_gradient:
     name: Nickname RGB gradients
     level: 66
-    price: 75000
+    price: 55000
     permissions:
     - namecolor.gradient
     - townyreborn.perk.namecolor.gradient
@@ -738,7 +739,7 @@ perks:
   name_style:
     name: Nickname text styles
     level: 72
-    price: 100000
+    price: 75000
     permissions:
     - namecolor.set.style
     - townyreborn.perk.namecolor.style
@@ -752,7 +753,7 @@ perks:
   anvil:
     name: Portable anvil
     level: 68
-    price: 35000
+    price: 25000
     permissions:
     - essentials.anvil
     legacy-markers:
@@ -764,7 +765,7 @@ perks:
   smithing:
     name: Portable smithing table
     level: 70
-    price: 35000
+    price: 25000
     permissions:
     - essentials.smithingtable
     legacy-markers:
@@ -776,7 +777,7 @@ perks:
   homes30:
     name: 30 homes
     level: 74
-    price: 100000
+    price: 75000
     permissions:
     - essentials.sethome.multiple.wither
     - townysmp.subscriptions.homes.30
@@ -792,7 +793,7 @@ perks:
   vaults16:
     name: 16 writable player vaults
     level: 76
-    price: 100000
+    price: 75000
     permissions:
     - axvaults.vault.16
     - townysmp.subscriptions.vaults.write.16
@@ -807,7 +808,7 @@ perks:
   shops240:
     name: 240 QuickShop trading shops
     level: 78
-    price: 100000
+    price: 75000
     permissions:
     - townyreborn.perk.shops.160
     - quickshop.limit.wither
@@ -822,7 +823,7 @@ perks:
   jobs4:
     name: 4 active jobs
     level: 80
-    price: 75000
+    price: 55000
     permissions:
     - jobs.max.4
     - townyreborn.perk.jobs.4
@@ -836,7 +837,7 @@ perks:
   redstone:
     name: Redstone kit every 72 hours
     level: 82
-    price: 75000
+    price: 55000
     permissions:
     - essentials.kits.redstone
     - townyreborn.perk.kit.redstone
@@ -849,7 +850,7 @@ perks:
   enderchest:
     name: Portable ender chest
     level: 84
-    price: 75000
+    price: 55000
     permissions:
     - essentials.enderchest
     legacy-markers:
@@ -859,9 +860,9 @@ perks:
     rank-tier: WITHER
     menu-order: 5
   town_flight_bypass:
-    name: Expanded town flight access
-    level: 86
-    price: 150000
+    name: Town flight anywhere
+    level: 116
+    price: 110000
     permissions:
     - townyflight.bypass
     legacy-markers:
@@ -869,12 +870,14 @@ perks:
     requires: tfly
     help-commands:
     - /tfly
+    - Fly in any town and in the wilderness.
+    - Leaving your town no longer removes TownyFlight.
     rank-tier: WITHER
     menu-order: 6
   fly:
     name: Personal flight
     level: 116
-    price: 200000
+    price: 150000
     permissions:
     - essentials.fly
     - townyreborn.perk.fly
@@ -1934,6 +1937,6 @@ gifts:
     name: 'Reborn Legend: $100,000 + 5 Supporter Keys'
     icon: TRIPWIRE_HOOK
     money: 100000
-catalogue-version: 5
+catalogue-version: 6
 notifications:
   enabled: true

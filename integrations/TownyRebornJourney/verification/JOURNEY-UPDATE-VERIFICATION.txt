@@ -1,6 +1,6 @@
-Towny Reborn Journey 2.0.0-beta.4
+Towny Reborn Journey 2.0.0-beta.5
 
-Current build: 89 scenarios passed (24 recovery + 45 menu/update + 20 long-Journey/migration).
+Current build: 113 scenarios passed (24 recovery + 45 menu/update + 32 long-Journey/migration + 12 permission-import).
 Preserved Beta.1 reference: the same 24 recovery scenarios passed independently.
 Java sources compile with --release 21; JVM verification runs with -Xverify:all.
 
@@ -44,7 +44,7 @@ PASS daily supporter perk removed, supporter keys only one-time gifts
 PASS warp limits are two and three, not trading-shop limits
 PASS remaining percentages and points at boundaries
 PASS abbreviations match title boundaries
-PASS updated catalogue preserves prices permission chains and stable reward IDs
+PASS updated catalogue preserves permission chains and stable reward IDs with authorised lower prices and final flight gates
 PASS startup reads existing configuration without rewriting it
 PASS incompatible old configuration fails without replacing it
 PASS external config writers and cleanup are absent from the JAR
@@ -88,6 +88,12 @@ PASS 116 distinct level titles and compact level IDs
 PASS maximum permitted earnings require the 100th UTC day
 PASS UTC midnight ignores JVM timezone and Berlin daylight-saving time
 PASS fresh profiles begin at level one without writing a read-only record
+PASS previous 5052 JP retain exactly 13 purchase unlocks without granting ownership
+PASS already-reset beta4 profile repairs eligibility while retaining its 4 JP and receipts
+PASS a purchased feature evidenced in a backup is restored without a payment
+PASS fresh players and new-curve backups do not inherit old early flight
+PASS eligibility repair fails closed for a mismatched profile UUID
+PASS new purchase unlocks persist independently of later Journey points
 PASS native reset keeps purchases claims limits achievements and exact backup
 PASS legacy quests and active time cannot pre-fill the restarted Journey
 PASS backup failure leaves old progress intact and no partially migrated cache
@@ -96,6 +102,9 @@ PASS new first skill readings cannot import pre-update levels or farm old record
 PASS a debited flight receipt recovers at level one without another debit
 PASS larger reward amounts cannot replay old gift claims or ambiguous receipts
 PASS flight needs the final level for a new purchase; owned flight remains owned
+PASS town flight bypass cannot provide a new full-flight purchase before the final level
+PASS all permanent feature prices fall moderately while rewards and point requirements stay unchanged
+PASS permission delivery save failure retains the original paid receipt after a price reduction
 PASS rank colours move pink to lime and both render formats preserve titles
 PASS reward value rises without recurring keys or cosmetic rewards
 PASS Experience category occupies the stone slot and preserves screenshot positions
@@ -103,5 +112,23 @@ PASS successful level gain saves before sound and sends the new-rank notificatio
 PASS failed level save sends no success sound or level notification
 PASS player head shows live personal stats while progress bottle stays focused
 PASS rank tabs use a Blaze head and explicit browsing instructions
-PASS Blaze tab sends a fixed Mojang skin profile rather than a Blaze rod
-RESULT 20 long Journey checks passed
+PASS retained unlock appears purchasable at level one, with a clear retained-unlock label
+PASS rank access is visible without falsely recording a permanent purchase
+PASS town flight scope is explained before confirming a purchase
+PASS Blaze tab sends the named official Mojang profile with its canonical skin URL
+RESULT 32 long Journey checks passed
+
+PERMISSIONS
+PASS old direct permanent purchase markers restore ownership at Journey level one
+PASS temporary false and unrelated-context nodes cannot prove a permanent purchase
+PASS owner wildcard and supporter membership stay separate from paid ownership
+PASS missing LP nodes do not remove already recorded purchases
+PASS anonymous exported permission case 1 keeps confirmed purchases
+PASS anonymous exported permission case 2 keeps confirmed purchases
+PASS anonymous exported permission case 3 keeps confirmed purchases
+PASS anonymous exported permission case 4 keeps confirmed purchases
+PASS anonymous exported permission case 5 keeps confirmed purchases
+PASS anonymous exported permission case 6 keeps confirmed purchases
+PASS anonymous exported permission case 7 keeps confirmed purchases
+PASS anonymous exported permission case 8 keeps confirmed purchases
+RESULT 12 permission import checks passed

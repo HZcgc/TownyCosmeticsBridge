@@ -9,6 +9,7 @@ public final class Journey {
     public final long base, increase;
     public final String progressRevision;
     public final RankStyle rankStyle;
+    final LegacyPerks legacyPerks = new LegacyPerks();
     public final Map<String, Perk> perks = new LinkedHashMap<>();
     public final Map<String, Gift> gifts = new LinkedHashMap<>();
     public final NavigableMap<Integer, String> titles = new TreeMap<>();
@@ -161,7 +162,15 @@ public final class Journey {
         for (String id : new ArrayList<>(owned)) for (Perk p = perks.get(id); p != null && !p.requires().isEmpty(); p = perks.get(p.requires())) owned.add(p.requires());
     }
     public boolean purchasable(State state, Perk perk) {
-        return perk != null && level(state.points) >= perk.level() && !state.owned.contains(perk.id()) && (perk.requires().isEmpty() || state.owned.contains(perk.requires()));
+        return perk != null && unlocked(state, perk) && !state.owned.contains(perk.id()) && (perk.requires().isEmpty() || state.owned.contains(perk.requires()));
+    }
+    public boolean unlocked(State state, Perk perk) {
+        return state.owned.contains(perk.id()) || state.unlocked.contains(perk.id()) || level(state.points) >= perk.level();
+    }
+    public void recordUnlocks(State state) {
+        int level = level(state.points);
+        for (Perk perk : perks.values())
+            if ((perk.level() <= level || state.owned.contains(perk.id())) && state.unlocked.add(perk.id())) state.dirty = true;
     }
     public static String perkMarker(String id) { return "townyreborn.journey.perk." + id; }
     public static String giftMarker(String id) { return "townyreborn.journey.reward." + id; }

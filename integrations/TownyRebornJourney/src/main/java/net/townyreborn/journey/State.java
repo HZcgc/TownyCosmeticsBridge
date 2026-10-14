@@ -17,6 +17,8 @@ public final class State {
    public long journeyStartedAt;
    public final Set<String> baselineDue = new HashSet<>();
    public final Set<String> owned = new HashSet<>();
+   public final Set<String> unlocked = new HashSet<>();
+   public boolean legacyPerksImported;
    public final Set<String> claimed = new HashSet<>();
    public final Set<String> achievements = new HashSet<>();
    public final Map<String, Long> high = new HashMap<>();

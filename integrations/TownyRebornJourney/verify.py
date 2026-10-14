@@ -6,6 +6,7 @@ import yaml
 ROOT=Path(__file__).resolve().parent
 p=argparse.ArgumentParser()
 p.add_argument('--jdk',type=Path,required=True);p.add_argument('--deps',type=Path,required=True);p.add_argument('--jar',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+p.add_argument('--permissions-fixture',type=Path)
 a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
 for line in (ROOT/'releases/SHA256SUMS.txt').read_text().splitlines():
  digest,name=line.split('  ',1);assert hashlib.sha256((ROOT/'releases'/name).read_bytes()).hexdigest()==digest
@@ -41,4 +42,9 @@ long_data=Path(tempfile.mkdtemp(prefix='long-data-',dir=a.output))
 r=subprocess.run([str(a.jdk/'java'),'-Xverify:all',jar_arg,'-Dnet.bytebuddy.experimental=true','-cp',str(classes)+':'+str(a.jar)+':'+cp,'net.townyreborn.journey.LongJourneyChecks',str(long_data),str(a.jar),str(ROOT)],capture_output=True,text=True)
 (a.output/'long.log').write_text(r.stdout+r.stderr)
 print(r.stdout)
+if r.returncode:print(r.stderr);raise SystemExit(r.returncode)
+subprocess.run([str(a.jdk/'javac'),'--release','21','-cp',str(classes)+':'+str(a.jar)+':'+cp,'-d',str(classes),str(ROOT/'src/test/java/net/townyreborn/journey/PermissionImportChecks.java')],check=True)
+command=[str(a.jdk/'java'),'-Xverify:all',jar_arg,'-Dnet.bytebuddy.experimental=true','-cp',str(classes)+':'+str(a.jar)+':'+cp,'net.townyreborn.journey.PermissionImportChecks',str(a.jar)]
+if a.permissions_fixture:command.append(str(a.permissions_fixture))
+r=subprocess.run(command,capture_output=True,text=True);(a.output/'permissions.log').write_text(r.stdout+r.stderr);print(r.stdout)
 if r.returncode:print(r.stderr);raise SystemExit(r.returncode)

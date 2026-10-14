@@ -107,6 +107,7 @@ public final class Purchases {
                   if (var5 != null) {
                      var3.accept("Your payment is recorded. Staff can finish the perk unlock safely.");
                   } else {
+                     State.Purchase paidReceipt = var1.pending;
                      var1.owned.add(var2.id());
                      this.journey.inheritLowerPerks(var1.owned);
                      var1.pending = null;
@@ -115,7 +116,7 @@ public final class Purchases {
                         this.store.save(var1);
                         var3.accept("Permanently unlocked " + var2.name() + "!");
                      } catch (Exception var6x) {
-                        var1.pending = new State.Purchase(var2.id(), "DEBITED", var2.price(), 0.0, System.currentTimeMillis());
+                        var1.pending = paidReceipt;
                         var1.blocked = true;
                         var3.accept("The perk was granted. Its receipt needs a staff check.");
                      }

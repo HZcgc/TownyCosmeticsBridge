@@ -57,6 +57,8 @@ public final class Store {
          var4.journeyStartedAt = var6.getLong("journey-started-at", 0);
          var4.baselineDue.addAll(var6.getStringList("baseline-due"));
          var4.owned.addAll(var6.getStringList("owned-perks"));
+         var4.unlocked.addAll(var6.getStringList("unlocked-perks"));
+         var4.legacyPerksImported = var6.getBoolean("legacy-perks-imported", false);
          var4.claimed.addAll(var6.getStringList("claimed-gifts"));
          var4.achievements.addAll(var6.getStringList("achievements"));
          loadNumbers(var6, "high-water", var4.high);
@@ -97,6 +99,8 @@ public final class Store {
 
       this.journey.migrateGiftReceipts(var4);
       this.journey.inheritLowerPerks(var4.owned);
+      if (previousFile != null && previousFile.equals(var5) && var4.progressRevision.isEmpty())
+         this.journey.legacyPerks.restore(var4, this.journey, read(previousFile));
       if (!this.journey.progressRevision.isEmpty() && !this.journey.progressRevision.equals(var4.progressRevision)) {
          // Preserve the complete original record before committing the one-time points reset.
          if (previousFile != null) {
@@ -110,9 +114,18 @@ public final class Store {
          var4.journeyStartedAt = System.currentTimeMillis();
          var4.baselineDue.addAll(var4.high.keySet());
          var4.dirty = true;
-         // A failed save must not leave a cached, partially migrated profile.
-         if (previousFile != null) this.save(var4);
       }
+      if (!var4.legacyPerksImported) {
+         if (!this.journey.progressRevision.isEmpty()) {
+            Path backup = this.migrationBackups.resolve(this.journey.progressRevision).resolve("journeydata").resolve(var1 + ".yml");
+            if (Files.isRegularFile(backup)) this.journey.legacyPerks.restore(var4, this.journey, read(backup));
+         }
+         var4.legacyPerksImported = true;
+         var4.dirty = true;
+      }
+      this.journey.recordUnlocks(var4);
+      // Do not cache a partial reset or eligibility repair after a storage failure.
+      if (previousFile != null && var4.dirty) this.save(var4);
       this.cache.put(var1, var4);
       return var4;
    }
@@ -135,6 +148,7 @@ public final class Store {
    }
 
    public synchronized void save(State var1) throws IOException {
+      this.journey.recordUnlocks(var1);
       YamlConfiguration var2 = new YamlConfiguration();
       var2.set("schema", 2);
       var2.set("uuid", var1.uuid.toString());
@@ -146,6 +160,8 @@ public final class Store {
       var2.set("journey-started-at", var1.journeyStartedAt);
       var2.set("baseline-due", var1.baselineDue.stream().sorted().toList());
       var2.set("owned-perks", var1.owned.stream().sorted().toList());
+      var2.set("unlocked-perks", var1.unlocked.stream().sorted().toList());
+      var2.set("legacy-perks-imported", var1.legacyPerksImported);
       var2.set("claimed-gifts", var1.claimed.stream().sorted().toList());
       var2.set("achievements", var1.achievements.stream().sorted().toList());
       var2.set("high-water", new TreeMap<>(var1.high));

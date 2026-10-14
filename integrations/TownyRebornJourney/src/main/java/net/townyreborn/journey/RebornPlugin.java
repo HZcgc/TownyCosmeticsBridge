@@ -255,6 +255,8 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
                      + var4.points
                      + " JP; owned="
                      + var4.owned.size()
+                     + "; unlocked-for-purchase="
+                     + var4.unlocked.size()
                      + "; receipt="
                      + (var4.pending == null ? "none" : var4.pending.perk() + "/" + var4.pending.phase())
                      + "; pending reward="

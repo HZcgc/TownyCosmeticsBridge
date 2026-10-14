@@ -68,6 +68,41 @@ public final class LongJourneyChecks {
         test("fresh profiles begin at level one without writing a read-only record",()->{
             State s=store("fresh").get(UUID.randomUUID(),"Test");require(s.points==0&&s.journeyMinutes==0&&s.progressRevision.equals("long-journey-2026-10-v1")&&!s.persisted);
         });
+        test("previous 5052 JP retain exactly 13 purchase unlocks without granting ownership",()->{
+            UUID id=UUID.randomUUID();var old=oldProfile(id);old.set("points",5052);old.set("owned-perks",List.of());
+            writeOld("eligibility",id,old);State s=store("eligibility").get(id,"Test");
+            require(s.points==0&&s.owned.isEmpty()&&s.unlocked.equals(Set.of("homes8","vaults4","shops50","jobs2","trash","seeds","ptime","pweather","homes12","craft","tfly","frames_invisible","fly")));
+            require(journey.purchasable(s,journey.perks.get("fly"))&&!journey.purchasable(s,journey.perks.get("homes12")));
+        });
+        test("already-reset beta4 profile repairs eligibility while retaining its 4 JP and receipts",()->{
+            UUID id=UUID.randomUUID();var old=oldProfile(id);old.set("points",5052);old.set("owned-perks",List.of());
+            Path backup=root.resolve("post-reset/migration-backups/long-journey-2026-10-v1/journeydata/"+id+".yml");Files.createDirectories(backup.getParent());Files.writeString(backup,old.saveToString());
+            var current=oldProfile(id);current.set("points",4);current.set("progress-revision","long-journey-2026-10-v1");current.set("journey-active-minutes",4);current.set("owned-perks",List.of());
+            Path file=writeOld("post-reset",id,current);Store st=store("post-reset");State s=st.get(id,"Test");
+            require(s.points==4&&s.journeyMinutes==4&&s.unlocked.size()==13&&s.owned.isEmpty()&&s.claimed.contains("milestone_005"));
+            State again=store("post-reset").get(id,"Test");require(again.points==4&&again.unlocked.equals(s.unlocked)&&again.legacyPerksImported);
+        });
+        test("a purchased feature evidenced in a backup is restored without a payment",()->{
+            UUID id=UUID.randomUUID();var old=oldProfile(id);old.set("points",5052);old.set("owned-perks",List.of("homes12","fly"));
+            Path backup=root.resolve("owned-repair/migration-backups/long-journey-2026-10-v1/journeydata/"+id+".yml");Files.createDirectories(backup.getParent());Files.writeString(backup,old.saveToString());
+            var current=oldProfile(id);current.set("points",4);current.set("progress-revision","long-journey-2026-10-v1");current.set("owned-perks",List.of());writeOld("owned-repair",id,current);
+            Store st=store("owned-repair");State s=st.get(id,"Test");require(s.points==4&&s.owned.containsAll(List.of("homes8","homes12","fly")));
+            RecoveryChecks.Bank bank=new RecoveryChecks.Bank();new Purchases(journey,st,bank).buy(s,journey.perks.get("fly"),x->{});require(bank.debits==0);
+        });
+        test("fresh players and new-curve backups do not inherit old early flight",()->{
+            State fresh=store("no-legacy").get(UUID.randomUUID(),"Test");require(fresh.unlocked.isEmpty()&&!journey.purchasable(fresh,journey.perks.get("fly")));
+            var newer=oldProfile(fresh.uuid);newer.set("progress-revision","long-journey-2026-10-v1");newer.set("points",5052);journey.legacyPerks.restore(fresh,journey,newer);
+            require(fresh.unlocked.isEmpty()&&fresh.owned.isEmpty());
+        });
+        test("eligibility repair fails closed for a mismatched profile UUID",()->{
+            UUID id=UUID.randomUUID();var current=oldProfile(id);current.set("progress-revision","long-journey-2026-10-v1");current.set("points",4);Path file=writeOld("bad-proof",id,current);String original=Files.readString(file);
+            Path backup=root.resolve("bad-proof/migration-backups/long-journey-2026-10-v1/journeydata/"+id+".yml");Files.createDirectories(backup.getParent());Files.writeString(backup,oldProfile(UUID.randomUUID()).saveToString());
+            Store st=store("bad-proof");boolean failed=false;try{st.get(id,"Test");}catch(IllegalArgumentException expected){failed=true;}require(failed&&st.cached().isEmpty()&&Files.readString(file).equals(original));
+        });
+        test("new purchase unlocks persist independently of later Journey points",()->{
+            Store st=store("future-unlocks");State s=st.get(UUID.randomUUID(),"Test");s.points=journey.threshold(2);st.save(s);require(s.unlocked.contains("homes8"));
+            s.points=0;st.save(s);State again=store("future-unlocks").get(s.uuid,"Test");require(again.points==0&&journey.purchasable(again,journey.perks.get("homes8"))&&!again.owned.contains("homes8"));
+        });
         test("native reset keeps purchases claims limits achievements and exact backup",()->{
             UUID id=UUID.randomUUID();Path file=writeOld("native",id,oldProfile(id));String old=Files.readString(file);
             Store store=store("native");State s=store.get(id,"Test");
@@ -121,6 +156,31 @@ public final class LongJourneyChecks {
             s.points=journey.threshold(116);require(journey.purchasable(s,journey.perks.get("fly")));s.owned.add("fly");s.points=0;
             require(s.owned.contains("fly")&&!journey.purchasable(s,journey.perks.get("fly")));
         });
+        test("town flight bypass cannot provide a new full-flight purchase before the final level",()->{
+            State s=new State(UUID.randomUUID(),"Test");s.owned.add("tfly");s.points=journey.threshold(115);
+            require(!journey.purchasable(s,journey.perks.get("town_flight_bypass")));
+            s.points=journey.threshold(116);require(journey.purchasable(s,journey.perks.get("town_flight_bypass")));
+            s.points=0;s.unlocked.add("town_flight_bypass");require(journey.purchasable(s,journey.perks.get("town_flight_bypass")));
+        });
+        test("all permanent feature prices fall moderately while rewards and point requirements stay unchanged",()->{
+            var previous=JourneyUpdateChecks.readJar(Path.of(args[2]).resolve("releases/TownyRebornProgression-2.0.0-beta.4.jar").toString());
+            Journey oldJourney=new Journey(previous);double oldTotal=0,newTotal=0;
+            for(String section:List.of("journey","sources"))for(String key:previous.getConfigurationSection(section).getKeys(true)) {
+                String path=section+"."+key;if(!previous.isConfigurationSection(path))require(Objects.equals(config.get(path),previous.get(path)));}
+            require(journey.gifts.equals(oldJourney.gifts));
+            for(var p:journey.perks.values()) {var old=oldJourney.perks.get(p.id());double ratio=p.price()/old.price();
+                require(ratio>=0.65&&ratio<=0.80&&p.permissions().equals(old.permissions())&&p.requires().equals(old.requires()));oldTotal+=old.price();newTotal+=p.price();}
+            require(oldTotal==2350000&&newTotal==1755000&&journey.perks.get("fly").price()==150000&&journey.perks.get("tfly").price()==150000);
+        });
+        test("permission delivery save failure retains the original paid receipt after a price reduction",()->{
+            UUID id=UUID.randomUUID();var c=oldProfile(id);c.set("owned-perks",List.of());c.set("pending-purchase.perk","fly");
+            c.set("pending-purchase.phase","DEBITED");c.set("pending-purchase.price",200000);c.set("pending-purchase.balance-before",250000);c.set("pending-purchase.created",100);
+            writeOld("old-price-receipt",id,c);Store st=spy(store("old-price-receipt"));State s=st.get(id,"Test");State.Purchase paid=s.pending;
+            doThrow(new IOException("disk full")).when(st).save(s);RecoveryChecks.Bank bank=new RecoveryChecks.Bank();Purchases purchases=new Purchases(journey,st,bank);
+            purchases.recover(s,x->{});bank.future.complete(null);
+            require(bank.debits==0&&s.pending.equals(paid)&&s.pending.price()==200000&&s.pending.balanceBefore()==250000&&s.pending.created()==100);
+            doCallRealMethod().when(st).save(s);purchases.recover(s,x->{});require(bank.debits==0&&s.pending==null&&s.owned.contains("fly"));
+        });
         test("rank colours move pink to lime and both render formats preserve titles",()->{
             require(journey.rankStyle.colour(1,116)==0xff6bd6&&journey.rankStyle.colour(116,116)==0xb8ff60);
             for(int l=1;l<=116;l++){
@@ -167,14 +227,27 @@ public final class LongJourneyChecks {
                 gui.menu.perks(gui.player,0,0);require(gui.tile(2).icon()==Material.PLAYER_HEAD&&gui.text(2).contains("Click this head")&&gui.text(6).contains("five heads above are clickable"));
                 for(int i=0;i<5;i++)require(gui.view().actions.get(i).page()==i);
             });
-            test("Blaze tab sends a fixed Mojang skin profile rather than a Blaze rod",()->{
+            test("retained unlock appears purchasable at level one, with a clear retained-unlock label",()->{
+                gui.state().points=4;gui.state().unlocked.add("fly");gui.menu.perks(gui.player,4,0);
+                require(gui.tile(16).icon()==Material.CHEST&&gui.text(16).contains("earlier purchase unlock is retained"));
+            });
+            test("rank access is visible without falsely recording a permanent purchase",()->{
+                when(gui.plugin.integrations.hasFeatureAccess(gui.player,journey.perks.get("fly"))).thenReturn(true);gui.menu.perks(gui.player,4,0);
+                require(gui.tile(16).icon()==Material.LIGHT_BLUE_DYE&&gui.text(16).contains("Your rank currently provides")&&!gui.state().owned.contains("fly"));
+            });
+            test("town flight scope is explained before confirming a purchase",()->{
+                gui.menu.perks(gui.player,4,0);require(gui.text(15).contains("Fly in any town and in the wilderness"));
+                gui.menu.confirm(gui.player,"town_flight_bypass");require(gui.text(13).contains("Leaving your town no longer removes TownyFlight"));
+            });
+            test("Blaze tab sends the named official Mojang profile with its canonical skin URL",()->{
                 SkullMeta skull=mock(SkullMeta.class);PlayerProfile profile=mock(PlayerProfile.class);PlayerTextures textures=mock(PlayerTextures.class);when(profile.getTextures()).thenReturn(textures);
-                gui.bukkit.when(()->Bukkit.createPlayerProfile(any(UUID.class))).thenReturn(profile);
+                gui.bukkit.when(()->Bukkit.createPlayerProfile(any(UUID.class),eq("MHF_Blaze"))).thenReturn(profile);
                 doAnswer(a->{var stack=mock(org.bukkit.inventory.ItemStack.class);when(stack.getItemMeta()).thenReturn(skull);
                     gui.tiles.put(stack,new JourneyUpdateChecks.Tile(a.getArgument(0),a.getArgument(1),List.copyOf(a.getArgument(2))));return stack;})
                     .when(gui.menu).item(eq(Material.PLAYER_HEAD),anyString(),anyList());
                 gui.menu.perks(gui.player,2,0);verify(skull).setOwnerProfile(profile);
-                verify(textures).setSkin(argThat(url->url.toString().equals("https://textures.minecraft.net/texture/d06e342f90ec538aaa1552b224f264a040840902e126d91ece6139aa5b3c7cc3")));
+                gui.bukkit.verify(()->Bukkit.createPlayerProfile(UUID.fromString("4c38ed11-596a-4fd4-ab1d-26f386c1cbac"),"MHF_Blaze"));
+                verify(textures).setSkin(argThat(url->url.toString().equals("http://textures.minecraft.net/texture/d06e342f90ec538aaa1552b224f264a040840902e126d91ece6139aa5b3c7cc3")));
             });
         }
         System.out.println("RESULT "+checks+" long Journey checks passed");

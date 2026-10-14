@@ -14,7 +14,7 @@ with zipfile.ZipFile(a.jar) as jar:
     version = meta['version']
     assert jar.read('config.yml') == (ROOT/'src/main/resources/config.yml').read_bytes(), 'JAR/config mismatch'
 
-logs = {name: (a.verification/(name+'.log')).read_text() for name in ['original', 'rebuilt', 'update', 'long']}
+logs = {name: (a.verification/(name+'.log')).read_text() for name in ['original', 'rebuilt', 'update', 'long', 'permissions']}
 counts = {}
 for name, log in logs.items():
     result = re.findall(r'^RESULT (\d+) .*checks passed$', log, re.M)
@@ -22,10 +22,10 @@ for name, log in logs.items():
     counts[name] = int(result[0])
     assert sum(line.startswith('PASS ') for line in log.splitlines()) == counts[name]
 assert logs['original'].split('RESULT')[0] == logs['rebuilt'].split('RESULT')[0], 'Reference/core scenarios disagree'
-total = counts['rebuilt'] + counts['update'] + counts['long']
+total = counts['rebuilt'] + counts['update'] + counts['long'] + counts['permissions']
 report = f'''Towny Reborn Journey {version}
 
-Current build: {total} scenarios passed ({counts['rebuilt']} recovery + {counts['update']} menu/update + {counts['long']} long-Journey/migration).
+Current build: {total} scenarios passed ({counts['rebuilt']} recovery + {counts['update']} menu/update + {counts['long']} long-Journey/migration + {counts['permissions']} permission-import).
 Preserved Beta.1 reference: the same {counts['original']} recovery scenarios passed independently.
 Java sources compile with --release 21; JVM verification runs with -Xverify:all.
 
@@ -34,7 +34,7 @@ No live Paper/client deployment or visual Minecraft test is claimed.
 Uploaded Quests player records and quest definitions are not packaged.
 
 '''
-for name in ['rebuilt', 'update', 'long']:
+for name in ['rebuilt', 'update', 'long', 'permissions']:
     report += name.upper()+'\n'+'\n'.join(line for line in logs[name].splitlines() if line.startswith(('PASS ', 'RESULT ')))+'\n\n'
 report = report.rstrip()+'\n'
 (ROOT/'verification/JOURNEY-UPDATE-VERIFICATION.txt').write_text(report)
@@ -58,21 +58,32 @@ bundle = {
 assert not any('/journeydata/' in name or '/playerdata/' in name or name.lower().startswith('plugins/quests/quests/') for name in bundle)
 for name, data in bundle.items():
     if name.endswith('.yml'): assert isinstance(yaml.safe_load(data), dict)
-bundle['SHA256SUMS.txt'] = ''.join(f'{hashlib.sha256(data).hexdigest()}  {name}\n' for name, data in sorted(bundle.items())).encode()
+def write_bundle(package, files):
+    entries = dict(files)
+    entries['SHA256SUMS.txt'] = ''.join(f'{hashlib.sha256(data).hexdigest()}  {name}\n' for name, data in sorted(files.items())).encode()
+    with zipfile.ZipFile(package, 'w', zipfile.ZIP_DEFLATED) as z:
+        for name, data in sorted(entries.items()):
+            info = zipfile.ZipInfo(name)
+            info.external_attr = 0o100644 << 16
+            info.compress_type = zipfile.ZIP_DEFLATED
+            z.writestr(info, data)
+    with zipfile.ZipFile(package) as z:
+        assert z.testzip() is None
+        assert z.read('plugins/'+jar_target.name) == a.jar.read_bytes()
+        for line in z.read('SHA256SUMS.txt').decode().splitlines():
+            digest, name = line.split('  ', 1)
+            assert hashlib.sha256(z.read(name)).hexdigest() == digest
+    return len(entries)
+
 package = release/f'TownyReborn-Journey-{version}.zip'
-with zipfile.ZipFile(package, 'w', zipfile.ZIP_DEFLATED) as z:
-    for name, data in sorted(bundle.items()):
-        info = zipfile.ZipInfo(name)
-        info.external_attr = 0o100644 << 16
-        info.compress_type = zipfile.ZIP_DEFLATED
-        z.writestr(info, data)
-with zipfile.ZipFile(package) as z:
-    assert z.testzip() is None
-    assert z.read('plugins/'+jar_target.name) == a.jar.read_bytes()
-    for line in z.read('SHA256SUMS.txt').decode().splitlines():
-        digest, name = line.split('  ', 1)
-        assert hashlib.sha256(z.read(name)).hexdigest() == digest
+members = write_bundle(package, bundle)
+hotfix = release/f'TownyReborn-Journey-Hotfix-{version}.zip'
+hotfix_files = {name: data for name, data in bundle.items()
+                if name in {'plugins/'+jar_target.name, 'plugins/TownyRebornProgression/config.yml', 'README-DE.md', 'PERKS.md', 'VERIFICATION.txt'}}
+assert {name for name in hotfix_files if name.startswith('plugins/')} == {'plugins/'+jar_target.name, 'plugins/TownyRebornProgression/config.yml'}
+hotfix_members = write_bundle(hotfix, hotfix_files)
 hashes = {name: digest for digest, name in (line.split('  ', 1) for line in (release/'SHA256SUMS.txt').read_text().splitlines())}
-for file in [jar_target, package]: hashes[file.name] = hashlib.sha256(file.read_bytes()).hexdigest()
+for file in [jar_target, package, hotfix]: hashes[file.name] = hashlib.sha256(file.read_bytes()).hexdigest()
 (release/'SHA256SUMS.txt').write_text(''.join(f'{digest}  {name}\n' for name, digest in sorted(hashes.items())))
-print(f'{package}\n{total} current scenarios passed; {len(bundle)} members; {package.stat().st_size} bytes; ZIP and SHA256 verification passed.')
+print(f'{package}\n{total} current scenarios passed; {members} members; {package.stat().st_size} bytes; ZIP and SHA256 verification passed.')
+print(f'{hotfix}\n{hotfix_members} members; {hotfix.stat().st_size} bytes; only Progression JAR/config plus instructions and verification.')

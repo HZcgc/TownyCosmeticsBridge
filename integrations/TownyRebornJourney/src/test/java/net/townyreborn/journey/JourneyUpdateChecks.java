@@ -116,14 +116,18 @@ public final class JourneyUpdateChecks {
             require(journey.abbreviation(1).equals("J001")&&journey.abbreviation(4).equals("J004")&&journey.abbreviation(17).equals("J017")&&journey.abbreviation(116).equals("J116"));
         });
         Path sourceRoot=Path.of(args[4]);
-        test("updated catalogue preserves prices permission chains and stable reward IDs",()->{
+        test("updated catalogue preserves permission chains and stable reward IDs with authorised lower prices and final flight gates",()->{
             YamlConfiguration previous=readJar(sourceRoot.resolve("releases/TownyRebornProgression-2.0.0-beta.3.jar").toString());
             require(config.getLong("journey.points-first")==150&&config.getLong("journey.points-increase")==30&&journey.threshold(116)==213900);
             var newGifts=config.getConfigurationSection("gifts");var oldGifts=previous.getConfigurationSection("gifts");
             require(newGifts.getKeys(false).equals(oldGifts.getKeys(false)));
             for(String id:oldGifts.getKeys(false))for(String key:List.of("level","permissions","legacy-ids"))require(Objects.equals(oldGifts.get(id+"."+key),newGifts.get(id+"."+key)));
-            for(String id:journey.perks.keySet())for(String field:List.of("level","price","permissions","legacy-markers","requires"))
-                if(!id.equals("fly")||!field.equals("level"))require(Objects.equals(config.get("perks."+id+"."+field),previous.get("perks."+id+"."+field)));
+            for(String id:journey.perks.keySet()) {
+                require(config.getDouble("perks."+id+".price")<previous.getDouble("perks."+id+".price"));
+                for(String field:List.of("level","permissions","legacy-markers","requires"))
+                    if(!Set.of("fly","town_flight_bypass").contains(id)||!field.equals("level"))
+                        require(Objects.equals(config.get("perks."+id+"."+field),previous.get("perks."+id+"."+field)));
+            }
         });
         test("startup reads existing configuration without rewriting it",()->{
             Path folder=root.resolve("manual-config");Files.createDirectories(folder);var old=read(config.saveToString());

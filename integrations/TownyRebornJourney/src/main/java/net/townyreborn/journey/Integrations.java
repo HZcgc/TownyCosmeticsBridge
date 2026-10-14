@@ -110,6 +110,7 @@ final class Integrations implements Purchases.Backend {
       this.plugin.journey.importGiftMarkers(var1, var2);
 
       this.plugin.journey.inheritLowerPerks(var1.owned);
+      var1.unlocked.addAll(var1.owned);
       LinkedHashSet var8 = new LinkedHashSet();
 
       for (String var5 : var1.owned) {
@@ -130,6 +131,12 @@ final class Integrations implements Purchases.Backend {
 
       var8.removeAll(var2);
       return List.copyOf(var8);
+   }
+
+   boolean hasFeatureAccess(Player player, Journey.Perk perk) {
+      List<String> functional = perk.permissions().stream()
+         .filter(node -> !node.startsWith("townyreborn.perk.") && !node.startsWith("townyreborn.journey.") && !node.startsWith("townysmp.subscriptions.")).toList();
+      return !functional.isEmpty() && functional.stream().allMatch(player::hasPermission);
    }
 
    Map<String, Long> jobsLevels(Player var1) {

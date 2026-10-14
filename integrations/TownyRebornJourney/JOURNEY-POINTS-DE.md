@@ -45,3 +45,7 @@ Das theoretische Gesamtmaximum ist 2.160 JP pro UTC-Tag. 99 solche Tage liefern 
 ## Einmaliger neuer Start
 
 Beta.4 beginnt für alle Profile bei 0 JP / Level 1. Der dauerhafte Marker `long-journey-2026-10-v1` stellt sicher, dass dieser Schritt nur einmal erfolgt. Die bisher gekauften permanenten Features und alle Belege werden übernommen. Alte Spielerdateien werden vor der Umstellung gesichert; niemand muss seinen Datenordner löschen.
+
+## Kauf-Freigaben nach dem Neustart
+
+Beta.5 bewahrt vorher erreichte Perk-Kauf-Freigaben getrennt von tatsächlich gekauften Features. Bereits freigeschaltete Käufe bleiben auch auf Journey-Level 1 möglich; Preis und gekaufte Vorgänger bleiben erforderlich. Rangzugriffe wie Owner/Wither bedeuten keine individuell bezahlten permanenten Perks. Bereits nach Beta.4 verdiente JP und tägliche Zähler werden nicht zurückgesetzt.

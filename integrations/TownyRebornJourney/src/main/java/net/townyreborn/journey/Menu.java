@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -187,9 +186,9 @@ final class Menu implements Listener {
                if (tier == Journey.Tier.BLAZE) {
                   ItemStack blaze = this.item(Material.PLAYER_HEAD, name, lore);
                   if (blaze.getItemMeta() instanceof SkullMeta skull) {
-                     var profile = Bukkit.createPlayerProfile(UUID.nameUUIDFromBytes("TownyReborn:BlazeTab".getBytes(StandardCharsets.UTF_8)));
+                     var profile = Bukkit.createPlayerProfile(UUID.fromString("4c38ed11-596a-4fd4-ab1d-26f386c1cbac"), "MHF_Blaze");
                      var textures = profile.getTextures();
-                     textures.setSkin(URI.create("https://textures.minecraft.net/texture/d06e342f90ec538aaa1552b224f264a040840902e126d91ece6139aa5b3c7cc3").toURL());
+                     textures.setSkin(URI.create("http://textures.minecraft.net/texture/d06e342f90ec538aaa1552b224f264a040840902e126d91ece6139aa5b3c7cc3").toURL());
                      profile.setTextures(textures);
                      skull.setOwnerProfile(profile);
                      blaze.setItemMeta(skull);
@@ -200,7 +199,8 @@ final class Menu implements Listener {
             }
             this.button(var7, 6, Material.BOOK, "&eClick a rank head &8• &fBrowse all perks",
                List.of("&aThe five heads above are clickable rank pages.", "&7Skeleton → Creeper → Blaze → Dragon → Wither",
-                  "&7Preview the later features and their required levels.", "&7Purchases are individual; this does not buy a rank."), null);
+                  "&7Preview the later features and their required levels.", "", "&aGreen: permanently purchased", "&bBlue: active through your current rank",
+                  "&eChest: available for purchase", "&cRed: reach the required level first", "", "&7Purchases are individual; this does not buy a rank."), null);
          }
 
          for (int var8 = 0; var8 < 36; var8++) {
@@ -211,10 +211,19 @@ final class Menu implements Listener {
 
             Journey.Perk var10 = (Journey.Perk)var5.get(var9);
             boolean var11 = var4.owned.contains(var10.id());
-            boolean var12 = this.plugin.journey.level(var4.points) >= var10.level();
+            boolean var12 = this.plugin.journey.unlocked(var4, var10);
+            boolean rankAccess = this.plugin.integrations.hasFeatureAccess(var1, var10);
             ArrayList var13 = new ArrayList<>(
-               List.of("&7Feature tier: &f" + var10.tier().label, "&7Available at Level &d" + var10.level(), "&7Price: &a$" + money(var10.price()), "&7Unlock: &fPermanent")
+               List.of("&7Feature tier: &f" + var10.tier().label,
+                  var11 ? "&aPermanently purchased" : var12 && this.plugin.journey.level(var4.points) < var10.level() ? "&aAvailable now: your earlier unlock is retained" : "&7Available at Level &d" + var10.level(),
+                  "&7Price: &a$" + money(var10.price()), "&7Unlock: &fPermanent")
             );
+            if (!var11 && var12 && this.plugin.journey.level(var4.points) < var10.level())
+               var13.add("&aYour earlier purchase unlock is retained.");
+            if (!var11 && rankAccess) {
+               var13.add("&bYour rank currently provides this feature.");
+               var13.add("&7A permanent purchase is separate.");
+            }
             if (!var10.requires().isEmpty()) {
                var13.add("&7Previous upgrade: &f" + this.plugin.journey.perks.get(var10.requires()).name());
             }
@@ -228,7 +237,7 @@ final class Menu implements Listener {
             this.button(
                var7,
                9 + var8,
-               var11 ? Material.LIME_DYE : (var12 ? Material.CHEST : Material.RED_DYE),
+               var11 ? Material.LIME_DYE : rankAccess ? Material.LIGHT_BLUE_DYE : (var12 ? Material.CHEST : Material.RED_DYE),
                var11 ? "&a" + var10.name() : "&f" + var10.name(),
                var13,
                new Menu.Action("confirm", var10.id(), 0, var3)
@@ -366,11 +375,11 @@ final class Menu implements Listener {
                   var5++,
                   Material.CHEST,
                   "&f" + var7.name(),
-                  List.of(
+                  perkLore(var7, List.of(
                      "&7Optional permanent unlock",
                      "&7Price: &a$" + money(var7.price()),
                      var3.owned.contains(var7.id()) ? "&aAlready owned" : "&aClick to review"
-                  ),
+                  )),
                   new Menu.Action("confirm", var7.id(), 0, var2)
                );
             }
@@ -422,12 +431,12 @@ final class Menu implements Listener {
                13,
                Material.CHEST,
                "&f" + var4.name(),
-               List.of(
+               perkLore(var4, List.of(
                   "&7Price: &a$" + money(var4.price()),
                   "&7Balance: &f$" + money(this.plugin.integrations.balance(var1.getUniqueId())),
                   "&7Permanent access to this feature.",
                   "&7Your level and points are unchanged."
-               ),
+               )),
                null
             );
             this.button(var5, 30, Material.RED_CONCRETE, "&cCancel", List.of(), new Menu.Action("step", "", 0, var4.level()));
@@ -442,6 +451,16 @@ final class Menu implements Listener {
             this.show(var1, var5);
          }
       }
+   }
+
+   private static List<String> perkLore(Journey.Perk perk, List<String> summary) {
+      List<String> lore = new ArrayList<>(summary);
+      if (!perk.commands().isEmpty()) {
+         lore.add("");
+         for (String line : perk.commands())
+            lore.add((line.startsWith("/") ? "&7Command: &f" : "&7") + line);
+      }
+      return lore;
    }
 
    void refresh(Player var1) {
