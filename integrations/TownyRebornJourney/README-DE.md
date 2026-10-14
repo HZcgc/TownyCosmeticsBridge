@@ -1,8 +1,10 @@
-# Towny Reborn Journey 2.0.0-beta.6
+# Towny Reborn Journey 2.0.0-beta.7
 
-## Hotfix für bereits installierte Beta.4 / Beta.5
+## Fortschritt übernehmen (Beta.4 bis Beta.6)
 
-Server stoppen, die bisherige Progression-JAR entfernen und aus `TownyReborn-Journey-Hotfix-2.0.0-beta.6.zip` den `plugins/`-Baum einfügen. Er enthält ausschließlich die neue JAR und die aktualisierte Progression-Config für den Flug in allen Towns und die günstigeren Preise. `playerdata`, `journeydata` und `migration-backups` bleiben im bestehenden Ordner. Vollständig starten. Der feste Fortschrittsmarker bleibt unverändert; bereits seit Beta.4 verdiente JP werden nicht nochmals zurückgesetzt. Die ausführliche ZIP enthält zusätzlich die bisherigen statischen TAB-, Nametag- und Quests-Configs.
+Server stoppen, den bestehenden Progression-Ordner sichern, die bisherige JAR entfernen und aus `TownyReborn-Journey-Hotfix-2.0.0-beta.7.zip` den `plugins/`-Baum einfügen. Er enthält die neue JAR und die neue Progression-Config. **Beide ersetzen**, damit die Fortschrittsübernahme aktiviert ist. `playerdata`, `journeydata`, `migration-backups` und der neue Ordner `history-credits` bleiben im bestehenden Ordner. Vollständig starten. Offline-Spieler werden beim nächsten Laden/Login übernommen. Die ausführliche ZIP enthält zusätzlich die bisherigen statischen TAB-, Nametag- und Quests-Configs.
+
+Beta.7 rechnet den früher verdienten Fortschritt auf die längere Journey um: **alte belegte JP + seit Beta.4 verdiente JP**. Der aktuelle Stand wird nicht durch eine alte Spielerdatei ersetzt. Bereits gezahlte Perks, offene Transaktionen, abgeholte Belohnungen, Tageszähler, Skill-Höchststände und mcMMO-/Jobs-Daten bleiben erhalten.
 
 Diese Version trennt **zum Kauf freigeschaltet** von **dauerhaft gekauft**. Vor dem Level-Neustart erreichte Kauf-Freigaben werden aus der passenden Sicherung mit der bisherigen 30/15-JP-Kurve und den früheren Perk-Gates wiederhergestellt und als `unlocked-perks` separat gespeichert. Die Sicherung belegt auch frühere tatsächliche Käufe; diese bleiben ohne erneute Zahlung erhalten. Neue Spieler müssen `/fly` auf Level 116 erreichen. Eine bereits vor dem Neustart erreichte Fly-Kauf-Freigabe bleibt erhalten.
 
@@ -46,20 +48,36 @@ Der Blaze-Tab verwendet nun die verifizierte Mojang-Identität und den Namen **M
 1. Server vollständig stoppen und den bestehenden `TownyRebornProgression`-Ordner sichern.
 2. Die bisherige Progression-JAR entfernen. Nur eine Version laden.
 3. Den `plugins/`-Baum aus dieser ZIP über die bestehenden Plugin-Ordner kopieren und die mitgelieferten Configs ersetzen.
-4. Alle vorhandenen `playerdata`, `journeydata`, Quest-Dateien und Datenbanken behalten.
+4. Alle vorhandenen `playerdata`, `journeydata`, `migration-backups`, `history-credits`, Quest-Dateien und Datenbanken behalten.
 5. Server vollständig starten. `/progression` öffnet die Journey; `/reborn perks` öffnet die Rank-Perks.
 
 Zugriff bleibt `townyreborn.progression.access`, standardmäßig aus. Bestehende LuckPerms-Zuweisungen gelten weiter. Es gibt keine neue Pflicht-Permission.
 
-## Einmaliger Neustart der Level
+## Einmalige Übernahme des alten Fortschritts
 
-Diese Version setzt JP auf **0 / Level 1**, sobald ein bisheriges Profil erstmals geladen wird. Offline-Spieler werden beim nächsten Laden/Login umgestellt. Gekaufte permanente Perks, deren Vorgänger, direkte LP-Freischaltungen, bereits abgeholte Belohnungen, tägliche Zähler und offene Kauf-/Belohnungsbelege bleiben erhalten. Normale Quests, mcMMO, Jobs, Paid-Ränge und Geld werden durch den Level-Neustart nicht zurückgesetzt.
+Die Übernahme erhält die verdienten JP, nicht die alte numerische Journey-Levelnummer. Die aktuelle Kurve berechnet daraus den heutigen Rang. Beispielsweise ergeben 5.052 alte JP und 4 neue JP zusammen **5.056 JP / Level 15**.
 
-Vor dem Reset wird die komplette Originaldatei unter `migration-backups/long-journey-2026-10-v1/` gesichert. Ohne erfolgreiche Sicherung und Speicherung wird kein teilweise umgestelltes Profil übernommen. Neue Profile beginnen ebenfalls bei Level 1.
+| Vorhandener Nachweis | Berechnung |
+|---|---|
+| Native Journey-Sicherung vor Beta.4 | Gespeicherte alte JP unverändert übernehmen |
+| Nur frühere Rank-Daten | Bisherige Umrechnung aus Level, aktiven Minuten und Quest-Punkten mit der eingefrorenen 30/15-Kurve rekonstruieren |
+| Kein alter Nachweis | Aktuelle JP behalten, keine historischen Punkte erfinden |
 
-**`journey.progress-revision: long-journey-2026-10-v1` unverändert lassen.** Der identische gespeicherte Wert verhindert, dass Relog, Neustart oder das erneute Einfügen dieser Version nochmals zurücksetzen. Bestehende Skill-/Jobs-Höchstwerte bleiben als Schutz gegen erneutes Farmen erhalten. Die erste gültige Messung nach der Umstellung wird als neuer Ausgangspunkt erfasst und gibt keine rückwirkenden JP.
+Die native Sicherung unter `migration-backups/long-journey-2026-10-v1/journeydata/` hat Vorrang. Danach folgt die alte `playerdata`-Sicherung; nur wenn diese fehlt, wird die noch vorhandene Legacy-Datei verwendet. Diese Quellen werden **nicht zusammengerechnet**. Bei Legacy-Daten gilt die frühere Formel: Maximum aus dem alten Level-Mindeststand und `aktive Minuten + 25 × Quest-Punkte`. Das alte Rank-Level wird wie zuvor auf `(Level−1) × 12`, maximal 116, abgebildet. Die Mindest-JP stammen aus der früheren 30/15-Kurve, nicht aus der teureren aktuellen Kurve. Beispiel: Rank-Level 4, 6.596 aktive Minuten und 541 Quest-Punkte ergeben **20.121 alte JP / aktueller Level 33**, plus neue JP.
 
-Eine bereits gekaufte Flugfreischaltung bleibt nutzbar. Neue Fly-Freigaben benötigen **Level 116**, den letzten Level der Journey; vor dem Neustart bereits erreichte Kauf-Freigaben bleiben erhalten. `/tfly` ist ein eigener Towny-Perk mit seiner bisherigen Freischaltung.
+Gespeicherte alte Perk-Kauf-Freigaben bleiben erhalten, auch wenn die längere Kurve eine andere Levelnummer ergibt. Tatsächliche Käufe bleiben getrennt. Historisch aufgezeichnete aktive Minuten werden einmalig in der persönlichen Journey-Spielzeit berücksichtigt; die gesamten aktiven Minuten und Tagesbudgets werden nicht neu erzeugt. Neue Spieler beginnen weiterhin bei 0 JP / Level 1.
+
+Vor der Gutschrift wird der aktuelle native Stand unter `migration-backups/pre-reset-points-2026-10-v1/journeydata/` gesichert. Das Plugin schreibt danach einen unabhängigen Beleg unter `history-credits/<UUID>.yml`, speichert den neuen JP-Stand und den Profilmarker atomar und schließt den Beleg ab. Nach einem Speicherfehler wird nur ein exakt unveränderter Ausgangsstand automatisch fortgesetzt. Unklare oder beschädigte Belege werden zur Prüfung angehalten; es wird keine zweite Gutschrift geraten.
+
+Der separate abgeschlossene Beleg schützt auch dann, wenn eine ältere JAR die neuen Profilfelder entfernt. Relog, Neustart, erneutes Einfügen oder eine geänderte Credit-Revisionsbezeichnung ergeben keine zweite Gutschrift. **`history-credits` und `migration-backups` behalten.** Beide Config-Marker unverändert lassen:
+
+```yaml
+journey:
+  progress-revision: long-journey-2026-10-v1
+  history-credit-revision: pre-reset-points-2026-10-v1
+```
+
+Die Gutschrift zahlt keine Items, Keys, Geld oder bereits gelieferten Belohnungen aus. Noch nie abgeholte, nun erreichte Meilensteine können regulär einmalig beansprucht werden. Bei aktiviertem Journey-Zugriff erhält der Spieler eine Nachricht mit Gutschrift und aktuellem Level. `/rebornadmin status <player>` zeigt `historical-credit=<JP>/<Quelle>` neben dem Gesamtstand; der Spieler muss online sein.
 
 ## Journey und Oberfläche
 
@@ -79,7 +97,7 @@ Das Plugin schreibt keine anderen Plugin-Configs um. Die statischen TAB-, Lyttle
 
 Level 2: 150 JP; Level 3: 330 JP; Level 116: insgesamt **213.900 JP**. JP sind kumulativ und werden nicht ausgegeben. Jeder Aufstieg setzt den nächsten Rangnamen automatisch.
 
-Alle Tageslimits resetten um **00:00 UTC**, unabhängig von der lokalen JVM-/Host-Zeitzone. Aktive Spielzeit hat jetzt ebenfalls ein Budget: 360 JP/Tag. Die übrigen Quell-Limits bleiben bestehen. Das theoretische Maximum ist 2.160 JP pro UTC-Tag: Im normalen Spiel ist der letzte Level frühestens am 100. verschiedenen UTC-Tag möglich. Biome und Advancements sind einmalig und dieses Maximum damit nicht dauerhaft erreichbar; die tatsächliche Dauer hängt von Spielzeit und Aktivitäten ab.
+Alle Tageslimits resetten um **00:00 UTC**, unabhängig von der lokalen JVM-/Host-Zeitzone. Aktive Spielzeit hat jetzt ebenfalls ein Budget: 360 JP/Tag. Die übrigen Quell-Limits bleiben bestehen. Das theoretische Maximum ist 2.160 JP pro UTC-Tag: Für neue Spieler ab 0 JP ist der letzte Level frühestens am 100. verschiedenen UTC-Tag möglich; alte Spieler bekommen ihren belegten Vorsprung zurück. Biome und Advancements sind einmalig und dieses Maximum damit nicht dauerhaft erreichbar; die tatsächliche Dauer hängt von Spielzeit und Aktivitäten ab.
 
 Die gesamte Journey enthält einmalig 525.500 $, Ressourcenpakete, einige Minecraft-XP-Belohnungen, einzelne Crate-Keys und insgesamt 20 Town-Claim-Chunks. Die letzte Belohnung enthält 100.000 $ und 5 Supporter-Keys. Es gibt keine UltraCosmetics-Belohnungen und keinen täglichen Supporter-Key-Perk.
 
@@ -87,7 +105,7 @@ Erhöhte Belohnungen ersetzen keinen alten Auszahlungsbeleg: Bereits gelieferte 
 
 ## Nach dem Start prüfen
 
-Mit einem Testspieler `/progression` öffnen und einen zuvor gekauften Perk testen. Bei erstmals umgestellten Profilen ist der Start Level 1 / 0 JP; bereits auf Beta.4 verdiente JP bleiben erhalten. Relog darf den Fortschritt nicht erneut löschen. Blaze-Kopf und günstigere Preise in `/reborn perks` prüfen. In `/quests` sollen Experience-Quests auf dem früheren Steinplatz und die Progression-Verknüpfung an ihrer Screenshot-Position stehen. TAB/Nametag sollten die neue Rangfarbe und die angeschlossene kleine mcMMO-Zahl zeigen.
+Mit einem Testspieler `/progression` öffnen und einen zuvor gekauften Perk testen. Mit vorhandenen alten Daten muss die einmalige historische Gutschrift im Status erscheinen; bereits seit Beta.4 verdiente JP bleiben zusätzlich erhalten. Relog darf den Fortschritt nicht erneut löschen. Blaze-Kopf und günstigere Preise in `/reborn perks` prüfen. In `/quests` sollen Experience-Quests auf dem früheren Steinplatz und die Progression-Verknüpfung an ihrer Screenshot-Position stehen. TAB/Nametag sollten die neue Rangfarbe und die angeschlossene kleine mcMMO-Zahl zeigen.
 
 Owner-Status: `rebornadmin status <player>`. `rebornadmin addpoints <player> <amount>` umgeht den normalen Grind und ist ausschließlich für Owner-Tests/administrative Korrekturen gedacht. Offene Zahlungsbelege erst anhand der tatsächlichen Zahlung/Auslieferung prüfen; kein Geld und keine Keys automatisch nachzahlen.
 

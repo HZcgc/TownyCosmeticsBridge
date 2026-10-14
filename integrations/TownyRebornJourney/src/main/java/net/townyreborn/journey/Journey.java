@@ -8,6 +8,7 @@ public final class Journey {
     public final int steps;
     public final long base, increase;
     public final String progressRevision;
+    public final String historyCreditRevision;
     public final RankStyle rankStyle;
     final LegacyPerks legacyPerks = new LegacyPerks();
     public final Map<String, Perk> perks = new LinkedHashMap<>();
@@ -23,6 +24,9 @@ public final class Journey {
         progressRevision = config.getString("journey.progress-revision", "");
         if (!progressRevision.isEmpty() && !progressRevision.matches("[a-z0-9_-]{1,80}"))
             throw new IllegalArgumentException("Invalid progress revision");
+        historyCreditRevision = config.getString("journey.history-credit-revision", "");
+        if (!historyCreditRevision.isEmpty() && (!historyCreditRevision.matches("[a-z0-9_-]{1,80}") || historyCreditRevision.equals(progressRevision)))
+            throw new IllegalArgumentException("Invalid history credit revision");
         rankStyle = new RankStyle(config);
         if (steps < 2 || steps > 10000 || base < 1 || base > 1000000 || increase < 0 || increase > 100000 || threshold(steps) > 1000000000000L)
             throw new IllegalArgumentException("Invalid progression curve");

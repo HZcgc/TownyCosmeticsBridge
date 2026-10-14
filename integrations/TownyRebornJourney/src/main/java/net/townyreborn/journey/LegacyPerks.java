@@ -24,14 +24,21 @@ final class LegacyPerks {
         while (result < steps && threshold(result + 1) <= Math.max(0, points)) result++;
         return result;
     }
+    long legacyPoints(int oldLevel, long minutes, long questPoints) {
+        int level = oldLevel <= 1 ? 1 : (int)Math.min(steps, (oldLevel - 1L) * 12L);
+        return Math.max(threshold(level), Math.max(0L, minutes) + Math.max(0L, questPoints) * 25L);
+    }
+    void unlock(State state, Journey journey, long points) {
+        int previousLevel = level(points);
+        for (var entry : gates.entrySet())
+            if (entry.getValue() <= previousLevel && journey.perks.containsKey(entry.getKey()) && state.unlocked.add(entry.getKey())) state.dirty = true;
+    }
     void restore(State state, Journey journey, YamlConfiguration old) {
         if (old.getInt("schema") != 2 || !state.uuid.toString().equals(old.getString("uuid")))
             throw new IllegalArgumentException("Invalid previous perk profile");
         // Profiles from the restarted curve must not be interpreted using the old curve.
         if (!old.getString("progress-revision", "").isEmpty()) return;
-        int previousLevel = level(old.getLong("points"));
-        for (var entry : gates.entrySet())
-            if (entry.getValue() <= previousLevel && journey.perks.containsKey(entry.getKey()) && state.unlocked.add(entry.getKey())) state.dirty = true;
+        unlock(state, journey, old.getLong("points"));
         // Only an actual recorded purchase proves ownership. Point thresholds never grant permissions.
         for (String id : old.getStringList("owned-perks"))
             if (journey.perks.containsKey(id) && state.owned.add(id)) state.dirty = true;

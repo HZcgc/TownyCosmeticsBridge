@@ -25,6 +25,7 @@ public final class Store {
    private final Path legacy;
    private final Path migrationBackups;
    private final Journey journey;
+   private final HistoryCredit history;
    private final Map<UUID, State> cache = new HashMap<>();
 
    public Store(Path var1, Journey var2) throws IOException {
@@ -32,6 +33,7 @@ public final class Store {
       this.legacy = var1.resolve("playerdata");
       this.migrationBackups = var1.resolve("migration-backups");
       this.journey = var2;
+      this.history = new HistoryCredit(var1, var2);
       Files.createDirectories(this.folder);
    }
 
@@ -55,6 +57,11 @@ public final class Store {
          var4.journeyMinutes = Math.max(0L, var6.getLong("journey-active-minutes", var4.minutes));
          var4.progressRevision = var6.getString("progress-revision", "");
          var4.journeyStartedAt = var6.getLong("journey-started-at", 0);
+         var4.historyCreditRevision = var6.getString("history-credit-revision", "");
+         var4.historyCreditPoints = var6.getLong("history-credit-points", 0);
+         var4.historyCreditMinutes = var6.getLong("history-credit-minutes", 0);
+         var4.historyCreditAt = var6.getLong("history-credit-at", 0);
+         var4.historyCreditSource = var6.getString("history-credit-source", "");
          var4.baselineDue.addAll(var6.getStringList("baseline-due"));
          var4.owned.addAll(var6.getStringList("owned-perks"));
          var4.unlocked.addAll(var6.getStringList("unlocked-perks"));
@@ -99,20 +106,23 @@ public final class Store {
 
       this.journey.migrateGiftReceipts(var4);
       this.journey.inheritLowerPerks(var4.owned);
-      if (previousFile != null && previousFile.equals(var5) && var4.progressRevision.isEmpty())
+      boolean previouslyCredited = this.history.alreadyCredited(var4);
+      if (!previouslyCredited && previousFile != null && previousFile.equals(var5) && var4.progressRevision.isEmpty())
          this.journey.legacyPerks.restore(var4, this.journey, read(previousFile));
       if (!this.journey.progressRevision.isEmpty() && !this.journey.progressRevision.equals(var4.progressRevision)) {
          // Preserve the complete original record before committing the one-time points reset.
-         if (previousFile != null) {
+         if (!previouslyCredited && previousFile != null) {
             Path backup = this.migrationBackups.resolve(this.journey.progressRevision)
                .resolve(previousFile.getParent().getFileName()).resolve(previousFile.getFileName());
             if (!Files.exists(backup)) atomic(backup, Files.readString(previousFile));
          }
-         var4.points = 0;
-         var4.journeyMinutes = 0;
+         if (!previouslyCredited) {
+            var4.points = 0;
+            var4.journeyMinutes = 0;
+            var4.journeyStartedAt = System.currentTimeMillis();
+            var4.baselineDue.addAll(var4.high.keySet());
+         }
          var4.progressRevision = this.journey.progressRevision;
-         var4.journeyStartedAt = System.currentTimeMillis();
-         var4.baselineDue.addAll(var4.high.keySet());
          var4.dirty = true;
       }
       if (!var4.legacyPerksImported) {
@@ -123,9 +133,11 @@ public final class Store {
          var4.legacyPerksImported = true;
          var4.dirty = true;
       }
+      HistoryCredit.Receipt credit = this.history.prepare(var4, var5);
       this.journey.recordUnlocks(var4);
       // Do not cache a partial reset or eligibility repair after a storage failure.
-      if (previousFile != null && var4.dirty) this.save(var4);
+      if (credit != null || previousFile != null && var4.dirty) this.save(var4);
+      if (credit != null) this.history.complete(credit);
       this.cache.put(var1, var4);
       return var4;
    }
@@ -158,6 +170,11 @@ public final class Store {
       var2.set("journey-active-minutes", var1.journeyMinutes);
       var2.set("progress-revision", var1.progressRevision);
       var2.set("journey-started-at", var1.journeyStartedAt);
+      var2.set("history-credit-revision", var1.historyCreditRevision);
+      var2.set("history-credit-points", var1.historyCreditPoints);
+      var2.set("history-credit-minutes", var1.historyCreditMinutes);
+      var2.set("history-credit-at", var1.historyCreditAt);
+      var2.set("history-credit-source", var1.historyCreditSource);
       var2.set("baseline-due", var1.baselineDue.stream().sorted().toList());
       var2.set("owned-perks", var1.owned.stream().sorted().toList());
       var2.set("unlocked-perks", var1.unlocked.stream().sorted().toList());

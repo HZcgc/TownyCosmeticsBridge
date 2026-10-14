@@ -7,6 +7,7 @@ ROOT=Path(__file__).resolve().parent
 p=argparse.ArgumentParser()
 p.add_argument('--jdk',type=Path,required=True);p.add_argument('--deps',type=Path,required=True);p.add_argument('--jar',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
 p.add_argument('--permissions-fixture',type=Path)
+p.add_argument('--history-fixture',type=Path)
 a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
 for line in (ROOT/'releases/SHA256SUMS.txt').read_text().splitlines():
  digest,name=line.split('  ',1);assert hashlib.sha256((ROOT/'releases'/name).read_bytes()).hexdigest()==digest
@@ -36,6 +37,12 @@ update_data=Path(tempfile.mkdtemp(prefix='update-data-',dir=a.output))
 r=subprocess.run([str(a.jdk/'java'),'-Xverify:all',jar_arg,'-Dnet.bytebuddy.experimental=true','-cp',str(classes)+':'+str(a.jar)+':'+cp,'net.townyreborn.journey.JourneyUpdateChecks',str(update_data),str(a.jar),str(ROOT/'releases/TownyRebornProgression-2.0.0-beta.1.jar'),str(ROOT/'ui/TAB-groups.yml'),str(ROOT)],capture_output=True,text=True)
 (a.output/'update.log').write_text(r.stdout+r.stderr)
 print(r.stdout)
+if r.returncode:print(r.stderr);raise SystemExit(r.returncode)
+subprocess.run([str(a.jdk/'javac'),'--release','21','-cp',str(classes)+':'+str(a.jar)+':'+cp,'-d',str(classes),str(ROOT/'src/test/java/net/townyreborn/journey/HistoryCreditChecks.java')],check=True)
+history_data=Path(tempfile.mkdtemp(prefix='history-data-',dir=a.output))
+command=[str(a.jdk/'java'),'-Xverify:all',jar_arg,'-Dnet.bytebuddy.experimental=true','-cp',str(classes)+':'+str(a.jar)+':'+cp,'net.townyreborn.journey.HistoryCreditChecks',str(history_data),str(a.jar)]
+if a.history_fixture:command.append(str(a.history_fixture))
+r=subprocess.run(command,capture_output=True,text=True);(a.output/'history.log').write_text(r.stdout+r.stderr);print(r.stdout)
 if r.returncode:print(r.stderr);raise SystemExit(r.returncode)
 subprocess.run([str(a.jdk/'javac'),'--release','21','-cp',str(classes)+':'+str(a.jar)+':'+cp,'-d',str(classes),str(ROOT/'src/test/java/net/townyreborn/journey/LongJourneyChecks.java')],check=True)
 long_data=Path(tempfile.mkdtemp(prefix='long-data-',dir=a.output))

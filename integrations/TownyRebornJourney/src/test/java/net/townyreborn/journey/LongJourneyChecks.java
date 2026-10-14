@@ -42,7 +42,9 @@ public final class LongJourneyChecks {
         when(p.getLocation()).thenReturn(new Location(world,0,64,0));return p;
     }
     public static void main(String[] args) throws Exception {
-        root=Path.of(args[0]);Files.createDirectories(root);config=JourneyUpdateChecks.readJar(args[1]);journey=new Journey(config);
+        root=Path.of(args[0]);Files.createDirectories(root);config=JourneyUpdateChecks.readJar(args[1]);
+        // Keep testing the older no-credit reset mode; HistoryCreditChecks covers the new enabled default.
+        config.set("journey.history-credit-revision", "");journey=new Journey(config);
         test("116 distinct level titles and compact level IDs",()->{
             Set<String> names=new HashSet<>(),shorts=new HashSet<>();
             for(int l=1;l<=116;l++)require(names.add(journey.title(l))&&shorts.add(journey.abbreviation(l)));

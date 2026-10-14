@@ -1,10 +1,10 @@
-Towny Reborn Journey 2.0.0-beta.6
+Towny Reborn Journey 2.0.0-beta.7
 
-Current build: 118 scenarios passed (24 recovery + 45 menu/update + 32 long-Journey/migration + 17 permission-import).
+Current build: 183 scenarios passed (24 recovery + 45 menu/update + 32 long-Journey/migration + 17 permission-import + 65 historical-credit).
 Preserved Beta.1 reference: the same 24 recovery scenarios passed independently.
 Java sources compile with --release 21; JVM verification runs with -Xverify:all.
 
-Scope: controlled economy/LP, inventory registry and sound/title boundaries.
+Scope: real temporary profile/backup/credit-journal files; controlled economy/LP, inventory registry and sound/title boundaries.
 No live Paper/client deployment or visual Minecraft test is claimed.
 Uploaded Quests player records and quest definitions are not packaged.
 
@@ -137,3 +137,71 @@ PASS anonymous exported permission case 6 keeps confirmed purchases
 PASS anonymous exported permission case 7 keeps confirmed purchases
 PASS anonymous exported permission case 8 keeps confirmed purchases
 RESULT 17 permission import checks passed
+
+HISTORY
+PASS history credit is enabled without changing the reset revision or progression curve
+PASS 5052 pre-reset JP plus 4 new JP become level 15 with restored active time
+PASS newly encountered pre-reset native profile is converted without losing its earned JP
+PASS legacy rank minutes and quests use the frozen old conversion before the new curve
+PASS legacy rank floor is reconstructed on the old curve rather than the expensive new curve
+PASS native backup takes precedence over all legacy records and is never summed twice
+PASS pre-reset legacy backup takes precedence over the later live legacy file
+PASS live legacy file is a documented fallback when reset backups are absent
+PASS fresh players still start at zero and a read-only lookup writes no profile or receipt
+PASS current players without old proof keep their points and receive no historical award
+PASS points restoration preserves purchased perks claims source caps baselines and pending receipts
+PASS relog restart and repeated installation preserve new earnings without repeating old credit
+PASS restored progress sends a player notice once after its durable save
+PASS completed standalone receipt prevents re-crediting after older JAR strips profile markers
+PASS a changed config credit revision cannot repeat a completed historical grant
+PASS a stripped new-curve profile is not reset or mistaken for old early-flight eligibility
+PASS completed credit with a deleted native profile fails closed rather than reconstructing another grant
+PASS a valid profile credit marker still prevents duplication if the standalone receipt is missing
+PASS backup failure leaves current profile untouched and no partially credited cache
+PASS journal preparation failure gives no points and never changes the original profile
+PASS failed profile save leaves a prepared receipt that safely retries the exact unchanged profile
+PASS crash after committed profile but before completed journal never adds the credit again
+PASS changed profile with an uncertain prepared credit fails closed instead of guessing
+PASS wrong UUID native backup cannot award historical points
+PASS new-curve or incomplete native backup cannot be interpreted as old earned points
+PASS invalid legacy counters cannot silently create historical progress
+PASS tampered receipt metadata fails closed without replacing current points
+PASS credit saturates the point safety limit without overflow or repeatedly adding time
+PASS anonymous uploaded historical profile 1 keeps its expected converted progress
+PASS anonymous uploaded historical profile 2 keeps its expected converted progress
+PASS anonymous uploaded historical profile 3 keeps its expected converted progress
+PASS anonymous uploaded historical profile 4 keeps its expected converted progress
+PASS anonymous uploaded historical profile 5 keeps its expected converted progress
+PASS anonymous uploaded historical profile 6 keeps its expected converted progress
+PASS anonymous uploaded historical profile 7 keeps its expected converted progress
+PASS anonymous uploaded historical profile 8 keeps its expected converted progress
+PASS anonymous uploaded historical profile 9 keeps its expected converted progress
+PASS anonymous uploaded historical profile 10 keeps its expected converted progress
+PASS anonymous uploaded historical profile 11 keeps its expected converted progress
+PASS anonymous uploaded historical profile 12 keeps its expected converted progress
+PASS anonymous uploaded historical profile 13 keeps its expected converted progress
+PASS anonymous uploaded historical profile 14 keeps its expected converted progress
+PASS anonymous uploaded historical profile 15 keeps its expected converted progress
+PASS anonymous uploaded historical profile 16 keeps its expected converted progress
+PASS anonymous uploaded historical profile 17 keeps its expected converted progress
+PASS anonymous uploaded historical profile 18 keeps its expected converted progress
+PASS anonymous uploaded historical profile 19 keeps its expected converted progress
+PASS anonymous uploaded historical profile 20 keeps its expected converted progress
+PASS anonymous uploaded historical profile 21 keeps its expected converted progress
+PASS anonymous uploaded historical profile 22 keeps its expected converted progress
+PASS anonymous uploaded historical profile 23 keeps its expected converted progress
+PASS anonymous uploaded historical profile 24 keeps its expected converted progress
+PASS anonymous uploaded historical profile 25 keeps its expected converted progress
+PASS anonymous uploaded historical profile 26 keeps its expected converted progress
+PASS anonymous uploaded historical profile 27 keeps its expected converted progress
+PASS anonymous uploaded historical profile 28 keeps its expected converted progress
+PASS anonymous uploaded historical profile 29 keeps its expected converted progress
+PASS anonymous uploaded historical profile 30 keeps its expected converted progress
+PASS anonymous uploaded historical profile 31 keeps its expected converted progress
+PASS anonymous uploaded historical profile 32 keeps its expected converted progress
+PASS anonymous uploaded historical profile 33 keeps its expected converted progress
+PASS anonymous uploaded historical profile 34 keeps its expected converted progress
+PASS anonymous uploaded historical profile 35 keeps its expected converted progress
+PASS anonymous uploaded historical profile 36 keeps its expected converted progress
+PASS anonymous uploaded historical profile 37 keeps its expected converted progress
+RESULT 65 historical credit checks passed

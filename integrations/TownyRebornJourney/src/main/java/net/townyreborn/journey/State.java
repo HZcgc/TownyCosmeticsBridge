@@ -15,6 +15,12 @@ public final class State {
    public volatile long journeyMinutes;
    public String progressRevision = "";
    public long journeyStartedAt;
+   public String historyCreditRevision = "";
+   public long historyCreditPoints;
+   public long historyCreditMinutes;
+   public long historyCreditAt;
+   public String historyCreditSource = "";
+   public boolean historyCreditJustApplied;
    public final Set<String> baselineDue = new HashSet<>();
    public final Set<String> owned = new HashSet<>();
    public final Set<String> unlocked = new HashSet<>();

@@ -1,7 +1,7 @@
-# Towny Reborn Journey beta.4. Install with the matching JAR while the server is stopped.
+# Towny Reborn Journey beta.7. Install with the matching JAR while the server is stopped.
 # No external config changes. Access: townyreborn.progression.access.
-# One-time authorised restart: long-journey-2026-10-v1 starts JP at zero, retaining perks/receipts.
-# Keep progress-revision unchanged on later updates: it is the durable reset identifier.
+# Restore pre-reset earned JP once; retain post-reset points, paid perks and delivery receipts.
+# Keep both revision values unchanged. Keep history-credits and migration-backups to prevent a repeated credit.
 # Profiles are backed up in migration-backups before their first reset; offline profiles migrate on first load.
 # UTC 00:00 daily reset; active playtime is capped at 360 JP/day. Other source caps are retained.
 # Green = earlier completed level, yellow = current level, red = future locked level.
@@ -248,6 +248,7 @@ journey:
     115: J115
     116: J116
   progress-revision: long-journey-2026-10-v1
+  history-credit-revision: pre-reset-points-2026-10-v1
   rank-colours:
     start: '#ff6bd6'
     end: '#b8ff60'

@@ -124,6 +124,11 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
             var2.name = var1.getName();
             List var3 = this.integrations.importOwned(var2);
             this.store.save(var2);
+            if (var2.historyCreditJustApplied) {
+               var2.historyCreditJustApplied = false;
+               this.message(var1, "&aPrevious progress restored: &e+" + var2.historyCreditPoints
+                  + " JP&7. Your Journey is now &eLevel " + this.journey.level(var2.points) + "&7. Open &a/progression &7to view it.");
+            }
             if (!var3.isEmpty() || var2.owned.contains("town_flight_bypass")) {
                this.integrations
                   .repairOwned(var2, var3)
@@ -257,6 +262,10 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
                      + var4.owned.size()
                      + "; unlocked-for-purchase="
                      + var4.unlocked.size()
+                     + "; historical-credit="
+                     + var4.historyCreditPoints
+                     + " JP/"
+                     + (var4.historyCreditSource.isEmpty() ? "none" : var4.historyCreditSource)
                      + "; receipt="
                      + (var4.pending == null ? "none" : var4.pending.perk() + "/" + var4.pending.phase())
                      + "; pending reward="
