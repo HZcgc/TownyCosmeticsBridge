@@ -1,13 +1,15 @@
-# Towny Reborn Staff HQ 5.1.1
+# Towny Reborn Staff HQ 5.2.0
 
-PHP/MySQL staff portal with Paper connector 1.4.0. The portal is in English. Version 5.1.1 updates HQ 5.0/5.1: pointer-following tooltips, a document-backed Staff guide and the requested once-only role presets (schema 10). API 7 and the connector stay compatible. Keep the existing production configuration, database and storage.
+English PHP/MySQL staff portal with Paper connector 1.5.0 and durable Journey beta.9 integration. HQ 5.2.0 uses API 8 and additive schema 11. Journey progress, retained unlocks, actual debits and reward evidence are visible directly in the dashboard and player profiles. A priority heartbeat separates server liveness from delayed HQ uploads. Keep existing production configuration, database, storage, migration journals and connector queues.
+
+Earlier pointer-following charts, document-backed staff guidance, themes and once-only role presets remain available. Existing role customisations are preserved by the 5.2.0 migration.
 
 Features:
 - Player dossiers: notes, watch instructions, permanent message pins, profile attachments and source-linked cases.
 - Owner-only account creation; granular profile/private-message/statistics permissions; readable role matrix and LuckPerms group snapshots.
 - Durable, immediate dupe/exploit chat notifications through the configured Freddie Discord bot, with grouping and repeat-safe delivery.
 - Permanent event statistics: crate batches/rewards/catalogs, voting, QuickShop transactions/catalogs, MCPets summons, pet shop purchases, Dragon results and supported PyroFishing/Piñata events.
-- Direct sidebar destinations and dashboard cards for Crates, Dragon, Voting, Piñata, Fishing, QuickShop and MCPets.
+- Direct sidebar destinations and dashboard cards for Reborn Journey, Crates, Dragon, Voting, Piñata, Fishing, QuickShop and MCPets.
 - Compact staff priorities with player search, clickable cases and alerts; detailed rankings, catalogues and evidence expand within each system.
 - Dark, a plum-and-rose Cherry Blossom theme with Sakura illustrations, and Clear Light; larger text, mobile table cards and grouped diagnostics.
 - Built-in staff field guide and repeat-safe historical crate import.
@@ -23,3 +25,7 @@ Production credentials, Discord tokens, uploaded evidence, user database records
 Build the webspace-only ZIP with `python3 tools/package_web.py`. The package excludes production configuration, storage, JARs and test fixtures.
 
 The requested Helper/Moderator/Admin defaults are applied once during upgrade; later Owner edits survive. Staff account management is always Owner-only. See [all permissions](docs/ROLE-PERMISSIONS.md).
+
+## 5.2.0: Journey and API health
+
+Adds direct Journey navigation, profile snapshots, source JP, historical credit, purchase eligibility, confirmed payments, reward command receipts and replay-safe aggregates. Connector 1.5.0 consumes Journey beta.9 durable audit receipts. Existing journals and permanent purchases remain authoritative. A small priority heartbeat distinguishes live game-server reports from delayed event delivery. HTTP failure warnings use a stability window rather than restarting on every short successful response. See docs/INSTALL-5.2.0-DE.md.

@@ -18,7 +18,7 @@ check('Guide editing retains CSRF protection',req('index.php?page=documents',pay
 # Simulate the actual schema-9 -> 10 upgrade with restrictive pre-existing rows.
 scalar("UPDATE settings SET setting_value='9' WHERE setting_key='schema.version';DELETE FROM settings WHERE setting_key='staff.roles.preset_5_1_1';UPDATE role_permissions SET allowed=0 WHERE role IN ('helper','moderator','admin');INSERT INTO role_permissions(role,permission,allowed,updated_at) VALUES('helper','custom.future.permission',0,NOW()) ON DUPLICATE KEY UPDATE allowed=0")
 req('api.php')
-check('Upgrade applies the requested presets and keeps a rollback snapshot',scalar("SELECT setting_value FROM settings WHERE setting_key='schema.version'")=='10' and bool(scalar("SELECT setting_value FROM settings WHERE setting_key='staff.roles.before_5_1_1'")))
+check('Upgrade applies the requested presets and keeps a rollback snapshot',scalar("SELECT setting_value FROM settings WHERE setting_key='schema.version'")=='11' and bool(scalar("SELECT setting_value FROM settings WHERE setting_key='staff.roles.before_5_1_1'")))
 for role in ['helper','moderator','admin']:
  code="$_SERVER['SCRIPT_NAME']='api.php';require '"+str(web/'app/bootstrap.php')+"';$wanted=defaultRolePermissions('"+role+"');$q=db()->prepare('SELECT permission,allowed FROM role_permissions WHERE role=?');$q->execute(['"+role+"']);$rows=array_column($q->fetchAll(),'allowed','permission');foreach(permissionCatalog() as $p=>$_){if((bool)$rows[$p]!==in_array($p,$wanted,true))throw new RuntimeException($p);}echo 'ok';"
  check('All known permissions match the '+role+' preset',cli(code)=='ok')

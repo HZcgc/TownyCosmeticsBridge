@@ -49,10 +49,25 @@ final class InsightsOutbox implements AutoCloseable {
         }
     }
 
+    /** Commit a complete receipt before its source audit file may be acknowledged. */
+    boolean addDurable(List<Map<String,Object>> events) {
+        synchronized(drain) { synchronized(this) {
+            if (pending.size() + events.size() > 50000) return false;
+            for (Map<String,Object> event : events) pending.addLast(new LinkedHashMap<>(event));
+            if (save()) return true;
+            for (int i = 0; i < events.size(); i++) pending.removeLast();
+            return false;
+        }}
+    }
+
     private boolean save() {
         try {
             List<Map<String,Object>> rows;synchronized(this){rows=new ArrayList<>(pending);}
-            Path tmp=file.resolveSibling(file.getFileName()+".tmp");Files.writeString(tmp,Json.encode(rows));
+            Path tmp=file.resolveSibling(file.getFileName()+".tmp");
+            try(var channel=java.nio.channels.FileChannel.open(tmp,StandardOpenOption.CREATE,StandardOpenOption.TRUNCATE_EXISTING,StandardOpenOption.WRITE)) {
+                var bytes=java.nio.ByteBuffer.wrap(Json.encode(rows).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                while(bytes.hasRemaining())channel.write(bytes);channel.force(true);
+            }
             try{Files.move(tmp,file,StandardCopyOption.REPLACE_EXISTING,StandardCopyOption.ATOMIC_MOVE);}
             catch(AtomicMoveNotSupportedException ignored){Files.move(tmp,file,StandardCopyOption.REPLACE_EXISTING);}
             return true;

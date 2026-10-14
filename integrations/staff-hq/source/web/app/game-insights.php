@@ -42,7 +42,7 @@ function gameIngest(PDO $pdo,array $payload,string $server,string $at): void
 function gameSnapshot(PDO $pdo,array $payload,string $server,string $at): void
 {
     $plugin=obsText($payload['plugin']??'',96);$key=obsText($payload['snapshot_key']??'catalog',96);$data=$payload['data']??null;
-    if (!in_array($plugin,['ExcellentCrates','QuickShop-Hikari','MCPets','TownyRebornPetShops','TownyDragonEvent','LuckPerms','PinataParty','PyroFishingPro','Votifier'],true)
+    if (!in_array($plugin,['ExcellentCrates','QuickShop-Hikari','MCPets','TownyRebornPetShops','TownyDragonEvent','LuckPerms','PinataParty','PyroFishingPro','Votifier','TownyRebornProgression'],true)
         || !preg_match('/^[a-zA-Z0-9_.:-]{1,96}$/',$key) || !is_array($data) || strlen(jsonEncode($data))>240000) throw new InvalidArgumentException('Invalid integration snapshot.');
     $pdo->prepare('INSERT INTO integration_snapshots(server_name,plugin_name,snapshot_key,data_json,captured_at) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE data_json=IF(VALUES(captured_at)>=captured_at,VALUES(data_json),data_json),captured_at=GREATEST(captured_at,VALUES(captured_at))')
         ->execute([$server,$plugin,$key,jsonEncode($data),gameDate($at)]);

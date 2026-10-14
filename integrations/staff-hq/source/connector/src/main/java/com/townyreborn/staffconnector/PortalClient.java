@@ -38,6 +38,11 @@ final class PortalClient implements AutoCloseable {
     private final ScheduledExecutorService worker;
     private final HttpClient httpClient;
     private final Consumer<RemoteAction> remoteActionHandler;
+    private final ConnectionWarnings connectionWarnings;
+    private final ConnectionWarnings pollWarnings;
+    private volatile Map<String,Object> heartbeat;
+    private volatile Instant lastHeartbeatSuccess;
+    private long nextHeartbeatNanos;
     private final AtomicBoolean persistenceScheduled = new AtomicBoolean();
     private final AtomicBoolean backlogDrainScheduled = new AtomicBoolean();
 
@@ -56,6 +61,8 @@ final class PortalClient implements AutoCloseable {
     PortalClient(Path dataFolder, Settings settings, Logger logger, Consumer<RemoteAction> remoteActionHandler) throws IOException {
         this.settings = settings;
         this.logger = logger;
+        this.connectionWarnings = new ConnectionWarnings(logger);
+        this.pollWarnings = new ConnectionWarnings(logger);
         this.remoteActionHandler = remoteActionHandler;
         Files.createDirectories(dataFolder);
         this.queueFile = dataFolder.resolve("pending-events.jsonl");
@@ -72,6 +79,7 @@ final class PortalClient implements AutoCloseable {
                 .followRedirects(HttpClient.Redirect.NEVER)
                 .build();
         this.effectiveBatchSize = settings.batchSize();
+        worker.execute(this::repairRejectedTelemetry);
     }
 
     void start() {
@@ -92,6 +100,12 @@ final class PortalClient implements AutoCloseable {
         payload.putIfAbsent("event_id", eventId(type));
         payload.putIfAbsent("occurred_at", Instant.now().toString());
         payload.putIfAbsent("server", settings.serverName());
+        if ("server.snapshot".equals(type)) {
+            Map<String,Object> live = new LinkedHashMap<>();
+            for(String key : List.of("server", "occurred_at", "online_players", "tps", "mspt", "uptime_seconds", "metadata"))
+                if(payload.containsKey(key)) live.put(key,payload.get(key));
+            live.put("operation", "connector.heartbeat"); heartbeat=live;
+        }
         String json = Json.encode(payload);
 
         synchronized (queue) {
@@ -140,6 +154,7 @@ final class PortalClient implements AutoCloseable {
                 return;
             }
             actionPollFailures = 0;
+            pollWarnings.healthy();
             for (Object supplied : actions) {
                 if (!(supplied instanceof Map<?, ?> action)) continue;
                 long id = number(action.get("id"), 0L);
@@ -209,16 +224,14 @@ final class PortalClient implements AutoCloseable {
                 .header("X-API-Token", settings.token())
                 .header("Content-Type", "application/json; charset=utf-8")
                 .header("Accept", "application/json")
-                .header("User-Agent", "TownyRebornStaffConnector/1.3.1")
+                .header("User-Agent", "TownyRebornStaffConnector/1.5.0")
                 .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
                 .build();
     }
 
     private void actionPollFailed(String detail) {
         actionPollFailures++;
-        if (actionPollFailures == 1 || actionPollFailures % 20 == 0) {
-            logger.warning("Staff Portal remote-action poll failed (" + detail + "). Event uploads continue normally.");
-        }
+        pollWarnings.failed("Staff Portal remote-action polling delayed (" + detail + "). This does not indicate that the game server is offline.");
     }
 
     private static String text(Object value) { return value == null ? "" : String.valueOf(value); }
@@ -230,6 +243,35 @@ final class PortalClient implements AutoCloseable {
             String trimmed = line.trim();
             if (!trimmed.isEmpty() && true) queue.addLast(trimmed);
         }
+    }
+
+    private void repairRejectedTelemetry() {
+        if(!Files.isRegularFile(rejectedFile))return;
+        Path cursor=rejectedFile.resolveSibling("repaired-telemetry.json");
+        try {
+            java.util.Set<String> repaired=new java.util.HashSet<>();
+            if(Files.isRegularFile(cursor)) {
+                Object previous=Json.decode(Files.readString(cursor));
+                if(!(previous instanceof List<?> list))throw new IOException("Invalid telemetry repair checkpoint");
+                for(Object item:list)repaired.add(String.valueOf(item));
+            }
+            int restored=0;
+            try(var lines=Files.lines(rejectedFile,StandardCharsets.UTF_8)) {
+                for(String line:lines.limit(10000).toList()) {
+                    Object decoded=Json.decode(line);if(!(decoded instanceof Map<?,?> record))continue;
+                    Map<String,Object> event=TelemetryRepair.repair(record);if(event==null)continue;
+                    String id=String.valueOf(event.get("event_id"));if(repaired.contains(id))continue;
+                    if(!((List<?>)event.get("samples")).isEmpty()) {
+                        if(!tryEnqueue(event)||!persistQueue())break;
+                        restored+=((List<?>)event.get("samples")).size();
+                    }
+                    repaired.add(id);
+                    Path tmp=cursor.resolveSibling(cursor.getFileName()+".tmp");Files.writeString(tmp,Json.encode(repaired));
+                    Files.move(tmp,cursor,StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            if(restored>0)logger.info("Recovered "+restored+" valid statistics samples from rejected numeric batches; original archives retained.");
+        } catch(Exception error) { logger.warning("Telemetry repair deferred; original rejected batches retained ("+error.getClass().getSimpleName()+")."); }
     }
 
     private void schedulePersistence() {
@@ -246,10 +288,32 @@ final class PortalClient implements AutoCloseable {
 
     private void flushSafely() {
         try {
+            sendHeartbeat();
             flushBatch();
         } catch (Throwable throwable) {
             registerFailure("unexpected connector error", throwable);
         }
+    }
+
+    Instant heartbeatSuccess() { return lastHeartbeatSuccess; }
+
+    private void sendHeartbeat() {
+        Map<String,Object> captured=heartbeat;
+        if(closed || captured==null || !settings.hasUsableToken() || System.nanoTime()<nextHeartbeatNanos)return;
+        Map<String,Object> request=new LinkedHashMap<>(captured);
+        Map<String,Object> health=new LinkedHashMap<>();
+        if(captured.get("metadata") instanceof Map<?,?> metadata)for(var entry:metadata.entrySet())health.put(String.valueOf(entry.getKey()),entry.getValue());
+        health.put("connection_state",state);health.put("last_http_status",lastHttpStatus);
+        health.put("queued_events",status().queuedEvents());health.put("last_success",lastSuccess==null?null:lastSuccess.toString());
+        request.put("metadata",health);
+        try {
+            HttpResponse<String> response=httpClient.send(apiRequest(Json.encode(request)),HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            Map<?,?> result=responseObject(response.body());
+            if(response.statusCode()>=200 && response.statusCode()<300 && Boolean.TRUE.equals(result.get("heartbeat"))) {
+                lastHeartbeatSuccess=Instant.now();nextHeartbeatNanos=System.nanoTime()+TimeUnit.SECONDS.toNanos(15);
+            } else nextHeartbeatNanos=System.nanoTime()+TimeUnit.SECONDS.toNanos(response.statusCode()>=500?60:180);
+        } catch(InterruptedException error) { Thread.currentThread().interrupt(); }
+        catch(IOException|RuntimeException error) { nextHeartbeatNanos=System.nanoTime()+TimeUnit.SECONDS.toNanos(60); }
     }
 
     private void flushBatch() {
@@ -275,7 +339,7 @@ final class PortalClient implements AutoCloseable {
                 .header("X-TR-Protocol", "batch-v1")
                 .header("Content-Type", "application/json; charset=utf-8")
                 .header("Accept", "application/json")
-                .header("User-Agent", "TownyRebornStaffConnector/1.3.1")
+                .header("User-Agent", "TownyRebornStaffConnector/1.5.0")
                 .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
                 .build();
 
@@ -287,6 +351,7 @@ final class PortalClient implements AutoCloseable {
                 lastSuccess = Instant.now();
                 state = "connected (batch mode, " + batch.size() + " sent)";
                 consecutiveFailures = 0;
+                connectionWarnings.healthy();
                 nextAttemptNanos = 0;
                 effectiveBatchSize = isolatingInvalidEvent ? 1 : settings.batchSize();
                 scheduleBacklogDrain();
@@ -386,6 +451,11 @@ final class PortalClient implements AutoCloseable {
         } catch (NumberFormatException ignored) {
             apiVersion = 0;
         }
+        if(apiVersion<8 && batch.stream().map(PortalClient::responseObject)
+            .anyMatch(event->JourneyInsights.PLUGIN.equals(event.get("plugin")))) {
+            registerHttpFailure(response.statusCode(),300,"Journey telemetry needs Staff HQ API 8; install the website update first; queue retained");
+            return;
+        }
         if (response.statusCode() == 422 && "invalid_event_data".equals(error)) {
             if (apiVersion < 6 || validation.isEmpty()) {
                 registerHttpFailure(422, 300, "portal rejected event data; install the Staff 1.3.1 website API fix; queue retained");
@@ -461,6 +531,7 @@ final class PortalClient implements AutoCloseable {
                 StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND)) {
             while (bytes.hasRemaining()) output.write(bytes);
             output.force(true);
+            if("invalid_numeric_metric".equals(validation))worker.execute(this::repairRejectedTelemetry);
             return true;
         } catch (IOException exception) {
             logger.warning("Could not save rejected Staff Portal event; it remains queued.");
@@ -481,10 +552,8 @@ final class PortalClient implements AutoCloseable {
         state = detail != null ? detail : ((status == 401 || status == 403)
                 ? "API token rejected (HTTP " + status + ")"
                 : "portal error (HTTP " + status + ")");
-        if (consecutiveFailures == 1 || consecutiveFailures % 10 == 0) {
-            logger.warning("Staff Portal request returned HTTP " + status + "; " + state
-                    + "; retrying in " + delay + "s.");
-        }
+        connectionWarnings.failed("Staff Portal delivery returned HTTP " + status + "; " + state
+            + "; queued events retained, retrying in " + delay + "s. Game-server status is reported separately.");
     }
 
     private void registerFailure(String message, Throwable throwable) {
@@ -492,10 +561,7 @@ final class PortalClient implements AutoCloseable {
         long delay = retryDelaySeconds();
         nextAttemptNanos = System.nanoTime() + TimeUnit.SECONDS.toNanos(delay);
         state = message;
-        if (consecutiveFailures == 1 || consecutiveFailures % 10 == 0) {
-            logger.log(Level.WARNING, "Staff Portal " + message + "; queued events will retry in " + delay + "s: "
-                    + throwable.getMessage());
-        }
+        connectionWarnings.failed("Staff Portal " + message + "; queued events retained, retrying in " + delay + "s (" + throwable.getClass().getSimpleName() + ").");
     }
 
     private long retryDelaySeconds() {
@@ -518,8 +584,10 @@ final class PortalClient implements AutoCloseable {
         }
         Path temporary = queueFile.resolveSibling(queueFile.getFileName() + ".tmp");
         try {
-            Files.write(temporary, snapshot, StandardCharsets.UTF_8,
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+            try (FileChannel output = FileChannel.open(temporary, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
+                ByteBuffer bytes=StandardCharsets.UTF_8.encode(String.join("\n",snapshot)+(snapshot.isEmpty()?"":"\n"));
+                while(bytes.hasRemaining())output.write(bytes);output.force(true);
+            }
             try {
                 Files.move(temporary, queueFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             } catch (IOException atomicMoveFailed) {

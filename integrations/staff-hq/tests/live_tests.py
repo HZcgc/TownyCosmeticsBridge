@@ -70,7 +70,7 @@ try:
   try:
    status,body,h=req('api.php');break
   except Exception:time.sleep(.1)
- check('Real API health / schema migration',status==200 and json.loads(body)['version']==7 and scalar("SELECT setting_value FROM settings WHERE setting_key='schema.version'")=='10')
+ check('Real API health / schema migration',status==200 and json.loads(body)['version']==8 and scalar("SELECT setting_value FROM settings WHERE setting_key='schema.version'")=='11')
  check('Unknown bearer rejected',post(event('player.join',uuid=u,username='Tester'),'tr_live_invalid')[0]==401)
  check('Join accepted',post(event('player.join',uuid=u,username='Tester',platform='java'))[0]==202)
  check('Hub join accepted',post(event('player.join',uuid=u,username='Tester',server='hub'))[0]==202)
@@ -139,6 +139,7 @@ try:
  exec(compile((w/'tests/analytics_tests.py').read_text(),str(w/'tests/analytics_tests.py'),'exec'),globals())
  exec(compile((w/'tests/experience_checks.py').read_text(),str(w/'tests/experience_checks.py'),'exec'),globals())
  exec(compile((w/'tests/guide_role_checks.py').read_text(),str(w/'tests/guide_role_checks.py'),'exec'),globals())
+ exec(compile((w/'tests/journey_checks.py').read_text(),str(w/'tests/journey_checks.py'),'exec'),globals())
  check('D3 cohort return is counted once across servers',scalar("SELECT d3 FROM retention_cohorts WHERE day_utc=DATE_SUB(UTC_DATE(),INTERVAL 3 DAY)")=='1')
  sid55=session(3300);h55={'Cookie':'tr_staff_session='+sid55,'X-TR-Background':'1'}
  check('Still authenticated after 55 minutes',req('index.php?page=plugins',headers=h55)[0]==200)

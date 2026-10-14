@@ -26,12 +26,14 @@ final class GameInsights implements Listener, AutoCloseable {
     private final Set<String> completedPets=new HashSet<>();
     private final Path petCursor;
     private final CrateHistoryReader crateHistory;
+    private final JourneyInsights journey;
     private boolean petBaseline;
     private int snapshotTask=-1;
 
     GameInsights(JavaPlugin owner,InsightsOutbox outbox) {
         this.owner=owner;this.outbox=outbox;petCursor=owner.getDataFolder().toPath().resolve("pet-ledger-seen.json");
         crateHistory=new CrateHistoryReader(owner.getDataFolder().toPath(),outbox,owner.getLogger());
+        journey=new JourneyInsights(outbox,owner.getLogger());
         try{if(Files.isRegularFile(petCursor)&&Json.decode(Files.readString(petCursor)) instanceof List<?> keys){for(Object key:keys)completedPets.add(String.valueOf(key));petBaseline=true;}}
         catch(Exception e){throw new IllegalStateException("Cannot read pet insights checkpoint",e);}
     }
@@ -39,6 +41,7 @@ final class GameInsights implements Listener, AutoCloseable {
         Bukkit.getPluginManager().registerEvents(this,owner);registerHooks();
         snapshotTask=Bukkit.getScheduler().scheduleSyncRepeatingTask(owner,this::snapshots,60L,6000L);
         reader.scheduleWithFixedDelay(this::petLedger,5,15,TimeUnit.SECONDS);
+        reader.scheduleWithFixedDelay(journey::read,2,2,TimeUnit.SECONDS);
         reader.scheduleWithFixedDelay(()->{Plugin p=Bukkit.getPluginManager().getPlugin("ExcellentCrates");if(p!=null&&registered.contains("su.nightexpress.excellentcrates.api.reward.event.RewardGrantedEvent"))crateHistory.read(p.getDataFolder().toPath().resolve("logs/crate_history.log"));},5,5,TimeUnit.SECONDS);
     }
     @EventHandler public void enabled(PluginEnableEvent event){Bukkit.getScheduler().runTask(owner,this::registerHooks);}
@@ -53,6 +56,8 @@ final class GameInsights implements Listener, AutoCloseable {
     }
 
     private void registerHooks() {
+        Plugin progression=Bukkit.getPluginManager().getPlugin(JourneyInsights.PLUGIN);
+        if(progression!=null&&progression.isEnabled())journey.configure(progression.getDataFolder().toPath());
         hookFirst("ExcellentCrates",List.of("su.nightexpress.excellentcrates.api.reward.event.RewardGrantedEvent","su.nightexpress.excellentcrates.api.event.CrateObtainRewardEvent"),e->{
             Object crate=Reflect.call(e,"getCrate"),reward=Reflect.call(e,"getReward"),player=Reflect.call(e,"getPlayer");
             String id=label(crate),rid=label(reward);
@@ -116,6 +121,10 @@ final class GameInsights implements Listener, AutoCloseable {
         List<String> nativeHooks=hooks.getOrDefault(plugin,List.of());
         Map<String,Object> data=new LinkedHashMap<>();data.put("insights_hooks",nativeHooks);data.put("insights_buffered",outbox.buffered());data.put("insights_rejected",outbox.rejected());
         if(!nativeHooks.isEmpty())data.put("coverage","native");
+        if(JourneyInsights.PLUGIN.equals(plugin)) {
+            data.put("coverage",journey.audited()?"native":"snapshot");
+            data.put("insights_hooks",List.of(journey.audited()?"Durable Journey commit receipts":"Journey profile snapshots; install Journey beta.9 for event receipts"));
+        }
         data.put("failed_hooks",unavailable.entrySet().stream().filter(e->nativeHooks.contains(e.getKey())).map(Map.Entry::getKey).toList());return data;
     }
 

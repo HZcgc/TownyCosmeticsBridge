@@ -1,16 +1,23 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/app/bootstrap.php';
+try {
+    require_once __DIR__ . '/app/bootstrap.php';
+} catch (Throwable $error) {
+    $reference=bin2hex(random_bytes(6));
+    error_log('[StaffHQ API '.$reference.'] bootstrap_unavailable '.get_class($error).' at '.basename($error->getFile()).':'.$error->getLine());
+    http_response_code(503);header('Content-Type: application/json; charset=utf-8');header('Cache-Control: no-store');header('Retry-After: 60');
+    echo json_encode(['error'=>'portal_unavailable','reference'=>$reference]);exit;
+}
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
-header('X-TR-API-Version: 7');
+header('X-TR-API-Version: 8');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
         db()->query('SELECT 1');
-        apiResponse(200, ['status' => 'ok', 'service' => 'Towny Reborn Staff API', 'version' => 7, 'batch' => true, 'remote_actions' => true, 'validation_details' => true]);
+        apiResponse(200, ['status' => 'ok', 'service' => 'Towny Reborn Staff API', 'version' => 8, 'batch' => true, 'remote_actions' => true, 'validation_details' => true, 'priority_heartbeat'=>true, 'journey'=>true]);
     } catch (Throwable) {
         apiResponse(503, ['status' => 'unavailable']);
     }
@@ -53,6 +60,7 @@ if (!is_array($payload)) {
 }
 
 $operation = strtolower(trim((string) ($payload['operation'] ?? '')));
+if ($operation === 'connector.heartbeat') apiConnectorHeartbeat($pdo,$client,$payload);
 if ($operation === 'actions.pull') apiPullActions($pdo, $client, $payload);
 if ($operation === 'actions.result') apiActionResult($pdo, $client, $payload);
 
@@ -124,12 +132,16 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    apiResponse(500, ['error' => 'storage_error']);
-} catch (Throwable) {
+    $reference=bin2hex(random_bytes(6));
+    error_log('[StaffHQ API '.$reference.'] storage_error SQLSTATE '.$exception->getCode().' driver '.(string)($exception->errorInfo[1]??'unknown').' at '.basename($exception->getFile()).':'.$exception->getLine());
+    apiResponse(500, ['error' => 'storage_error','reference'=>$reference]);
+} catch (Throwable $exception) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    apiResponse(500, ['error' => 'processing_error']);
+    $reference=bin2hex(random_bytes(6));
+    error_log('[StaffHQ API '.$reference.'] processing_error '.get_class($exception).' at '.basename($exception->getFile()).':'.$exception->getLine());
+    apiResponse(500, ['error' => 'processing_error','reference'=>$reference]);
 }
 
 /** @return array{type:string,duplicate:bool} */

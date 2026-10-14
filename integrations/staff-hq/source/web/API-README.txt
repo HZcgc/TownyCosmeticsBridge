@@ -136,3 +136,12 @@ prevent replay from duplicating rankings after raw activity expiry.
 integration.snapshot: plugin, snapshot_key, data and occurred_at. Current catalog
 chunks and manifests remove stale catalog entries; older snapshots do not replace
 newer data. These events are read-only server observations, never grants.
+
+
+API 8 / HQ 5.2.0: Journey and priority heartbeat
+------------------------------------------------
+POST connector.heartbeat as an operation, authenticated with the existing connector token. Fields: server, occurred_at (capture timestamp), online_players, optional tps/mspt/uptime_seconds and bounded metadata. This operation is independent of ordinary event batches. Old captures cannot overwrite newer liveness; an old capture remains stale even when delivered now. It does not acknowledge or discard event queues.
+
+TownyRebornProgression is an accepted integration.snapshot source. Its catalog and player.<UUID> snapshots are current state. Stable game.event receipts distinguish source JP, historical restoration, level changes, purchase unlocks, ownership, confirmed debits, delivered purchases and reward claims. Do not add snapshot totals to new-event counters. The existing event ledger deduplicates replayed receipts permanently.
+
+HTTP 500/502 means HQ/API delivery failed, not proof of an offline Minecraft server. Missing liveness is shown as Status unknown. Heartbeat/connector incidents have one notification per sustained incident and a recovery after two healthy minutes. New safe error references correlate API processing/storage faults with the private PHP log without disclosing SQL content or tokens.

@@ -10,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 switch ($page) {
+    case 'journey': showJourneyInsights(); break;
     case 'attention': showNotifications(); break;
     case 'leaderboards': showLeaderboards(); break;
     case 'crates': showCrateInsights(); break;

@@ -258,6 +258,14 @@ function notificationCondition(PDO $pdo,string $key,string $server,string $kind,
     $at??=time();$stamp=notificationDate($at);$s=notificationSettings();$delay=max($delay,notificationGrace($kind));
     $pdo->prepare('INSERT IGNORE INTO notification_monitors(monitor_key,server_name,kind,title,severity,details_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)')->execute([$key,$server,$kind,$title,$severity,jsonEncode($details),$stamp,$stamp]);
     $q=$pdo->prepare('SELECT * FROM notification_monitors WHERE monitor_key=? FOR UPDATE');$q->execute([$key]);$row=$q->fetch();
+    $recovery=null;
+    if(!$bad&&$row['state']==='incident'&&in_array($kind,['heartbeat','connector','queue'],true)){
+        $recovery=$row['recovery_since']??$stamp;
+        if($at-strtotime((string)$recovery)<120){
+            $pdo->prepare('UPDATE notification_monitors SET recovery_since=?,updated_at=? WHERE monitor_key=?')->execute([$recovery,$stamp,$key]);
+            return;
+        }
+    }
     $since=$bad?($row['condition_since']??$stamp):null;
     $state=$row['state'];$cycle=(int)$row['cycle'];$incident=$row['incident_at'];$notice=$row['last_notice_at'];$parent=$row['incident_notification_id'];
     if($bad&&$state==='incident'&&$parent){
@@ -283,7 +291,7 @@ function notificationCondition(PDO $pdo,string $key,string $server,string $kind,
             if(in_array($parentState,['pending','blocked'],true))$pdo->prepare('UPDATE notification_outbox SET severity=?,details_json=?,last_at=? WHERE id=?')->execute([$severity,jsonEncode($tagged),$stamp,$parent]);
             else notificationEnqueue($pdo,'condition:'.$key.':'.$cycle.':escalated:'.$severity,$kind,$server,$severity,$title.' · escalated',$tagged,$at,null,$parent?(int)$parent:null);
             $notice=$stamp;
-        } elseif($notice&&$at-strtotime($notice)>=$s['reminder_minutes']*60){
+        } elseif(!in_array($kind,['heartbeat','connector'],true)&&$notice&&$at-strtotime($notice)>=$s['reminder_minutes']*60){
             $q=$pdo->prepare('SELECT status FROM notification_outbox WHERE id=? FOR UPDATE');$q->execute([$parent]);
             if($q->fetchColumn()==='sent')notificationEnqueue($pdo,'condition:'.$key.':'.$cycle.':reminder:'.$stamp,$kind,$server,$severity,$title.' · still needs attention',[...$details,'condition_key'=>$key,'condition_cycle'=>$cycle],$at,null,$parent?(int)$parent:null);
             $notice=$stamp;
@@ -300,8 +308,8 @@ function notificationCondition(PDO $pdo,string $key,string $server,string $kind,
         }
         $state='ok';$incident=null;$notice=null;
     }
-    $pdo->prepare('UPDATE notification_monitors SET title=?,severity=?,state=?,condition_since=?,incident_at=?,last_notice_at=?,cycle=?,incident_notification_id=?,details_json=?,updated_at=? WHERE monitor_key=?')
-        ->execute([$title,$severity,$state,$since,$incident,$notice,$cycle,$parent,jsonEncode($details),$stamp,$key]);
+    $pdo->prepare('UPDATE notification_monitors SET title=?,severity=?,state=?,condition_since=?,incident_at=?,last_notice_at=?,cycle=?,incident_notification_id=?,details_json=?,updated_at=?,recovery_since=? WHERE monitor_key=?')
+        ->execute([$title,$severity,$state,$since,$incident,$notice,$cycle,$parent,jsonEncode($details),$stamp,null,$key]);
 }
 
 /** Timestamps change on every log line; the underlying error must recur over five minutes. */
@@ -346,7 +354,7 @@ function notificationOnEvent(PDO $pdo,array $payload,string $type,string $source
         if($s['health']&&in_array($source,$s['servers'],true)){
             $stamp=notificationDate($at);$captured=notificationDate(min($epoch,$at));
             $pdo->prepare("INSERT INTO notification_monitors(monitor_key,server_name,kind,title,severity,last_fresh_at,details_json,created_at,updated_at) VALUES(?,?,'heartbeat',?,'critical',?,'{}',?,?) ON DUPLICATE KEY UPDATE last_fresh_at=GREATEST(COALESCE(last_fresh_at,VALUES(last_fresh_at)),VALUES(last_fresh_at))")
-                ->execute(['heartbeat:'.$source,$source,'Missing heartbeat · '.strtoupper($source),$captured,$stamp,$stamp]);
+                ->execute(['heartbeat:'.$source,$source,'Status unknown · '.strtoupper($source),$captured,$stamp,$stamp]);
         }
         return;
     }
@@ -374,7 +382,7 @@ function notificationOnEvent(PDO $pdo,array $payload,string $type,string $source
 function notificationCheckHealth(PDO $pdo,?int $at=null): void
 {
     $at??=time();$s=notificationSettings();if(!$s['enabled'])return;
-    $snapshots=[];foreach($pdo->query('SELECT * FROM server_status')->fetchAll() as $row)$snapshots[strtolower($row['server_name'])]=$row;
+    $snapshots=[];foreach(hqServerStatuses($pdo) as $row)$snapshots[strtolower($row['server_name'])]=$row;
     $pdo->beginTransaction();
     try{
         $pdo->prepare("UPDATE notification_monitors SET state='ok',condition_since=NULL WHERE kind IN('connector','integration','queue','performance') AND state NOT IN('incident','disabled') AND updated_at<?")->execute([notificationDate($at-120)]);
@@ -400,9 +408,9 @@ function notificationCheckHealth(PDO $pdo,?int $at=null): void
             $captured=$row?strtotime($row['captured_at']):false;$received=$row?strtotime($row['updated_at']):false;
             if($captured!==false&&$received!==false&&$captured<=$at+30&&$received<=$at+30)$fresh=max($fresh??0,min($captured,$received,$at));
             $reference=$fresh??($monitor?strtotime($monitor['created_at']):$at);$age=max(0,$at-$reference);
-            $details=notificationDetails('No fresh server status has arrived for more than '.$s['down_minutes'].' minutes. The game server or its Staff connector may be unavailable.',['Server'=>strtoupper($server),'Last fresh status'=>$fresh?gmdate('Y-m-d H:i:s',$fresh).' UTC':'Not received yet','Without fresh status'=>number_format($age/60,1).' minutes'],'plugins');
+            $details=notificationDetails('No fresh server status has arrived for more than '.$s['down_minutes'].' minutes. This can be an HQ/API delivery problem and does not prove the game server is offline.',['Server'=>strtoupper($server),'Last fresh status'=>$fresh?gmdate('Y-m-d H:i:s',$fresh).' UTC':'Not received yet','Without fresh status'=>number_format($age/60,1).' minutes'],'plugins');
             if($s['health']){
-                notificationCondition($pdo,$key,$server,'heartbeat','Missing heartbeat · '.strtoupper($server),'critical',$age>$s['down_minutes']*60,0,$details,$at);
+                notificationCondition($pdo,$key,$server,'heartbeat','Status unknown · '.strtoupper($server),'high',$age>$s['down_minutes']*60,0,$details,$at);
                 if($fresh!==null)$pdo->prepare('UPDATE notification_monitors SET last_fresh_at=? WHERE monitor_key=?')->execute([notificationDate($fresh),$key]);
             }
             // Do not label stale operational data as a current condition or recovery.
@@ -531,7 +539,9 @@ function notificationHttp(string $url,array $message): array
 function notificationCurrentCondition(PDO $pdo,array $monitor,array $settings,int $at): ?bool
 {
     $kind=$monitor['kind'];$server=$monitor['server_name'];
-    $q=$pdo->prepare('SELECT * FROM server_status WHERE LOWER(server_name)=?');$q->execute([$server]);$snapshot=$q->fetch();
+    if($monitor['state']==='incident'&&in_array($kind,['heartbeat','connector','queue'],true)
+        &&!empty($monitor['recovery_since'])&&$at-strtotime($monitor['recovery_since'])<120)return null;
+    $snapshot=hqServerStatus($pdo,$server);
     $captured=$snapshot?strtotime($snapshot['captured_at']):false;$received=$snapshot?strtotime($snapshot['updated_at']):false;
     $valid=$captured!==false&&$received!==false&&$captured<=$at+30&&$received<=$at+30;
     if($kind==='heartbeat'){

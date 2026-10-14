@@ -5,6 +5,7 @@ declare(strict_types=1);
 function hqTopics(): array
 {
     return [
+        'journey'=>['Reborn Journey','analytics.view','TownyRebornProgression','journey_jp','JP earned','Levels, historical progress, permanent perks and purchase evidence.','spark'],
         'crates'=>['Crates','statistics.crates','ExcellentCrates','crate_openings','Openings','Rewards, opening batches and player history.','box'],
         'dragon'=>['Dragon event','statistics.leaderboards','TownyDragonEvent','dragon_damage','Damage','Fight results, winners and lifetime records.','dragon'],
         'votes'=>['Voting','statistics.leaderboards','Votifier','votes','Votes','Player rankings and voting services.','vote'],
@@ -87,7 +88,7 @@ function showGameOverview(): void
 function hqDashboardIntro(): void
 {
     ?><section class="hq-hero"><div><span class="eyebrow">Your daily staff workspace</span><h2>Your server, at a glance.</h2><p>Start with anything that needs attention, or open a game below for the complete picture.</p></div><?php if(can('players.view')): ?><form class="hq-player-search" action="index.php" method="get"><input type="hidden" name="page" value="players"><label for="hq-player-query">Open a player profile</label><div><input id="hq-player-query" name="q" placeholder="Player name or UUID" aria-label="Player name or UUID" required><button class="button" type="submit">Find player</button></div></form><?php endif; ?></section>
-    <?php if(can('plugins.view')): $rows=db()->query('SELECT * FROM server_status ORDER BY server_name')->fetchAll(); ?><section class="server-strip" aria-label="Server connection status"><?php foreach($rows as $r):$fresh=strtotime($r['updated_at'])>=time()-180; ?><a class="server-chip" href="index.php?page=plugins"><span class="status-dot <?= $fresh?'':'stale' ?>"></span><strong><?= e(strtoupper($r['server_name'])) ?></strong><span><?= $fresh?(int)$r['online_players'].' players':'Report delayed' ?></span><?php if($fresh&&$r['tps']!==null): ?><span><?= e(obsNumber((float)$r['tps'])) ?> TPS</span><?php endif; ?><small>Reported <?= e(displayDate($r['captured_at'])) ?></small></a><?php endforeach; ?><?php if(!$rows): ?><div class="server-chip"><strong>Waiting for a server report</strong><span>Connections shows the latest connector status.</span></div><?php endif; ?></section><?php endif;
+    <?php if(can('plugins.view')): $rows=hqServerStatuses(); ?><section class="server-strip" aria-label="Server connection status"><?php foreach($rows as $r):$fresh=hqStatusFresh($r); ?><a class="server-chip" href="index.php?page=plugins"><span class="status-dot <?= $fresh?'':'stale' ?>"></span><strong><?= e(strtoupper($r['server_name'])) ?></strong><span><?= $fresh?(int)$r['online_players'].' players':'Status unknown' ?></span><?php if($fresh&&$r['tps']!==null): ?><span><?= e(obsNumber((float)$r['tps'])) ?> TPS</span><?php endif; ?><small>Reported <?= e(displayDate($r['captured_at'])) ?></small></a><?php endforeach; ?><?php if(!$rows): ?><div class="server-chip"><strong>Waiting for a server report</strong><span>Connections shows the latest connector status.</span></div><?php endif; ?></section><?php endif;
 }
 
 function showHqDashboard(): void

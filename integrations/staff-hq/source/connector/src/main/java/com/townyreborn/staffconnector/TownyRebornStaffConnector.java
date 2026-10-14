@@ -403,6 +403,7 @@ public final class TownyRebornStaffConnector extends JavaPlugin implements Liste
         metadata.put("processors", runtime.availableProcessors());
         PortalClient.Status health=portal.status();metadata.put("queued_events",health.queuedEvents());metadata.put("connection_state",health.state());metadata.put("last_http_status",health.lastHttpStatus());metadata.put("last_success",health.lastSuccess()==null?null:health.lastSuccess().toString());metadata.put("dropped_events",portal.droppedEvents());metadata.put("telemetry_buffered",telemetry==null?0:telemetry.buffered());metadata.put("telemetry_rejected",telemetry==null?0:telemetry.rejected());
         metadata.put("connector_version", getDescription().getVersion());
+        metadata.put("last_heartbeat_success",portal.heartbeatSuccess()==null?null:portal.heartbeatSuccess().toString());
         Map<String,Integer> pluginNames=new java.util.HashMap<>();for(Map<String,Object> p:plugins)pluginNames.merge(String.valueOf(p.get("name")),1,Integer::sum);metadata.put("duplicate_plugin_names",pluginNames.entrySet().stream().filter(e->e.getValue()>1).map(Map.Entry::getKey).toList());
         payload.put("metadata", metadata);
         return payload;

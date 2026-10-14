@@ -1,0 +1,3 @@
+9e1a4bf842d3208d84984a5f034bdc8379b05e34e522097af8ad45006bf837f6  TownyReborn-Server-Journey-Staff-1.5.0.zip
+995d9e2a810dd9b59b33587a90d457217b237e713eaf78c69fb1f67a144a1373  TownyReborn-StaffHQ-5.2.0-Journey.zip
+5bb2ab8a26cbe8bf6c474ab0e2a718c9887b2344be6b8b20554209ea89f0dee7  TownyRebornStaffConnector-1.5.0.jar

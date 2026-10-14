@@ -1,10 +1,11 @@
 name: TownyRebornStaffConnector
-version: 1.4.0
+version: 1.5.0
 main: com.townyreborn.staffconnector.TownyRebornStaffConnector
 api-version: '1.21'
 author: Towny Reborn
 description: Secure SMP and Hub event connector for the Towny Reborn Staff Portal.
 softdepend:
+  - TownyRebornProgression
   - Vulcan
   - LiteBans
   - PremiumVanish

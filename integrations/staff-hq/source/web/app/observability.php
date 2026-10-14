@@ -233,7 +233,11 @@ function analyticsSnapshot(int $days=30): array
 }
 function obsOnline(): int
 {
-    $q=db()->query("SELECT online_players FROM server_status WHERE server_name='proxy' AND updated_at>=DATE_SUB(NOW(),INTERVAL 3 MINUTE)");$n=$q->fetchColumn();
-    if($n!==false)return (int)$n;
-    return (int)statScalar("SELECT COALESCE(SUM(online_players),0) FROM server_status WHERE server_name<>'proxy' AND updated_at>=DATE_SUB(NOW(),INTERVAL 3 MINUTE)");
+    $total=0;
+    foreach(hqServerStatuses() as $row){
+        if(!hqStatusFresh($row))continue;
+        if(strtolower($row['server_name'])==='proxy')return (int)$row['online_players'];
+        $total+=(int)$row['online_players'];
+    }
+    return $total;
 }
