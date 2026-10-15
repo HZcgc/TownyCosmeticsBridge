@@ -33,6 +33,11 @@ $mime = (string) $attachment['mime_type'];
 $inlineAllowed = str_starts_with($mime, 'image/') || str_starts_with($mime, 'video/')
     || str_starts_with($mime, 'audio/') || $mime === 'application/pdf' || $mime === 'text/plain';
 $inline = isset($_GET['inline']) && $inlineAllowed;
+if ($inline && $mime === 'application/pdf' && $attachment['owner_type'] === 'document') {
+    header('X-Frame-Options: SAMEORIGIN');
+    header("Content-Security-Policy: default-src 'none'; frame-ancestors 'self'");
+}
+
 $filename = preg_replace('/[^A-Za-z0-9._ -]/u', '_', (string) $attachment['original_name']) ?: 'attachment';
 
 header('Content-Type: ' . $mime);

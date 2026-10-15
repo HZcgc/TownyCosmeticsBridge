@@ -4,6 +4,15 @@ Der neue Serverlog bestätigt Connector 1.5.1 und 50.000 Queue-Plätze.
 Die Website antwortet jedoch noch mit API 7. Die Website muss API 9 ausliefern.
 Ein erneutes Einspielen derselben Connector-JAR löst diesen Webspace-Stand nicht.
 
+Das anschließend bereitgestellte aktuelle HQ-Archiv bestätigt den genauen Grund:
+Im Hauptverzeichnis liegt API 7. Die neuen API-9-Dateien liegen im Unterordner
+WEBSPACE-UPDATE/ und werden vom konfigurierten Root-Endpoint nicht verwendet.
+
+Dieses MERGED-Paket enthält die richtige API 9 mit den PDF-Anpassungen aus dem
+aktiven Hauptverzeichnis: PDF-Import, originale Seitenvorschau, passende Styles
+und erlaubte Einbettung über media.php. Auch die neue Journey-Seite bleibt drin.
+Bitte dieses MERGED-Paket für den Root-Upload verwenden.
+
 1. Website und Datenbank sichern.
 2. Diese ZIP entpacken. Die Dateien liegen DIREKT auf ZIP-Hauptebene:
    api.php, index.php, app/, assets/, config/ usw.

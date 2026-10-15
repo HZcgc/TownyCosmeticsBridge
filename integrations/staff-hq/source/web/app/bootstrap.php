@@ -521,7 +521,7 @@ function renderAuthPage(string $title, string $content): void
         <title><?= e($title) ?> · Towny Reborn Staff</title>
         <link rel="icon" type="image/png" href="assets/favicon.png?v=4.1.0">
         <script src="assets/preferences.js?v=5.2.1"></script>
-        <link rel="stylesheet" href="assets/app.css?v=5.2.1">
+        <link rel="stylesheet" href="assets/app.css?v=5.2.1-pdf">
         <link rel="stylesheet" href="assets/workspace.css?v=5.2.1">
         <link rel="stylesheet" href="assets/experience.css?v=5.2.1">
         <script src="assets/workspace.js?v=5.2.1" defer></script>
@@ -564,7 +564,7 @@ function renderAppPage(string $title, string $activePage, string $content): void
         <title><?= e($title) ?> · Towny Reborn Staff</title>
         <link rel="icon" type="image/png" href="assets/favicon.png?v=4.1.0">
         <script src="assets/preferences.js?v=5.2.1"></script>
-        <link rel="stylesheet" href="assets/app.css?v=5.2.1">
+        <link rel="stylesheet" href="assets/app.css?v=5.2.1-pdf">
         <link rel="stylesheet" href="assets/workspace.css?v=5.2.1">
         <link rel="stylesheet" href="assets/experience.css?v=5.2.1">
         <script src="assets/workspace.js?v=5.2.1" defer></script>

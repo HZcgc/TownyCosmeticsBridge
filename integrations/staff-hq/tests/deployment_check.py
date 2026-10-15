@@ -6,7 +6,8 @@ import argparse,base64,hashlib,json,os,re,socket,subprocess,tempfile,time,urllib
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser(description=__doc__)
 p.add_argument('--php',type=Path,required=True)
-p.add_argument('--archive',type=Path,default=ROOT/'releases/TownyReborn-StaffHQ-5.2.1-DIRECT-UPLOAD.zip')
+p.add_argument('--archive',type=Path,default=ROOT/'releases/TownyReborn-StaffHQ-5.2.1-MERGED-DIRECT-UPLOAD.zip')
+p.add_argument('--active-archive',type=Path,help='Optional private current-HQ ZIP; only allowlisted public files are read')
 a=p.parse_args();checks=[]
 def check(name,value):
     if not value:raise AssertionError(name)
@@ -19,10 +20,26 @@ with tempfile.TemporaryDirectory(prefix='hq-deployment-check-') as temp:
         check('API is directly at the archive root','api.php' in archive.namelist() and not any(n.startswith('WEBSPACE-UPDATE/') for n in archive.namelist()))
         check('No production data in root overlay',not any(n in archive.namelist() for n in ('config/config.php','config/notifications.php','storage/','pending-events.jsonl')))
         with zipfile.ZipFile(ROOT/'releases/TownyReborn-StaffHQ-5.2.1-API9.zip') as original:
-            check('All previously tested HQ core files are identical',all(archive.read(n.removeprefix('WEBSPACE-UPDATE/'))==original.read(n) for n in original.namelist() if n.startswith('WEBSPACE-UPDATE/')))
-    for file in (web/'tr-update-check-5-2-1.php',):
+            preserved={'.htaccess','assets/app.css','media.php','index.php','app/bootstrap.php'}
+            check('Tested API and core retained outside the documented PDF restore',all(archive.read(n.removeprefix('WEBSPACE-UPDATE/'))==original.read(n) for n in original.namelist() if n.startswith('WEBSPACE-UPDATE/') and n.removeprefix('WEBSPACE-UPDATE/') not in preserved))
+        if a.active_archive:
+            with zipfile.ZipFile(a.active_archive) as active:
+                for name in ('.htaccess','assets/app.css','media.php'):
+                    check('Active PDF file preserved exactly: '+name,archive.read(name)==active.read(name))
+                journey="    case 'journey': showJourneyInsights(); break;\n"
+                check('Active index retained with only the Journey route added',archive.read('index.php').decode().replace(journey,'',1)==active.read('index.php').decode())
+                boot=archive.read('app/bootstrap.php').decode()
+                before=active.read('app/bootstrap.php').decode()
+                # The active bootstrap only changed CSS cache versions; new Journey/heartbeat includes are retained.
+                for version in ('5.1.1','5.1.2-pdf','5.2.1','5.2.1-pdf'):
+                    boot=boot.replace('?v='+version+'"','?v=CACHE"');before=before.replace('?v='+version+'"','?v=CACHE"')
+                boot=boot.replace("require_once APP_ROOT . '/app/connection-health.php';\n",'').replace("require_once APP_ROOT . '/app/journey.php';\n",'')
+                check('Active bootstrap retained apart from cache and new module includes',boot==before)
+                check('Input archive demonstrates the root cause',b'X-TR-API-Version: 7' in active.read('api.php') and b'STAFF_HQ_API_VERSION = 9' in active.read('WEBSPACE-UPDATE/api.php'))
+    for file in sorted(web.rglob('*.php')):
         result=subprocess.run([str(a.php),'-n','-l',str(file)],capture_output=True,text=True)
-        check('Checker PHP syntax is valid',result.returncode==0)
+        if result.returncode:raise AssertionError(str(file)+result.stdout+result.stderr)
+    check('All merged PHP files pass syntax checks',True)
     (web/'config/config.php').write_text("<?php throw new RuntimeException('PRIVATE CONFIG MUST NOT LOAD');")
     (web/'storage').mkdir(exist_ok=True);(web/'storage/private-token.txt').write_text('PRIVATE TOKEN MUST NOT BE READ')
     phase=work/'phase.json';phase.write_text(json.dumps({'get':9,'post':9,'journey':True,'status':200}))

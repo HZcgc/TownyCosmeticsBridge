@@ -11,3 +11,10 @@ Options -Indexes
   Header always set X-Frame-Options "DENY"
   Header always set Referrer-Policy "no-referrer"
 </IfModule>
+
+# Authenticated media may be embedded only by this Staff HQ origin.
+<IfModule mod_headers.c>
+  <Files "media.php">
+    Header always set X-Frame-Options "SAMEORIGIN"
+  </Files>
+</IfModule>
