@@ -1,5 +1,7 @@
 # Towny Reborn Staff HQ 5.2.1
 
+For an existing connector that still receives API 7 after an attempted update, use `releases/TownyReborn-StaffHQ-5.2.1-DIRECT-UPLOAD.zip`. Its files sit directly at the web root and include a read-only checker for file completeness, root/domain placement and the real GET/POST API. See `docs/DIRECT-UPLOAD-5.2.1-DE.txt`. Connector 1.5.1 remains unchanged.
+
 English PHP/MySQL staff portal with Paper connector 1.5.1 and durable Journey beta.9 integration. HQ 5.2.1 uses API 9 and additive schema 11. Journey progress, retained unlocks, actual debits and reward evidence are visible directly in the dashboard and player profiles. A priority heartbeat separates server liveness from delayed HQ uploads. Keep existing production configuration, database, storage, migration journals and connector queues.
 
 Earlier pointer-following charts, document-backed staff guidance, themes and once-only role presets remain available. Existing role customisations are preserved by the 5.2.0 migration.

@@ -1,0 +1,47 @@
+Towny Reborn Staff HQ 5.2.1 – direkt ins Web-Hauptverzeichnis
+
+Der neue Serverlog bestätigt Connector 1.5.1 und 50.000 Queue-Plätze.
+Die Website antwortet jedoch noch mit API 7. Die Website muss API 9 ausliefern.
+Ein erneutes Einspielen derselben Connector-JAR löst diesen Webspace-Stand nicht.
+
+1. Website und Datenbank sichern.
+2. Diese ZIP entpacken. Die Dateien liegen DIREKT auf ZIP-Hauptebene:
+   api.php, index.php, app/, assets/, config/ usw.
+3. Den gesamten INHALT genau in den Web-Ordner kopieren, in dem deine bisherige
+   api.php liegt und den staff.townyreborn.com als Dokumentenstamm verwendet.
+   Alle gleichnamigen Dateien wirklich überschreiben. NICHT nur neuere Dateien
+   übertragen und KEINEN weiteren Unterordner anlegen.
+4. config/config.php, config/notifications.php und storage/ behalten. Das Paket
+   enthält diese privaten Dateien, Accounts und Daten nicht. Keine Neuinstallation.
+5. Öffnen: https://staff.townyreborn.com/tr-update-check-5-2-1.php
+
+Der Check zeigt getrennt:
+- ob die hochgeladenen öffentlichen Dateien vollständig dem Paket entsprechen;
+- welche API-Version in der api.php auf der Festplatte steht;
+- welche Version GET und ein anonymer POST tatsächlich ausführen;
+- ob Journey vom ausgeführten API-Code unterstützt wird.
+
+Ein HTTP 401 beim anonymen POST ist normal: Es wird absichtlich kein API-Token
+gesendet. API 9 meldet ihre Version und Fähigkeiten auch in dieser Antwort.
+Der Check liest nur öffentliche Update-Dateien und API-Metadaten. Er lädt keine
+private HQ-Config, führt keine Staff-Aktion aus und setzt keinen Cache zurück.
+
+Falls der Check 404 zeigt: Er liegt nicht im aktiven Web-Hauptverzeichnis,
+oder der Webserver blockiert die Datei. Den Dokumentenstamm der Subdomain prüfen.
+Falls Dateien fehlen/abweichen: Den Upload vollständig überschreiben lassen.
+Falls die Dateien API 9 enthalten, aber die Antwort API 7 bleibt: PHP-FPM bzw.
+OPcache über Hosting/Support neu starten lassen. Browsercache löschen reicht
+für alten PHP-Bytecode nicht. Unterschiedliche GET-/POST-Versionen weisen auf
+abweichende Routen, Caches oder PHP-Worker hin.
+
+Sobald GET und POST API 9 sowie Journey-Unterstützung zeigen:
+Im SMP und gegebenenfalls Hub den eigenen Plugin-Befehl /trstaff reload ausführen
+(in der Konsole ohne /), danach /trstaff status. Dies startet den Versand ohne
+die alte 5-Minuten-Wartezeit neu. Es wird keine weitere JAR benötigt.
+
+Alle Pending-/Outbox-Dateien, Cursor, Audit-/Migrationsjournale, Token und
+Spielerdaten behalten. Connector 1.5.1 hat das Queue-Minimum bereits auf 50.000
+angehoben. JP, Käufe und Perks werden durch dieses Website-Paket nicht verändert.
+
+Nach erfolgreicher Prüfung können der Check und sein Manifest optional entfernt
+werden. Die normale API und das HQ benötigen sie nicht.
