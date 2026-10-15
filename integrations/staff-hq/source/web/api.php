@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+const STAFF_HQ_API_VERSION = 9;
+const STAFF_HQ_RELEASE = '5.2.1';
+
 try {
     require_once __DIR__ . '/app/bootstrap.php';
 } catch (Throwable $error) {
@@ -12,12 +15,12 @@ try {
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
-header('X-TR-API-Version: 8');
+header('X-TR-API-Version: '.STAFF_HQ_API_VERSION);
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
         db()->query('SELECT 1');
-        apiResponse(200, ['status' => 'ok', 'service' => 'Towny Reborn Staff API', 'version' => 8, 'batch' => true, 'remote_actions' => true, 'validation_details' => true, 'priority_heartbeat'=>true, 'journey'=>true]);
+        apiResponse(200, ['status' => 'ok', 'service' => 'Towny Reborn Staff API', 'version' => STAFF_HQ_API_VERSION, 'batch' => true, 'remote_actions' => true, 'validation_details' => true, 'priority_heartbeat'=>function_exists('apiConnectorHeartbeat'), 'journey'=>apiCapabilities()['journey']]);
     } catch (Throwable) {
         apiResponse(503, ['status' => 'unavailable']);
     }
@@ -586,8 +589,18 @@ function apiDate(string $value): string
     return date('Y-m-d H:i:s', $timestamp);
 }
 
+function apiCapabilities(): array
+{
+    return ['batch'=>true,'validation_details'=>true,
+        'priority_heartbeat'=>function_exists('apiConnectorHeartbeat'),
+        'journey'=>function_exists('gameSnapshotPlugins') && in_array('TownyRebornProgression',gameSnapshotPlugins(),true)];
+}
+
 function apiResponse(int $status, array $body): never
 {
+    $body['api_version'] = STAFF_HQ_API_VERSION;
+    $body['release'] = STAFF_HQ_RELEASE;
+    $body['capabilities'] = apiCapabilities();
     http_response_code($status);
     $encoded=json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     header('Content-Length: '.strlen((string)$encoded));

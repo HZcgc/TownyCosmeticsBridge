@@ -14,8 +14,8 @@ if not (data/'mysql/global_priv.MAD').exists():
  sql='CREATE DATABASE IF NOT EXISTS mysql;\nUSE mysql;\n'+(r/'usr/share/mysql/mysql_system_tables.sql').read_text()
  p=subprocess.run(base+['--bootstrap','--skip-grant-tables','--skip-log-bin'],input=sql,text=True,env=env,capture_output=True,timeout=50)
  if p.returncode:raise RuntimeError(p.stderr[-4000:])
-dbenv=env.copy();dbenv['LD_PRELOAD']=str(r/'socketshim.so')
-dblog=open(r/'db.log','w');dbproc=subprocess.Popen(base+['--skip-grant-tables','--skip-log-bin','--bind-address=127.0.0.1','--port=43293','--socket='+str(r/'test.sock'),'--pid-file='+str(r/'test.pid'),'--innodb-buffer-pool-size=64M'],env=dbenv,stdout=dblog,stderr=dblog)
+dbenv=env.copy()  # The fixture clients use TCP; no Unix socket or preload shim is required.
+dblog=open(r/'db.log','w');dbproc=subprocess.Popen(base+['--skip-grant-tables','--skip-log-bin','--bind-address=127.0.0.1','--port=43293','--socket=','--pid-file='+str(r/'test.pid'),'--innodb-buffer-pool-size=64M'],env=dbenv,stdout=dblog,stderr=dblog)
 http=None
 
 def check(name,value):
@@ -70,7 +70,24 @@ try:
   try:
    status,body,h=req('api.php');break
   except Exception:time.sleep(.1)
- check('Real API health / schema migration',status==200 and json.loads(body)['version']==8 and scalar("SELECT setting_value FROM settings WHERE setting_key='schema.version'")=='11')
+ check('Real API health / schema migration',status==200 and json.loads(body)['version']==9 and scalar("SELECT setting_value FROM settings WHERE setting_key='schema.version'")=='11')
+
+ health=json.loads(body)
+ check('API capability survives stripped version headers',health['api_version']==9 and health['release']=='5.2.1' and health['capabilities']['journey'] is True)
+ unauthorized=post(event('player.join',uuid=u,username='Tester'),'tr_live_invalid')
+ check('Even unauthorized JSON reports the executed API release',unauthorized[0]==401 and unauthorized[1]['api_version']==9 and unauthorized[1]['release']=='5.2.1')
+ invalid=post({'events':[]})
+ check('Validation JSON includes API and real Journey capability',invalid[0]==422 and invalid[1]['api_version']==9 and invalid[1]['capabilities']['journey'] is True)
+ gamefile=web/'app/game-insights.php';gamecode=gamefile.read_text()
+ try:
+  gamefile.write_text(gamecode.replace(",'TownyRebornProgression']", "]"))
+  partial=json.loads(req('api.php')[1])
+  check('Partial deployment is not advertised as Journey capable',partial['version']==9 and partial['journey'] is False and partial['capabilities']['journey'] is False)
+  rejected=post(event('integration.snapshot',plugin='TownyRebornProgression',snapshot_key='profile.fixture',data={'points':150}))
+  check('Partial deployment rejection explains real capability in JSON',rejected[0]==422 and rejected[1]['validation_error']=='invalid_integration_snapshot' and rejected[1]['api_version']==9 and rejected[1]['capabilities']['journey'] is False)
+ finally:
+  gamefile.write_text(gamecode)
+ check('Complete deployment re-enables Journey capability',json.loads(req('api.php')[1])['capabilities']['journey'] is True)
  check('Unknown bearer rejected',post(event('player.join',uuid=u,username='Tester'),'tr_live_invalid')[0]==401)
  check('Join accepted',post(event('player.join',uuid=u,username='Tester',platform='java'))[0]==202)
  check('Hub join accepted',post(event('player.join',uuid=u,username='Tester',server='hub'))[0]==202)

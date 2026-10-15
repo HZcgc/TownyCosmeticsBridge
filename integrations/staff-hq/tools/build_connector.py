@@ -15,7 +15,7 @@ source=ROOT/'source/connector'
 dependencies=sorted(f for f in a.deps.rglob('*.jar') if zipfile.is_zipfile(f))
 cp=':'.join(map(str,dependencies));classes=Path(tempfile.mkdtemp(prefix='classes-',dir=a.output));tests=Path(tempfile.mkdtemp(prefix='tests-',dir=a.output))
 subprocess.run([str(a.jdk/'javac'),'--release','17','-cp',cp,'-d',str(classes),*map(str,sorted((source/'src/main/java').rglob('*.java'))),*map(str,sorted((source/'stubs').rglob('*.java')))],check=True)
-jar=a.output/'TownyRebornStaffConnector-1.5.0.jar'
+jar=a.output/'TownyRebornStaffConnector-1.5.1.jar'
 with zipfile.ZipFile(jar,'w',zipfile.ZIP_DEFLATED) as archive:
  for folder in [classes,source/'src/main/resources']:
   for f in sorted(folder.rglob('*')):
@@ -28,7 +28,8 @@ r=subprocess.run([str(a.jdk/'java'),'-Xverify:all','-jar',str(a.junit),'execute'
 if r.returncode:raise SystemExit(r.returncode)
 successful=re.search(r'\[\s*(\d+) tests successful',r.stdout)
 skipped=re.search(r'\[\s*(\d+) tests skipped',r.stdout)
-(a.output/'verification.json').write_text(json.dumps({'tests_successful':int(successful[1]),'tests_skipped':int(skipped[1])}))
+aborted=re.search(r'\[\s*(\d+) tests aborted',r.stdout)
+(a.output/'verification.json').write_text(json.dumps({'tests_successful':int(successful[1]),'tests_skipped':int(skipped[1]),'tests_aborted':int(aborted[1])}))
 if a.journey_jar:
  with zipfile.ZipFile(a.journey_jar) as archive:(a.output/'journey-config.yml').write_bytes(archive.read('config.yml'))
  bridgecp=testcp+':'+str(a.journey_jar)

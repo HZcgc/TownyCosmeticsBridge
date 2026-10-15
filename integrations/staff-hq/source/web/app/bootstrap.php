@@ -520,13 +520,13 @@ function renderAuthPage(string $title, string $content): void
         <meta name="theme-color" content="#090c13">
         <title><?= e($title) ?> · Towny Reborn Staff</title>
         <link rel="icon" type="image/png" href="assets/favicon.png?v=4.1.0">
-        <script src="assets/preferences.js?v=5.2.0"></script>
-        <link rel="stylesheet" href="assets/app.css?v=5.2.0">
-        <link rel="stylesheet" href="assets/workspace.css?v=5.2.0">
-        <link rel="stylesheet" href="assets/experience.css?v=5.2.0">
-        <script src="assets/workspace.js?v=5.2.0" defer></script>
-        <script src="assets/app.js?v=5.2.0" defer></script>
-        <script src="assets/experience.js?v=5.2.0" defer></script>
+        <script src="assets/preferences.js?v=5.2.1"></script>
+        <link rel="stylesheet" href="assets/app.css?v=5.2.1">
+        <link rel="stylesheet" href="assets/workspace.css?v=5.2.1">
+        <link rel="stylesheet" href="assets/experience.css?v=5.2.1">
+        <script src="assets/workspace.js?v=5.2.1" defer></script>
+        <script src="assets/app.js?v=5.2.1" defer></script>
+        <script src="assets/experience.js?v=5.2.1" defer></script>
     </head>
     <body class="auth-body">
         <main class="auth-shell">
@@ -563,13 +563,13 @@ function renderAppPage(string $title, string $activePage, string $content): void
         <meta name="theme-color" content="#090c13">
         <title><?= e($title) ?> · Towny Reborn Staff</title>
         <link rel="icon" type="image/png" href="assets/favicon.png?v=4.1.0">
-        <script src="assets/preferences.js?v=5.2.0"></script>
-        <link rel="stylesheet" href="assets/app.css?v=5.2.0">
-        <link rel="stylesheet" href="assets/workspace.css?v=5.2.0">
-        <link rel="stylesheet" href="assets/experience.css?v=5.2.0">
-        <script src="assets/workspace.js?v=5.2.0" defer></script>
-        <script src="assets/app.js?v=5.2.0" defer></script>
-        <script src="assets/experience.js?v=5.2.0" defer></script>
+        <script src="assets/preferences.js?v=5.2.1"></script>
+        <link rel="stylesheet" href="assets/app.css?v=5.2.1">
+        <link rel="stylesheet" href="assets/workspace.css?v=5.2.1">
+        <link rel="stylesheet" href="assets/experience.css?v=5.2.1">
+        <script src="assets/workspace.js?v=5.2.1" defer></script>
+        <script src="assets/app.js?v=5.2.1" defer></script>
+        <script src="assets/experience.js?v=5.2.1" defer></script>
     </head>
     <body class="app-body" data-session-timeout="3600" data-csrf-token="<?= e(csrfToken()) ?>">
         <button class="mobile-menu" type="button" data-menu-toggle aria-label="Open navigation" aria-controls="hq-navigation" aria-expanded="false">Menu</button>

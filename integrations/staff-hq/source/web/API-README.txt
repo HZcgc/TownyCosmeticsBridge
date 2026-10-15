@@ -145,3 +145,15 @@ POST connector.heartbeat as an operation, authenticated with the existing connec
 TownyRebornProgression is an accepted integration.snapshot source. Its catalog and player.<UUID> snapshots are current state. Stable game.event receipts distinguish source JP, historical restoration, level changes, purchase unlocks, ownership, confirmed debits, delivered purchases and reward claims. Do not add snapshot totals to new-event counters. The existing event ledger deduplicates replayed receipts permanently.
 
 HTTP 500/502 means HQ/API delivery failed, not proof of an offline Minecraft server. Missing liveness is shown as Status unknown. Heartbeat/connector incidents have one notification per sustained incident and a recovery after two healthy minutes. New safe error references correlate API processing/storage faults with the private PHP log without disclosing SQL content or tokens.
+
+
+API 9 / HQ 5.2.1: queue and deployment compatibility hotfix
+Every JSON response now includes api_version, release and capabilities, including
+HTTP 401/422/500. Header X-TR-API-Version remains available but is not required by
+the connector. GET api.php returns version=9, release=5.2.1 and journey=true only
+when the loaded gameSnapshotPlugins() whitelist actually supports Journey. A
+partial or stale PHP deployment is reported as journey=false. This does not
+change token validation, accepted event limits, stable IDs or game ownership.
+Connector 1.5.1 retains unknown/unsupported Journey snapshots, checks the exact
+identified failing event, and can use the real GET health response for API 8
+hosts stripping custom headers. Existing retry queues are not cleared.

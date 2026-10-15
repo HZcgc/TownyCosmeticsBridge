@@ -57,6 +57,8 @@ final class PortalClient implements AutoCloseable {
     private int effectiveBatchSize;
     private int actionPollFailures;
     private boolean isolatingInvalidEvent;
+    private volatile PortalCompatibility portalCompatibility = PortalCompatibility.UNKNOWN;
+    private long nextCompatibilityProbeNanos;
 
     PortalClient(Path dataFolder, Settings settings, Logger logger, Consumer<RemoteAction> remoteActionHandler) throws IOException {
         this.settings = settings;
@@ -128,7 +130,7 @@ final class PortalClient implements AutoCloseable {
             size = queue.size();
         }
         return new Status(settings.hasUsableToken(), settings.endpoint().toString(), settings.serverName(), size,
-                state, lastHttpStatus, lastSuccess);
+                state, lastHttpStatus, lastSuccess, settings.maximumQueuedEvents(), portalCompatibility.apiVersion());
     }
 
     void reportActionResult(long actionId, boolean succeeded, String message) {
@@ -224,7 +226,7 @@ final class PortalClient implements AutoCloseable {
                 .header("X-API-Token", settings.token())
                 .header("Content-Type", "application/json; charset=utf-8")
                 .header("Accept", "application/json")
-                .header("User-Agent", "TownyRebornStaffConnector/1.5.0")
+                .header("User-Agent", "TownyRebornStaffConnector/1.5.1")
                 .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
                 .build();
     }
@@ -304,11 +306,12 @@ final class PortalClient implements AutoCloseable {
         Map<String,Object> health=new LinkedHashMap<>();
         if(captured.get("metadata") instanceof Map<?,?> metadata)for(var entry:metadata.entrySet())health.put(String.valueOf(entry.getKey()),entry.getValue());
         health.put("connection_state",state);health.put("last_http_status",lastHttpStatus);
-        health.put("queued_events",status().queuedEvents());health.put("last_success",lastSuccess==null?null:lastSuccess.toString());
+        health.put("queued_events",status().queuedEvents());health.put("queue_capacity",settings.maximumQueuedEvents());health.put("last_success",lastSuccess==null?null:lastSuccess.toString());
         request.put("metadata",health);
         try {
             HttpResponse<String> response=httpClient.send(apiRequest(Json.encode(request)),HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             Map<?,?> result=responseObject(response.body());
+            observeCompatibility(response, result);
             if(response.statusCode()>=200 && response.statusCode()<300 && Boolean.TRUE.equals(result.get("heartbeat"))) {
                 lastHeartbeatSuccess=Instant.now();nextHeartbeatNanos=System.nanoTime()+TimeUnit.SECONDS.toNanos(15);
             } else nextHeartbeatNanos=System.nanoTime()+TimeUnit.SECONDS.toNanos(response.statusCode()>=500?60:180);
@@ -339,13 +342,14 @@ final class PortalClient implements AutoCloseable {
                 .header("X-TR-Protocol", "batch-v1")
                 .header("Content-Type", "application/json; charset=utf-8")
                 .header("Accept", "application/json")
-                .header("User-Agent", "TownyRebornStaffConnector/1.5.0")
+                .header("User-Agent", "TownyRebornStaffConnector/1.5.1")
                 .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
                 .build();
 
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             lastHttpStatus = response.statusCode();
+            observeCompatibility(response, responseObject(response.body()));
             if (response.statusCode() >= 200 && response.statusCode() < 300 && acknowledgesBatch(response.body(), batch.size())) {
                 removeBatch(batch);
                 lastSuccess = Instant.now();
@@ -441,24 +445,67 @@ final class PortalClient implements AutoCloseable {
         return true; // Earlier portals acknowledge the whole batch with accepted=true.
     }
 
+    private PortalCompatibility observeCompatibility(HttpResponse<String> response, Map<?, ?> result) {
+        PortalCompatibility reported = PortalCompatibility.read(
+                response.headers().firstValue("X-TR-API-Version").orElse(""), result);
+        if (reported.known()) portalCompatibility = reported;
+        return reported;
+    }
+
+    private PortalCompatibility validationCompatibility(HttpResponse<String> response, Map<?, ?> result) {
+        PortalCompatibility reported = observeCompatibility(response, result);
+        if (reported.known()) return reported;
+        if (System.nanoTime() >= nextCompatibilityProbeNanos) {
+            nextCompatibilityProbeNanos = System.nanoTime() + TimeUnit.SECONDS.toNanos(60);
+            try {
+                HttpRequest healthRequest = HttpRequest.newBuilder(settings.endpoint())
+                        .timeout(settings.requestTimeout()).header("Accept", "application/json")
+                        .header("Cache-Control", "no-cache")
+                        .header("User-Agent", "TownyRebornStaffConnector/1.5.1").GET().build();
+                HttpResponse<String> health = httpClient.send(healthRequest, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+                Map<?, ?> body = responseObject(health.body());
+                if (health.statusCode() == 200 && "Towny Reborn Staff API".equals(body.get("service"))
+                        && "ok".equals(body.get("status"))) observeCompatibility(health, body);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+            } catch (IOException | RuntimeException unavailable) {
+                // No event is acknowledged or removed by a capability probe.
+            }
+        }
+        return portalCompatibility;
+    }
+
     private void handleValidationFailure(HttpResponse<String> response, List<String> batch) {
         Map<?, ?> result = responseObject(response.body());
         String error = safeCode(result.get("error"));
         String validation = safeCode(result.get("validation_error"));
-        long apiVersion;
-        try {
-            apiVersion = Long.parseLong(response.headers().firstValue("X-TR-API-Version").orElse("0"));
-        } catch (NumberFormatException ignored) {
-            apiVersion = 0;
+        PortalCompatibility compatibility = validationCompatibility(response, result);
+        long rejectedIndex = number(result.get("event_index"), -1);
+        Map<?, ?> rejected = rejectedIndex >= 0 && rejectedIndex < batch.size()
+                ? responseObject(batch.get((int) rejectedIndex)) : Map.of();
+        boolean rejectionIdentified = !rejected.isEmpty()
+                && !text(rejected.get("event_id")).isEmpty()
+                && text(rejected.get("event_id")).equals(text(result.get("event_id")))
+                && text(rejected.get("type")).equals(text(result.get("event_type")));
+        boolean journeySnapshot = rejectionIdentified && JourneyInsights.PLUGIN.equals(rejected.get("plugin"))
+                && "integration.snapshot".equals(rejected.get("type"));
+        if (journeySnapshot && "invalid_integration_snapshot".equals(validation)
+                && validJourneySnapshotEnvelope(rejected) && !compatibility.journeyUnavailable() && compatibility.known()) {
+            registerHttpFailure(response.statusCode(), 300, "HQ API " + compatibility.apiVersion()
+                    + " rejected a valid Journey snapshot envelope; check the complete website update and stale PHP code; queue retained");
+            return;
         }
-        if(apiVersion<8 && batch.stream().map(PortalClient::responseObject)
-            .anyMatch(event->JourneyInsights.PLUGIN.equals(event.get("plugin")))) {
-            registerHttpFailure(response.statusCode(),300,"Journey telemetry needs Staff HQ API 8; install the website update first; queue retained");
+        if (journeySnapshot && ("invalid_integration_snapshot".equals(validation) || "unsupported_event_type".equals(validation))
+                && (compatibility.journeyUnavailable() || !compatibility.known())) {
+            String capability = compatibility.known()
+                    ? "HQ API " + compatibility.apiVersion() + " does not support Journey snapshots; install the complete Staff HQ website update (API 8 or newer)"
+                    : "HQ capability could not be verified; install/check the complete Staff HQ website update";
+            registerHttpFailure(response.statusCode(), 300, "Journey snapshot rejected (" + validation + "); " + capability + "; queue retained");
             return;
         }
         if (response.statusCode() == 422 && "invalid_event_data".equals(error)) {
-            if (apiVersion < 6 || validation.isEmpty()) {
-                registerHttpFailure(422, 300, "portal rejected event data; install the Staff 1.3.1 website API fix; queue retained");
+            if ((compatibility.apiVersion() > 0 && compatibility.apiVersion() < 6) || validation.isEmpty()) {
+                registerHttpFailure(422, 300, "portal rejected event data without usable validation details; check the Staff HQ API update; queue retained");
                 return;
             }
             if ("unsupported_event_type".equals(validation)) {
@@ -509,6 +556,14 @@ final class PortalClient implements AutoCloseable {
         String detail = "portal rejected request (HTTP " + response.statusCode()
                 + (error.isEmpty() ? "" : ", " + error) + "); queue retained";
         registerHttpFailure(response.statusCode(), 300, detail);
+    }
+
+    private static boolean validJourneySnapshotEnvelope(Map<?, ?> event) {
+        Object key = event.containsKey("snapshot_key") ? event.get("snapshot_key") : "catalog";
+        Object data = event.get("data");
+        return key instanceof String value && value.matches("[a-zA-Z0-9_.:-]{1,96}")
+                && (data instanceof Map<?, ?> || data instanceof List<?>)
+                && Json.encode(data).getBytes(StandardCharsets.UTF_8).length <= 240_000;
     }
 
     private static String safeCode(Object value) {
@@ -619,7 +674,7 @@ final class PortalClient implements AutoCloseable {
     }
 
     record Status(boolean tokenConfigured, String endpoint, String serverName, int queuedEvents,
-                  String state, int lastHttpStatus, Instant lastSuccess) {
+                  String state, int lastHttpStatus, Instant lastSuccess, int queueCapacity, int apiVersion) {
     }
 
     record RemoteAction(long id, String type, String playerUuid, String playerName, String reason,

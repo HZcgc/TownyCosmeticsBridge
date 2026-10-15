@@ -11,7 +11,9 @@ portal:
   # so a small shared Plesk webspace cannot be flooded by the SMP.
   flush-interval-seconds: 15
   batch-size: 20
-  maximum-queued-events: 5000
+  # Effective minimum is 50,000, including older configs still containing 5,000.
+  # Higher capacities up to 500,000 can be configured; existing queues are retained.
+  maximum-queued-events: 50000
 
 tracking:
   # Permanent crate, voting, shop, pet, Dragon and fishing analytics (read only).

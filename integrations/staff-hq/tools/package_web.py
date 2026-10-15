@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the public HQ 5.2.0 webspace update, excluding user configuration/data."""
+"""Build the complete HQ 5.2.1 webspace update, excluding user configuration/data."""
 from __future__ import annotations
 
 import argparse
@@ -8,7 +8,7 @@ from pathlib import Path
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-NAME = "TownyReborn-StaffHQ-5.2.0-Journey.zip"
+NAME = "TownyReborn-StaffHQ-5.2.1-API9.zip"
 EXCLUDED = {"config/config.php", "config/notifications.php"}
 
 
@@ -23,9 +23,9 @@ def build(destination: Path) -> tuple[int, str]:
             continue
         entries["WEBSPACE-UPDATE/" + relative] = path.read_bytes()
     for archive_name, source in {
-        "INSTALL-DE.md": "docs/INSTALL-5.2.0-DE.md",
-        "UI-CHANGES.md": "docs/UI-CHANGES-5.2.0.md",
-        "VALIDATION.md": "docs/VALIDATION-5.2.0.md",
+        "INSTALL-DE.md": "docs/INSTALL-5.2.1-DE.md",
+        "UI-CHANGES.md": "docs/UI-CHANGES-5.2.1.md",
+        "VALIDATION.md": "docs/VALIDATION-5.2.1.md",
         "STAFF-GUIDE.md": "docs/STAFF-GUIDE.md",
         "ROLE-PERMISSIONS.md": "docs/ROLE-PERMISSIONS.md",
     }.items():
@@ -36,7 +36,7 @@ def build(destination: Path) -> tuple[int, str]:
     destination.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(destination, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for name, data in sorted(entries.items()):
-            info = zipfile.ZipInfo(name, date_time=(2026, 10, 14, 0, 0, 0))
+            info = zipfile.ZipInfo(name, date_time=(2026, 10, 15, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o100644 << 16
             archive.writestr(info, data)

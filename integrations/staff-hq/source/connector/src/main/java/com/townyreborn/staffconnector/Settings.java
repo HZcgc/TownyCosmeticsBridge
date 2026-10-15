@@ -36,6 +36,9 @@ record Settings(
         boolean includeCommandArguments,
         Set<String> auditedCommands
 ) {
+    static final int MINIMUM_QUEUED_EVENTS = 50_000;
+    static final int MAXIMUM_QUEUED_EVENTS = 500_000;
+
     static Settings load(JavaPlugin plugin) {
         FileConfiguration config = plugin.getConfig();
         URI endpoint;
@@ -74,7 +77,7 @@ record Settings(
                 Duration.ofSeconds(bound(config.getInt("portal.request-timeout-seconds", 10), 3, 60)),
                 bound(config.getInt("portal.flush-interval-seconds", 15), 10, 300),
                 bound(config.getInt("portal.batch-size", 20), 1, 25),
-                bound(config.getInt("portal.maximum-queued-events", 5000), 100, 50_000),
+                queueLimit(config.getInt("portal.maximum-queued-events", MINIMUM_QUEUED_EVENTS)),
                 bound(config.getInt("player-sync-interval-seconds", 300), 30, 3600),
                 bound(config.getInt("server-snapshot-interval-seconds", 60), 30, 900),
                 bound(config.getInt("remote-actions.poll-interval-seconds", 10), 5, 60),
@@ -96,6 +99,10 @@ record Settings(
 
     boolean hasUsableToken() {
         return token.startsWith("tr_live_") && token.length() >= 24 && !token.contains("PASTE_");
+    }
+
+    static int queueLimit(int configured) {
+        return bound(configured, MINIMUM_QUEUED_EVENTS, MAXIMUM_QUEUED_EVENTS);
     }
 
     private static int bound(int value, int minimum, int maximum) {

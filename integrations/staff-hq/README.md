@@ -1,6 +1,6 @@
-# Towny Reborn Staff HQ 5.2.0
+# Towny Reborn Staff HQ 5.2.1
 
-English PHP/MySQL staff portal with Paper connector 1.5.0 and durable Journey beta.9 integration. HQ 5.2.0 uses API 8 and additive schema 11. Journey progress, retained unlocks, actual debits and reward evidence are visible directly in the dashboard and player profiles. A priority heartbeat separates server liveness from delayed HQ uploads. Keep existing production configuration, database, storage, migration journals and connector queues.
+English PHP/MySQL staff portal with Paper connector 1.5.1 and durable Journey beta.9 integration. HQ 5.2.1 uses API 9 and additive schema 11. Journey progress, retained unlocks, actual debits and reward evidence are visible directly in the dashboard and player profiles. A priority heartbeat separates server liveness from delayed HQ uploads. Keep existing production configuration, database, storage, migration journals and connector queues.
 
 Earlier pointer-following charts, document-backed staff guidance, themes and once-only role presets remain available. Existing role customisations are preserved by the 5.2.0 migration.
 
@@ -29,3 +29,15 @@ The requested Helper/Moderator/Admin defaults are applied once during upgrade; l
 ## 5.2.0: Journey and API health
 
 Adds direct Journey navigation, profile snapshots, source JP, historical credit, purchase eligibility, confirmed payments, reward command receipts and replay-safe aggregates. Connector 1.5.0 consumes Journey beta.9 durable audit receipts. Existing journals and permanent purchases remain authoritative. A small priority heartbeat distinguishes live game-server reports from delayed event delivery. HTTP failure warnings use a stability window rather than restarting on every short successful response. See docs/INSTALL-5.2.0-DE.md.
+
+
+## 5.2.1: HTTP 422 compatibility and queue capacity
+
+The executed PHP release and real Journey capability are included in JSON, even
+when a host strips custom headers. Connector 1.5.1 identifies the exact rejected
+event instead of treating any Journey entry in a mixed batch as an old API.
+Unknown or unsupported Journey snapshots remain queued; actual invalid entries
+are individually archived only after a matching validation response. Old config
+limits of 5,000 are raised to an effective minimum of 50,000 without rewriting
+tokens or configuration. Higher configured limits up to 500,000 are supported;
+existing larger queues are never truncated. See docs/INSTALL-5.2.1-DE.md.

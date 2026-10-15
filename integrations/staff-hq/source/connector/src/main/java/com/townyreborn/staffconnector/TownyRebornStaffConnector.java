@@ -110,6 +110,8 @@ public final class TownyRebornStaffConnector extends JavaPlugin implements Liste
         try {
             if (reload) reloadConfig();
             settings = Settings.load(this);
+            if (getConfig().getInt("portal.maximum-queued-events", Settings.MINIMUM_QUEUED_EVENTS) < Settings.MINIMUM_QUEUED_EVENTS)
+                getLogger().info("Staff Portal queue capacity raised to 50,000 for this older config; endpoint, token and queued events are retained.");
             portal = new PortalClient(getDataFolder().toPath(), settings, getLogger(), this::queueRemoteAction);
             portal.start();
         } catch (IllegalArgumentException | IOException exception) {
@@ -986,7 +988,8 @@ public final class TownyRebornStaffConnector extends JavaPlugin implements Liste
         sender.sendMessage("[TR Staff] Server: " + status.serverName());
         sender.sendMessage("[TR Staff] Endpoint: " + status.endpoint());
         sender.sendMessage("[TR Staff] API token configured: " + (status.tokenConfigured() ? "yes" : "NO"));
-        sender.sendMessage("[TR Staff] State: " + status.state() + " | queued: " + status.queuedEvents());
+        sender.sendMessage("[TR Staff] State: " + status.state() + " | queued: " + status.queuedEvents() + " / " + status.queueCapacity());
+        sender.sendMessage("[TR Staff] HQ API: " + (status.apiVersion() > 0 ? status.apiVersion() : "not yet verified"));
         if (status.lastHttpStatus() > 0) sender.sendMessage("[TR Staff] Last HTTP status: " + status.lastHttpStatus());
         if (status.lastSuccess() != null) sender.sendMessage("[TR Staff] Last success: " + status.lastSuccess());
         for (Map.Entry<String, String> integration : integrations.entrySet()) {
