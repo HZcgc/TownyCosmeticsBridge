@@ -1,4 +1,4 @@
-# Permanent rank features — beta.8
+# Permanent rank features — 2.0.0
 
 Features are individual permanent purchases. Already owned features remain owned after historical points restoration. Fly needs the last Journey level for new eligibility; previous purchase unlocks survive the restart. Tier tabs are labels, not paid LP groups.
 The existing 43 prices remain around 25% lower in aggregate than Beta.4; the new eGlow feature costs $20,000. Existing purchases remain paid; historical receipts retain their original amounts. `Flight in all towns` grants only `townyflight.alltowns`: `/tfly` works inside towns and ends on entering wilderness. It unlocks at Level 86 and costs $110,000; unrestricted `/fly` remains Level 116. The internal `town_flight_bypass` ID is retained for purchase continuity. Existing direct permanent perk bypass grants are migrated to town-only access; independent staff/supporter group and `/fly` access are preserved. Own-town `/tfly` remains Level 12.

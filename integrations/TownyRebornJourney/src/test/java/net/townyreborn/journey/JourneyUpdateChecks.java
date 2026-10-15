@@ -42,6 +42,7 @@ public final class JourneyUpdateChecks {
     static final class Gui implements AutoCloseable {
         final Map<ItemStack,Tile> tiles=new IdentityHashMap<>(); final Map<Inventory,Map<Integer,ItemStack>> inventories=new IdentityHashMap<>();
         final Inventory[] current={mock(Inventory.class)};
+        final ArrayDeque<Runnable> tasks=new ArrayDeque<>();
         final MockedStatic<Bukkit> bukkit=mockStatic(Bukkit.class);
         final RebornPlugin plugin=mock(RebornPlugin.class); final Player player=mock(Player.class); final Menu menu;
         Gui() throws Exception {
@@ -57,6 +58,9 @@ public final class JourneyUpdateChecks {
             when(plugin.integrations.jobsLevels(player)).thenReturn(Map.of("job:Miner",15L));
             when(player.getStatistic(Statistic.FISH_CAUGHT)).thenReturn(123);
             Server server=mock(Server.class);when(plugin.getServer()).thenReturn(server);doReturn(List.of(player)).when(server).getOnlinePlayers();
+            when(plugin.isEnabled()).thenReturn(true);
+            BukkitScheduler scheduler=mock(BukkitScheduler.class);when(server.getScheduler()).thenReturn(scheduler);
+            doAnswer(call->{tasks.add(call.getArgument(1));return null;}).when(scheduler).runTask(eq(plugin),any(Runnable.class));
             bukkit.when(Bukkit::getTPS).thenReturn(new double[]{19.8,19.9,20});
             doAnswer(a-> { ItemStack item=mock(ItemStack.class);when(item.getItemMeta()).thenReturn(mock(ItemMeta.class));tiles.put(item,new Tile(a.getArgument(0),a.getArgument(1),List.copyOf(a.getArgument(2))));return item; })
                 .when(menu).item(any(Material.class),anyString(),anyList());
@@ -113,7 +117,7 @@ public final class JourneyUpdateChecks {
             require(journey.remainingPercent(journey.threshold(116))==0&&journey.remaining(journey.threshold(116),116)==0);
         });
         test("abbreviations match title boundaries",()->{
-            require(journey.abbreviation(1).equals("J001")&&journey.abbreviation(4).equals("J004")&&journey.abbreviation(17).equals("J017")&&journey.abbreviation(116).equals("J116"));
+            require(journey.abbreviation(1).equals("1NEW")&&journey.abbreviation(4).equals("4TRV")&&journey.abbreviation(17).equals("17PTH")&&journey.abbreviation(116).equals("116RLG"));
         });
         Path sourceRoot=Path.of(args[4]);
         test("updated catalogue preserves permission chains and stable reward IDs with authorised lower prices and final flight gates",()->{
@@ -287,7 +291,8 @@ public final class JourneyUpdateChecks {
                 require(gui.text(16).contains("Glow colours and effects")&&gui.text(16).contains("20,000")&&gui.text(16).contains("Level &d88"));
             });
             test("rank tab click opens the selected tier",()->{
-                gui.menu.perks(gui.player,0,0);var event=mock(InventoryClickEvent.class);InventoryView open=gui.player.getOpenInventory();when(event.getView()).thenReturn(open);when(event.getWhoClicked()).thenReturn(gui.player);when(event.getRawSlot()).thenReturn(4);gui.menu.click(event);
+                gui.menu.perks(gui.player,0,0);var event=mock(InventoryClickEvent.class);InventoryView open=gui.player.getOpenInventory();when(event.getView()).thenReturn(open);when(event.getWhoClicked()).thenReturn(gui.player);when(event.getRawSlot()).thenReturn(4);when(event.getClick()).thenReturn(ClickType.LEFT);gui.menu.click(event);
+                require(gui.view().page==0&&gui.tasks.size()==1);gui.tasks.remove().run();
                 require(gui.view().page==4&&gui.text(17).contains("Personal flight"));
             });
             test("Quests bridge opens on the next tick and checks target access",()->{
@@ -300,8 +305,10 @@ public final class JourneyUpdateChecks {
                 task[0]=null;when(gui.plugin.access(gui.player)).thenReturn(false);gui.plugin.admin(console,new String[]{"open","TestPlayer"});require(task[0]==null);when(gui.plugin.access(gui.player)).thenReturn(true);
             });
             test("bottle click opens guide and cancels item movement",()->{
-                gui.menu.journey(gui.player,0);var event=mock(InventoryClickEvent.class);InventoryView open=gui.player.getOpenInventory();when(event.getView()).thenReturn(open);when(event.getWhoClicked()).thenReturn(gui.player);when(event.getRawSlot()).thenReturn(2);
-                gui.menu.click(event);verify(event).setCancelled(true);require(gui.view().type.equals("guide"));
+                BukkitScheduler scheduler=mock(BukkitScheduler.class);when(gui.plugin.getServer().getScheduler()).thenReturn(scheduler);
+                doAnswer(call->{gui.tasks.add(call.getArgument(1));return null;}).when(scheduler).runTask(eq(gui.plugin),any(Runnable.class));
+                gui.menu.journey(gui.player,0);var event=mock(InventoryClickEvent.class);InventoryView open=gui.player.getOpenInventory();when(event.getView()).thenReturn(open);when(event.getWhoClicked()).thenReturn(gui.player);when(event.getRawSlot()).thenReturn(2);when(event.getClick()).thenReturn(ClickType.LEFT);
+                gui.menu.click(event);verify(event).setCancelled(true);require(gui.view().type.equals("journey")&&gui.tasks.size()==1);gui.tasks.remove().run();require(gui.view().type.equals("guide"));
             });
             test("revoked access closes inventory and prevents further actions",()->{
                 when(gui.plugin.access(gui.player)).thenReturn(false);gui.menu.refresh(gui.player);verify(gui.player).closeInventory();

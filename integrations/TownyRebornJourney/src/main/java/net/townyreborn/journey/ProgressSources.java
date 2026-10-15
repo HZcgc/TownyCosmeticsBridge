@@ -63,12 +63,21 @@ final class ProgressSources implements Listener {
             var7.capped(DailyTime.today(), var2, var3, var5);
             int var9 = this.plugin.journey.level(var7.points);
             if (var9 > var8) {
-               this.plugin.store.save(var7);
+               this.persist(var7);
                this.plugin.levelReached(var1, var7, var8);
             }
          } catch (Exception var10) {
             this.plugin.profileError(var1, var10);
          }
+      }
+   }
+
+   private void persist(State state) throws Exception {
+      try {
+         this.plugin.store.save(state);
+      } catch (Exception error) {
+         state.blocked = true;
+         throw error;
       }
    }
 
@@ -144,7 +153,7 @@ final class ProgressSources implements Listener {
                   }
 
                   if (var5.dirty) {
-                     this.plugin.store.save(var5);
+                     this.persist(var5);
                   }
 
                   this.plugin.menu.refresh(var4);

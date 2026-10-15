@@ -1,0 +1,123 @@
+# Journey level codes
+
+TAB shows the Journey level followed by three unique letters from its English title.
+The rank colour still transitions from pink to lime. LP rank and attached mcMMO retain their order.
+
+| Level | Journey title | TAB label |
+|---:|---|---|
+| 1 | Newcomer | `[1NEW]` |
+| 2 | Drifter | `[2DRF]` |
+| 3 | Wanderer | `[3WAN]` |
+| 4 | Traveller | `[4TRV]` |
+| 5 | Wayfarer | `[5WAY]` |
+| 6 | Scout | `[6SCT]` |
+| 7 | Settler | `[7SET]` |
+| 8 | Resident | `[8RES]` |
+| 9 | Citizen | `[9CIT]` |
+| 10 | Homesteader | `[10HOM]` |
+| 11 | Gatherer | `[11GTH]` |
+| 12 | Forager | `[12FOR]` |
+| 13 | Harvester | `[13HRV]` |
+| 14 | Cultivator | `[14CUL]` |
+| 15 | Gardener | `[15GAR]` |
+| 16 | Trailblazer | `[16TRB]` |
+| 17 | Pathfinder | `[17PTH]` |
+| 18 | Ranger | `[18RAN]` |
+| 19 | Tracker | `[19TRK]` |
+| 20 | Explorer | `[20EXP]` |
+| 21 | Digger | `[21DIG]` |
+| 22 | Prospector | `[22PRS]` |
+| 23 | Miner | `[23MIN]` |
+| 24 | Excavator | `[24EXC]` |
+| 25 | Stoneworker | `[25STW]` |
+| 26 | Mason | `[26MAS]` |
+| 27 | Builder | `[27BLD]` |
+| 28 | Architect | `[28ARC]` |
+| 29 | Crafter | `[29CRF]` |
+| 30 | Artisan | `[30ART]` |
+| 31 | Apprentice | `[31APP]` |
+| 32 | Smith | `[32SMI]` |
+| 33 | Forgemaster | `[33FRG]` |
+| 34 | Tinkerer | `[34TNK]` |
+| 35 | Engineer | `[35ENG]` |
+| 36 | Inventor | `[36INV]` |
+| 37 | Angler | `[37ANG]` |
+| 38 | Fisher | `[38FSH]` |
+| 39 | Sailor | `[39SAI]` |
+| 40 | Navigator | `[40NAV]` |
+| 41 | Merchant | `[41MER]` |
+| 42 | Trader | `[42TRD]` |
+| 43 | Broker | `[43BRK]` |
+| 44 | Quartermaster | `[44QTM]` |
+| 45 | Steward | `[45STE]` |
+| 46 | Caretaker | `[46CAR]` |
+| 47 | Warden | `[47WAR]` |
+| 48 | Guardian | `[48GUA]` |
+| 49 | Defender | `[49DEF]` |
+| 50 | Sentinel | `[50SEN]` |
+| 51 | Adventurer | `[51ADV]` |
+| 52 | Voyager | `[52VOY]` |
+| 53 | Expeditioner | `[53EXD]` |
+| 54 | Pioneer | `[54PIO]` |
+| 55 | Frontiersman | `[55FRT]` |
+| 56 | Mountaineer | `[56MNT]` |
+| 57 | Cartographer | `[57CTG]` |
+| 58 | Discoverer | `[58DSC]` |
+| 59 | Scholar | `[59SCH]` |
+| 60 | Researcher | `[60RSC]` |
+| 61 | Sage | `[61SAG]` |
+| 62 | Lorekeeper | `[62LOR]` |
+| 63 | Alchemist | `[63ALC]` |
+| 64 | Enchanter | `[64ENC]` |
+| 65 | Spellweaver | `[65SPL]` |
+| 66 | Runekeeper | `[66RUN]` |
+| 67 | Veteran | `[67VET]` |
+| 68 | Seasoned Soul | `[68SSO]` |
+| 69 | Stalwart | `[69STL]` |
+| 70 | Vanguard | `[70VNG]` |
+| 71 | Commander | `[71CMD]` |
+| 72 | Marshal | `[72MAR]` |
+| 73 | Champion | `[73CHM]` |
+| 74 | Gladiator | `[74GLD]` |
+| 75 | Conqueror | `[75CON]` |
+| 76 | Vanquisher | `[76VAN]` |
+| 77 | Hero | `[77HRO]` |
+| 78 | Protector | `[78PRT]` |
+| 79 | Paragon | `[79PAR]` |
+| 80 | Luminary | `[80LUM]` |
+| 81 | Starwatcher | `[81SWC]` |
+| 82 | Stargazer | `[82SGZ]` |
+| 83 | Astronomer | `[83AST]` |
+| 84 | Celestial | `[84CEL]` |
+| 85 | Moonwalker | `[85MWK]` |
+| 86 | Dawnbringer | `[86DWN]` |
+| 87 | Sunseeker | `[87SUN]` |
+| 88 | Radiant | `[88RAD]` |
+| 89 | Emberkeeper | `[89EMB]` |
+| 90 | Flamewarden | `[90FLW]` |
+| 91 | Phoenix | `[91PHX]` |
+| 92 | Fireheart | `[92FHR]` |
+| 93 | Stormcaller | `[93STM]` |
+| 94 | Tempest | `[94TMP]` |
+| 95 | Thunderlord | `[95THR]` |
+| 96 | Skywarden | `[96SKY]` |
+| 97 | Earthkeeper | `[97ERT]` |
+| 98 | Worldshaper | `[98WSH]` |
+| 99 | Worldwalker | `[99WWK]` |
+| 100 | Worldkeeper | `[100WKP]` |
+| 101 | Mystic | `[101MYS]` |
+| 102 | Oracle | `[102ORC]` |
+| 103 | Seer | `[103SEE]` |
+| 104 | Visionary | `[104VIS]` |
+| 105 | Ethereal | `[105ETH]` |
+| 106 | Astral | `[106ASR]` |
+| 107 | Mythic | `[107MYT]` |
+| 108 | Ascendant | `[108ASC]` |
+| 109 | Exalted | `[109EXA]` |
+| 110 | Sovereign | `[110SOV]` |
+| 111 | Immortal | `[111IMM]` |
+| 112 | Eternal | `[112ETR]` |
+| 113 | Legend | `[113LEG]` |
+| 114 | Reborn Hero | `[114RHR]` |
+| 115 | Reborn Master | `[115RMS]` |
+| 116 | Reborn Legend | `[116RLG]` |

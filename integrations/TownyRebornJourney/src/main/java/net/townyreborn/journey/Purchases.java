@@ -114,12 +114,14 @@ public final class Purchases {
 
                      try {
                         this.store.save(var1);
-                        var3.accept("Permanently unlocked " + var2.name() + "!");
                      } catch (Exception var6x) {
                         var1.pending = paidReceipt;
                         var1.blocked = true;
                         var3.accept("The perk was granted. Its receipt needs a staff check.");
+                        return;
                      }
+                     // A disconnected UI cannot reopen an already committed purchase.
+                     var3.accept("Permanently unlocked " + var2.name() + "!");
                   }
                }
             }));
@@ -145,8 +147,15 @@ public final class Purchases {
             throw new IllegalArgumentException("Unknown receipt perk");
          }
 
-         var1.pending = new State.Purchase(var4.id(), "DEBITED", var1.pending.price(), var1.pending.balanceBefore(), var1.pending.created());
-         this.store.save(var1);
+         State.Purchase original = var1.pending;
+         var1.pending = new State.Purchase(var4.id(), "DEBITED", original.price(), original.balanceBefore(), original.created());
+         try {
+            this.store.save(var1);
+         } catch (Exception error) {
+            var1.pending = original;
+            var1.blocked = true;
+            throw error;
+         }
          this.finish(var1, var4, var3);
       } else {
          State.Purchase var7 = var1.pending;

@@ -19,8 +19,8 @@ public final class Journey {
 
     public Journey(ConfigurationSection config) {
         steps = config.getInt("journey.steps", 116);
-        base = config.getLong("journey.points-first", 30);
-        increase = config.getLong("journey.points-increase", 15);
+        base = config.getLong("journey.points-first", 150);
+        increase = config.getLong("journey.points-increase", 30);
         progressRevision = config.getString("journey.progress-revision", "");
         if (!progressRevision.isEmpty() && !progressRevision.matches("[a-z0-9_-]{1,80}"))
             throw new IllegalArgumentException("Invalid progress revision");
@@ -40,7 +40,7 @@ public final class Journey {
         titles.putIfAbsent(1, "Newcomer");
         for (var entry : titles.entrySet()) {
             String fallback = entry.getValue().replaceAll("[^A-Za-z0-9]", "").toUpperCase(Locale.ROOT);
-            fallback = fallback.substring(0, Math.min(3, fallback.length()));
+            fallback = entry.getKey() + fallback.substring(0, Math.min(3, fallback.length()));
             String abbreviation = config.getString("journey.short-titles." + entry.getKey(), fallback);
             if (!abbreviation.matches("[A-Za-z0-9]{1,8}")) throw new IllegalArgumentException("Invalid short title " + entry.getKey());
             abbreviations.put(entry.getKey(), abbreviation);

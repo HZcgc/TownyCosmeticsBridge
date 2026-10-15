@@ -1,4 +1,4 @@
-# Static TAB format: LP rank, Journey abbreviation, display name and attached small mcMMO.
+# Static TAB format: LP rank, Journey level/title code (e.g. [1NEW] / [116RLG]), display name and attached small mcMMO.
 # Header/footer, sorting, scoreboard, fake players and other TAB settings are unchanged.
 Owner:
   tabprefix: ' %luckperms_prefix%&r &7[%reborn_short_title_colored%&7]&r '

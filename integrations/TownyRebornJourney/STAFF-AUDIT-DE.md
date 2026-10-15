@@ -1,6 +1,6 @@
 # Journey und Staff HQ
 
-Benötigt: TownyRebornProgression 2.0.0-beta.9, TownyRebornStaffConnector 1.5.0 und Staff HQ 5.2.0 / API 8.
+Die stabile TownyRebornProgression 2.0.0 verwendet dasselbe Auditformat wie Beta 9. Der zuletzt installierte TownyRebornStaffConnector 1.5.1 und Staff HQ 5.2.1 / API 9 bleiben kompatibel. Für dieses Journey-Update müssen Connector und Website nicht erneut ersetzt werden. Ursprüngliche Mindestversionen des Auditformats: Journey Beta 9, Connector 1.5.0 und HQ 5.2.0 / API 8.
 
 ## Erfasste Daten
 

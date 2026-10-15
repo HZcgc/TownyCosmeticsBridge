@@ -1,3 +1,6 @@
 !releases/TownyRebornProgression-2.0.0-beta.1.jar
 !releases/TownyRebornProgression-2.0.0-beta.2.jar
 !releases/TownyRebornProgression-2.0.0-beta.3.jar
+!releases/TownyRebornProgression-2.0.0.jar
+__pycache__/
+*.pyc

@@ -173,6 +173,7 @@ public final class LongJourneyChecks {
             Journey oldJourney=new Journey(previous);double oldTotal=0,newTotal=0;
             for(String section:List.of("journey","sources"))for(String key:previous.getConfigurationSection(section).getKeys(true)) {
                 String path=section+"."+key;if(!previous.isConfigurationSection(path)) {
+                    if(path.startsWith("journey.short-titles."))continue; // Authorised level/title display change; StableReleaseChecks verifies every code.
                     if(path.equals("sources.quests.enabled"))require(config.getBoolean(path));
                     else require(Objects.equals(config.get(path),previous.get(path)));}}
             require(journey.gifts.equals(oldJourney.gifts));

@@ -14,7 +14,9 @@ with zipfile.ZipFile(a.jar) as jar:
     version = meta['version']
     assert jar.read('config.yml') == (ROOT/'src/main/resources/config.yml').read_bytes(), 'JAR/config mismatch'
 
-logs = {name: (a.verification/(name+'.log')).read_text() for name in ['original', 'rebuilt', 'update', 'long', 'permissions', 'history', 'quests', 'audit']}
+names = ['original', 'rebuilt', 'update', 'long', 'permissions', 'history', 'quests', 'audit', 'stable']
+if (a.verification/'uploaded.log').is_file(): names.append('uploaded')
+logs = {name: (a.verification/(name+'.log')).read_text() for name in names}
 counts = {}
 for name, log in logs.items():
     result = re.findall(r'^RESULT (\d+) .*checks passed$', log, re.M)
@@ -22,19 +24,20 @@ for name, log in logs.items():
     counts[name] = int(result[0])
     assert sum(line.startswith('PASS ') for line in log.splitlines()) == counts[name]
 assert logs['original'].split('RESULT')[0] == logs['rebuilt'].split('RESULT')[0], 'Reference/core scenarios disagree'
-total = counts['rebuilt'] + counts['update'] + counts['long'] + counts['permissions'] + counts['history'] + counts['quests'] + counts['audit']
+current = [name for name in names if name != 'original']
+total = sum(counts[name] for name in current)
 report = f'''Towny Reborn Journey {version}
 
-Current build: {total} scenarios passed ({counts['rebuilt']} recovery + {counts['update']} menu/update + {counts['long']} long-Journey/migration + {counts['permissions']} permission-import + {counts['history']} historical-credit + {counts['quests']} quest/eGlow + {counts['audit']} durable Staff audit).
+Current build: {total} scenarios passed ({counts['rebuilt']} recovery + {counts['update']} menu/update + {counts['long']} long-Journey/migration + {counts['permissions']} permission-import + {counts['history']} historical-credit + {counts['quests']} quest/eGlow + {counts['audit']} durable Staff audit + {counts['stable']} stable-release regressions + {counts.get('uploaded',0)} private uploaded-profile checks).
 Preserved Beta.1 reference: the same {counts['original']} recovery scenarios passed independently.
 Java sources compile with --release 21; JVM verification runs with -Xverify:all.
 
 Scope: real temporary profile/backup/credit-journal files; controlled economy/LP, inventory registry and sound/title boundaries.
 No live Paper/client deployment or visual Minecraft test is claimed.
-Uploaded Quests player records and quest definitions are not packaged.
+Uploaded player records, original ZIPs and private profile copies are not packaged.
 
 '''
-for name in ['rebuilt', 'update', 'long', 'permissions', 'history', 'quests', 'audit']:
+for name in current:
     report += name.upper()+'\n'+'\n'.join(line for line in logs[name].splitlines() if line.startswith(('PASS ', 'RESULT ')))+'\n\n'
 report = report.rstrip()+'\n'
 (ROOT/'verification/JOURNEY-UPDATE-VERIFICATION.txt').write_text(report)
@@ -51,6 +54,8 @@ bundle = {
     'README-DE.md': (ROOT/'README-DE.md').read_bytes(),
     'TECHNICAL-README.md': (ROOT/'README.md').read_bytes(),
     'JOURNEY-POINTS-DE.md': (ROOT/'JOURNEY-POINTS-DE.md').read_bytes(),
+    'LEVEL-CODES.md': (ROOT/'LEVEL-CODES.md').read_bytes(),
+    'CHANGELOG-2.0.0.md': (ROOT/'CHANGELOG-2.0.0.md').read_bytes(),
     'STAFF-AUDIT-DE.md': (ROOT/'STAFF-AUDIT-DE.md').read_bytes(),
     'PERKS.md': (ROOT/'PERKS.md').read_bytes(),
     'REWARDS.md': (ROOT/'REWARDS.md').read_bytes(),
@@ -78,9 +83,9 @@ def write_bundle(package, files):
 
 package = release/f'TownyReborn-Journey-{version}.zip'
 members = write_bundle(package, bundle)
-hotfix = release/f'TownyReborn-Journey-Hotfix-{version}.zip'
+hotfix = release/f'TownyReborn-Journey-{version}-Update.zip'
 hotfix_files = {name: data for name, data in bundle.items()
-                if name in {'plugins/'+jar_target.name, 'plugins/TownyRebornProgression/config.yml', 'README-DE.md', 'PERKS.md', 'STAFF-AUDIT-DE.md', 'VERIFICATION.txt'}}
+                if name in {'plugins/'+jar_target.name, 'plugins/TownyRebornProgression/config.yml', 'README-DE.md', 'LEVEL-CODES.md', 'CHANGELOG-2.0.0.md', 'PERKS.md', 'STAFF-AUDIT-DE.md', 'VERIFICATION.txt'}}
 assert {name for name in hotfix_files if name.startswith('plugins/')} == {'plugins/'+jar_target.name, 'plugins/TownyRebornProgression/config.yml'}
 hotfix_members = write_bundle(hotfix, hotfix_files)
 hashes = {name: digest for digest, name in (line.split('  ', 1) for line in (release/'SHA256SUMS.txt').read_text().splitlines())}

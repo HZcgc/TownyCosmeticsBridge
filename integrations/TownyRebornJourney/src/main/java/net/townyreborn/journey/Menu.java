@@ -2,9 +2,11 @@ package net.townyreborn.journey;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.net.URI;
 import java.util.UUID;
 import org.bukkit.Bukkit;
@@ -15,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -25,6 +28,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 final class Menu implements Listener {
    private final RebornPlugin plugin;
    private boolean refreshing;
+   private final Set<UUID> scheduledActions = new HashSet<>();
 
    Menu(RebornPlugin var1) {
       this.plugin = var1;
@@ -495,53 +499,62 @@ final class Menu implements Listener {
    }
 
    @EventHandler(priority = EventPriority.LOWEST)
-   public void click(InventoryClickEvent var1) {
-      if (var1.getView().getTopInventory().getHolder() instanceof Menu.View var2) {
-         var1.setCancelled(true);
-         if (var1.getWhoClicked() instanceof Player var10) {
-            if (!this.plugin.access(var10)) {
-               var10.closeInventory();
-            } else {
-               Menu.Action var11 = var2.actions.get(var1.getRawSlot());
-               if (var11 != null) {
-                  try {
-                     switch (var11.type()) {
-                        case "journey":
-                           this.journey(var10, var11.page());
-                           break;
-                        case "guide":
-                           this.guide(var10, var11.page());
-                           break;
-                        case "perks":
-                           this.perks(var10, var11.page(), var11.step());
-                           break;
-                        case "step":
-                           this.step(var10, var11.step());
-                           break;
-                        case "confirm":
-                           this.confirm(var10, var11.id());
-                           break;
-                        case "gift":
-                           this.plugin.gifts.claim(var10, this.plugin.state(var10), this.plugin.journey.gifts.get(var11.id()));
-                           break;
-                        case "buy":
-                           State var7 = this.plugin.state(var10);
-                           Journey.Perk var8 = this.plugin.journey.perks.get(var11.id());
-                           this.plugin.message(var10, this.plugin.purchases.buy(var7, var8, var3 -> {
-                              this.plugin.message(var10, var3);
-
-                              try {
-                                 this.step(var10, var8.level());
-                              } catch (Exception var5) {
-                              }
-                           }));
-                     }
-                  } catch (Exception var9) {
-                     this.plugin.profileError(var10, var9);
-                  }
-               }
-            }
+   public void click(InventoryClickEvent event) {
+      if (!(event.getView().getTopInventory().getHolder() instanceof Menu.View view)) return;
+      event.setCancelled(true);
+      if (!(event.getWhoClicked() instanceof Player player)) return;
+      int slot = event.getRawSlot();
+      Menu.Action action = view.actions.get(slot);
+      ClickType click = event.getClick();
+      if (this.plugin.access(player) && (action == null || click != ClickType.LEFT && click != ClickType.RIGHT
+         && click != ClickType.SHIFT_LEFT && click != ClickType.SHIFT_RIGHT)) return;
+      if (!this.scheduledActions.add(player.getUniqueId())) return;
+      // InventoryClickEvent is still modifying the old window. Open/close only on the next tick.
+      this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
+         this.scheduledActions.remove(player.getUniqueId());
+         if (!this.plugin.isEnabled() || !player.isOnline()
+            || player.getOpenInventory().getTopInventory() != view.inventory) return;
+         if (!this.plugin.access(player)) { player.closeInventory(); return; }
+         if (action == null || !action.equals(view.actions.get(slot))) return;
+         try {
+            this.execute(player, action);
+         } catch (Exception error) {
+            this.plugin.profileError(player, error);
          }
+      });
+   }
+
+   private void execute(Player var10, Menu.Action var11) throws Exception {
+      switch (var11.type()) {
+         case "journey":
+            this.journey(var10, var11.page());
+            break;
+         case "guide":
+            this.guide(var10, var11.page());
+            break;
+         case "perks":
+            this.perks(var10, var11.page(), var11.step());
+            break;
+         case "step":
+            this.step(var10, var11.step());
+            break;
+         case "confirm":
+            this.confirm(var10, var11.id());
+            break;
+         case "gift":
+            this.plugin.gifts.claim(var10, this.plugin.state(var10), this.plugin.journey.gifts.get(var11.id()));
+            break;
+         case "buy":
+            State var7 = this.plugin.state(var10);
+            Journey.Perk var8 = this.plugin.journey.perks.get(var11.id());
+            this.plugin.message(var10, this.plugin.purchases.buy(var7, var8, var3 -> {
+               this.plugin.message(var10, var3);
+
+               try {
+                  this.step(var10, var8.level());
+               } catch (Exception var5) {
+               }
+            }));
       }
    }
 

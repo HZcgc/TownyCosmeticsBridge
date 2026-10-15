@@ -1,12 +1,12 @@
-Towny Reborn Journey 2.0.0-beta.9
+Towny Reborn Journey 2.0.0
 
-Current build: 210 scenarios passed (24 recovery + 45 menu/update + 32 long-Journey/migration + 17 permission-import + 65 historical-credit + 19 quest/eGlow + 8 durable Staff audit).
+Current build: 224 scenarios passed (24 recovery + 45 menu/update + 32 long-Journey/migration + 9 permission-import + 28 historical-credit + 19 quest/eGlow + 8 durable Staff audit + 19 stable-release regressions + 40 private uploaded-profile checks).
 Preserved Beta.1 reference: the same 24 recovery scenarios passed independently.
 Java sources compile with --release 21; JVM verification runs with -Xverify:all.
 
 Scope: real temporary profile/backup/credit-journal files; controlled economy/LP, inventory registry and sound/title boundaries.
 No live Paper/client deployment or visual Minecraft test is claimed.
-Uploaded Quests player records and quest definitions are not packaged.
+Uploaded player records, original ZIPs and private profile copies are not packaged.
 
 REBUILT
 PASS default catalogue, pages and configured flight gate
@@ -128,15 +128,7 @@ PASS town-flight migration preserves temporary negative world hub multi-server a
 PASS staff and supporter memberships do not trigger a town-flight purchase migration
 PASS transient flight access cannot prove ownership or trigger a permanent flight migration
 PASS town-flight permission save retries safely with unchanged ownership and points
-PASS anonymous exported permission case 1 keeps confirmed purchases
-PASS anonymous exported permission case 2 keeps confirmed purchases
-PASS anonymous exported permission case 3 keeps confirmed purchases
-PASS anonymous exported permission case 4 keeps confirmed purchases
-PASS anonymous exported permission case 5 keeps confirmed purchases
-PASS anonymous exported permission case 6 keeps confirmed purchases
-PASS anonymous exported permission case 7 keeps confirmed purchases
-PASS anonymous exported permission case 8 keeps confirmed purchases
-RESULT 17 permission import checks passed
+RESULT 9 permission import checks passed
 
 HISTORY
 PASS history credit is enabled without changing the reset revision or progression curve
@@ -167,44 +159,7 @@ PASS new-curve or incomplete native backup cannot be interpreted as old earned p
 PASS invalid legacy counters cannot silently create historical progress
 PASS tampered receipt metadata fails closed without replacing current points
 PASS credit saturates the point safety limit without overflow or repeatedly adding time
-PASS anonymous uploaded historical profile 1 keeps its expected converted progress
-PASS anonymous uploaded historical profile 2 keeps its expected converted progress
-PASS anonymous uploaded historical profile 3 keeps its expected converted progress
-PASS anonymous uploaded historical profile 4 keeps its expected converted progress
-PASS anonymous uploaded historical profile 5 keeps its expected converted progress
-PASS anonymous uploaded historical profile 6 keeps its expected converted progress
-PASS anonymous uploaded historical profile 7 keeps its expected converted progress
-PASS anonymous uploaded historical profile 8 keeps its expected converted progress
-PASS anonymous uploaded historical profile 9 keeps its expected converted progress
-PASS anonymous uploaded historical profile 10 keeps its expected converted progress
-PASS anonymous uploaded historical profile 11 keeps its expected converted progress
-PASS anonymous uploaded historical profile 12 keeps its expected converted progress
-PASS anonymous uploaded historical profile 13 keeps its expected converted progress
-PASS anonymous uploaded historical profile 14 keeps its expected converted progress
-PASS anonymous uploaded historical profile 15 keeps its expected converted progress
-PASS anonymous uploaded historical profile 16 keeps its expected converted progress
-PASS anonymous uploaded historical profile 17 keeps its expected converted progress
-PASS anonymous uploaded historical profile 18 keeps its expected converted progress
-PASS anonymous uploaded historical profile 19 keeps its expected converted progress
-PASS anonymous uploaded historical profile 20 keeps its expected converted progress
-PASS anonymous uploaded historical profile 21 keeps its expected converted progress
-PASS anonymous uploaded historical profile 22 keeps its expected converted progress
-PASS anonymous uploaded historical profile 23 keeps its expected converted progress
-PASS anonymous uploaded historical profile 24 keeps its expected converted progress
-PASS anonymous uploaded historical profile 25 keeps its expected converted progress
-PASS anonymous uploaded historical profile 26 keeps its expected converted progress
-PASS anonymous uploaded historical profile 27 keeps its expected converted progress
-PASS anonymous uploaded historical profile 28 keeps its expected converted progress
-PASS anonymous uploaded historical profile 29 keeps its expected converted progress
-PASS anonymous uploaded historical profile 30 keeps its expected converted progress
-PASS anonymous uploaded historical profile 31 keeps its expected converted progress
-PASS anonymous uploaded historical profile 32 keeps its expected converted progress
-PASS anonymous uploaded historical profile 33 keeps its expected converted progress
-PASS anonymous uploaded historical profile 34 keeps its expected converted progress
-PASS anonymous uploaded historical profile 35 keeps its expected converted progress
-PASS anonymous uploaded historical profile 36 keeps its expected converted progress
-PASS anonymous uploaded historical profile 37 keeps its expected converted progress
-RESULT 65 historical credit checks passed
+RESULT 28 historical credit checks passed
 
 QUESTS
 PASS Quests enabled at 10 JP with 300 daily JP and unchanged migration revisions
@@ -238,3 +193,68 @@ PASS independent audit counter survives an older profile writer removing its seq
 PASS failed profile commit never creates a completed receipt
 PASS audit prepare failure leaves the existing gameplay profile unchanged
 RESULT 8 Staff audit checks passed
+
+STABLE
+PASS all 116 TAB labels contain their exact level and three unique title letters
+PASS actual TAB and chat placeholders retain their distinct compact and full formats
+PASS custom future level fallback retains the level number
+PASS omitted curve options use the current 150 and 30 defaults
+PASS stable update preserves the complete Beta 9 gameplay catalogue and revision markers
+PASS every level boundary and both sides of each boundary retain the same JP
+PASS failed level-up commit blocks later activity until the profile is saved
+PASS client level-up feedback failure cannot block an already saved progression award
+PASS poll storage failure blocks subsequent progression writes
+PASS failed owner point correction cannot leave spendable uncommitted progression
+PASS failed owner grant review retains PREPARED instead of inventing a DEBITED receipt
+PASS UI feedback failure cannot reopen a successfully saved purchase
+PASS menu navigation is cancelled immediately and runs only on the next tick
+PASS multiple clicks in one tick schedule a single menu action
+PASS closing or replacing the menu discards a delayed click
+PASS disconnecting discards delayed menu actions
+PASS permission removal between click and next tick prevents the action
+PASS number keys drop keys middle clicks and offhand swaps cannot activate a menu purchase
+PASS a changed slot action cannot execute from a stale menu click
+RESULT 19 stable release checks passed
+
+UPLOADED
+PASS uploaded native profile 1 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 2 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 3 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 4 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 5 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 6 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 7 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 8 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 9 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 10 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 11 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 12 retains points purchases rewards limits and historical credit
+PASS uploaded native profile 13 retains points purchases rewards limits and historical credit
+PASS all existing historical receipts and migration backups remain byte-identical
+PASS uploaded offline legacy profile 1 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 2 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 3 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 4 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 5 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 6 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 7 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 8 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 9 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 10 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 11 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 12 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 13 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 14 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 15 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 16 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 17 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 18 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 19 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 20 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 21 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 22 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 23 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 24 converts once without paid ownership or reward replay
+PASS uploaded offline legacy profile 25 converts once without paid ownership or reward replay
+PASS the uploaded archive is unchanged by every profile and restart check
+RESULT 40 uploaded profile checks passed

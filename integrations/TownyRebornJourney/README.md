@@ -1,10 +1,16 @@
 # Standalone Reborn Journey
 
-Current release: **2.0.0-beta.8**. Install [the folder overlay](releases/TownyReborn-Journey-2.0.0-beta.8.zip). [German installation guide](README-DE.md), [JP explanation](JOURNEY-POINTS-DE.md), [reward catalogue](REWARDS.md), [permanent features](PERKS.md).
+Current release: **2.0.0 (stable)**. Existing Beta 9 installations use [the small update overlay](releases/TownyReborn-Journey-2.0.0-Update.zip); the [full folder overlay](releases/TownyReborn-Journey-2.0.0.zip) also contains the reference Quests/TAB/nametag configs. [German installation guide](README-DE.md), [JP explanation](JOURNEY-POINTS-DE.md), [reward catalogue](REWARDS.md), [permanent features](PERKS.md).
 
 116 levels, four continuous snake pages, a distinct title per level and 44 optional permanent features. Access requires `townyreborn.progression.access`, default false. Paid feature purchases never gate normal levelling. Fly is the final Wither feature and requires level 116 for new eligibility; previously reached purchase unlocks are retained.
 
-## Beta.7 historical progress restoration
+## Stable 2.0.0 update
+
+TAB uses the level number and three unique title letters, from `[1NEW]` to `[116RLG]`. All 116 mappings are listed in [LEVEL-CODES.md](LEVEL-CODES.md). Full chat and overhead titles keep their original names. Existing `%reborn_short_title_colored%` / `%reborn_tab_prefix%` placeholders remain compatible; no TAB reload or replacement is required after a full server restart.
+
+The stable update fixes unsafe inventory-event navigation, stale and repeated menu actions, progression after a failed save, unsaved owner payment-phase changes, and receipt reopening after a failed UI message. See [CHANGELOG-2.0.0.md](CHANGELOG-2.0.0.md). The small overlay contains only the JAR, its config and documentation. Keep every data and receipt folder, including `staff-audit`.
+
+## Historical progress restoration (introduced in Beta.7)
 
 An already installed Beta.4–Beta.6 uses the small hotfix ZIP: back up the existing folder, remove the old JAR, copy its `plugins/` tree (**both the JAR and updated own config**), and restart fully. Keep `playerdata`, `journeydata`, `migration-backups` and the new `history-credits` directory. The config is an explicit overlay; no startup writer changes an existing config. `history-credit-revision: pre-reset-points-2026-10-v1` enables the new credit. The existing reset revision remains unchanged.
 
@@ -18,7 +24,7 @@ On activation, import and persist confirmed ownership before `Integrations.repai
 
 The Blaze tab now sends the official `MHF_Blaze` UUID and nonempty name alongside its fixed canonical skin URL. Mojang's profile/session services confirm the identity and texture, and the texture PNG was fetched successfully. This avoids an incomplete nameless profile and permits a valid Mojang lookup if a client resolves it. No runtime HTTP lookup or new HeadDB dependency is introduced.
 
-The released build passed 183 scenarios, including eight anonymous permission-only cases and 37 anonymous historical-profile cases derived from the supplied data. Private fixtures and original player/export records are not published. Without those two optional fixtures, 138 public scenarios run. Inventory/client/economy/LP boundaries use controlled doubles; profile and journal persistence uses real temporary files. Live Paper/client verification remains separate.
+The current verification report records all public regression suites and the optional read-only checks against copies of the supplied current player archive. Private fixtures and original player/export records are not published. Inventory/client/economy/LP boundaries use controlled doubles; profile and journal persistence uses real temporary files. Live Paper/client verification remains separate.
 
 ## Historical credit and installation
 
@@ -36,15 +42,15 @@ Beta.4's older reset mode remains available only when the history-credit setting
 
 ## Points and pacing
 
-All activity sources share one cumulative point balance: active minute +1 (360/day); new mcMMO power level +5 (500/day); new per-job high-water level +12 (500/day); fish catch +3 (300/day); first biome +8 (200/day); first non-recipe advancement +15 (300/day). Normal Quests remain disabled as a JP source. Buying perks uses game money, not JP.
+All activity sources share one cumulative point balance: active minute +1 (360/day); new mcMMO power level +5 (500/day); new per-job high-water level +12 (500/day); fish catch +3 (300/day); first biome +8 (200/day); first non-recipe advancement +15 (300/day). Actual successful Quest completions add 10 JP (300/day), including new runs of repeatable quests; old displayed completion counts are not re-imported. Buying perks uses game money, not JP.
 
 All awards and UI daily calculations use the UTC calendar, resetting at **00:00 UTC** regardless of the host/JVM timezone. Activity/poll refresh is 30 seconds, with a 90-second idle timeout. Creative/Spectator/NPCs/test-name prefixes/ignored worlds do not earn points.
 
-Level L requires `150 × (L−1) + 30 × (L−1) × (L−2) / 2` total points. L2=150, L3=330, L116=213900. The theoretical daily ceiling is 2160 JP: 99 days reach only 213840, so a fresh player starting from zero needs at least the 100th distinct UTC day. Existing players receive their proven historical head start. One-time biome/advancement sources cannot sustain that ceiling; this is a strict optimistic lower bound, not a promise about actual completion time. Owner `addpoints` intentionally bypasses ordinary pacing.
+Level L requires `150 × (L−1) + 30 × (L−1) × (L−2) / 2` total points. L2=150, L3=330, L116=213900. The theoretical daily ceiling is 2460 JP: 86 days reach only 211560, so a fresh player starting from zero needs at least the 87th distinct UTC day. Existing players receive their proven historical head start. One-time biome/advancement sources cannot sustain that ceiling; this is a strict optimistic lower bound, not a promise about actual completion time. Owner `addpoints` intentionally bypasses ordinary pacing.
 
 ## UI and feedback
 
-Every level has a distinct English title. TAB uses J001-J116; the rank palette transitions pink to lime and uses a subtle text gradient. `title`/`short_title` stay plain for compatibility; `title_colored`/`short_title_colored` supply legacy RGB, and `title_mini` supplies MiniMessage. Existing `chat_prefix` automatically uses the coloured full title. Supplied TAB and nametag files explicitly use the renderer-specific placeholders, preserve LP order, display-name RGB and attached small mcMMO.
+Every level has a distinct English title. TAB uses `[1NEW]` through `[116RLG]`, with a unique three-letter title code per level; the rank palette transitions pink to lime and uses a subtle text gradient. `title`/`short_title` stay plain for compatibility; `title_colored`/`short_title_colored` supply legacy RGB, and `title_mini` supplies MiniMessage. Existing `chat_prefix` automatically uses the coloured full title. Supplied TAB and nametag files explicitly use the renderer-specific placeholders, preserve LP order, display-name RGB and attached small mcMMO.
 
 Green is an earlier completed level, yellow is the current level, red is a future locked level. The progress bottle remains focused on goal/percent/missing JP. The player head supplies personal money/playtime/skills/Jobs/fish/quests/perk stats. How to progress has six numbered sources in two rows plus the seventh Quest-completion source below, with explanation, personal stats and UTC limits. No server snapshot/TPS item remains.
 
@@ -66,7 +72,7 @@ Requires Java 21+, Paper, PlaceholderAPI, LuckPerms and Vault with an economy pr
 
 ```text
 python build.py --jdk <jdk-bin> --deps <dependency-directory> --output <output-jar>
-python verify.py --jdk <jdk-bin> --deps <dependency-directory> --jar <output-jar> --output <verification-directory>
+python verify.py --jdk <jdk-bin> --deps <dependency-directory> --jar <output-jar> --output <verification-directory> [--uploaded-archive <private-current-Progression.zip>]
 python package.py --jar <output-jar> --verification <verification-directory>
 ```
 

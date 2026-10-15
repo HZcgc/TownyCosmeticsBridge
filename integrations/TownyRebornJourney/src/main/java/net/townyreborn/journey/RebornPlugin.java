@@ -291,11 +291,17 @@ public final class RebornPlugin extends JavaPlugin implements CommandExecutor {
                throw new IllegalArgumentException("Use delivered only after verifying the reward");
             case "addpoints":
                if (var2.length == 3 && this.access(var3)) {
+                  if (var4.blocked) throw new IllegalStateException("Profile storage needs review before another point correction");
                   long var7 = Long.parseLong(var2[2]);
                   if (var7 >= 1L && var7 <= 1000000L) {
                      int previousLevel = this.journey.level(var4.points);
                      var4.points = Math.min(1000000000000L, var4.points + var7);
-                     this.store.save(var4);
+                     try {
+                        this.store.save(var4);
+                     } catch (Exception error) {
+                        var4.blocked = true;
+                        throw error;
+                     }
                      this.levelReached(var3, var4, previousLevel);
                      this.message(var1, "Added " + var7 + " Journey Points.");
                      break;

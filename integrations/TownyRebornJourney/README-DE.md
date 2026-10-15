@@ -1,10 +1,26 @@
-# Towny Reborn Journey 2.0.0-beta.9
+# Towny Reborn Journey 2.0.0 – stabile Version
 
-## Staff-HQ-Anbindung (Beta.9)
+## Update von Beta 9 auf 2.0.0
+
+1. Server vollständig stoppen und den bestehenden Progression-Ordner sichern.
+2. Die bisherige Progression-JAR entfernen; nur **TownyRebornProgression-2.0.0.jar** behalten.
+3. Aus **TownyReborn-Journey-2.0.0-Update.zip** den `plugins/`-Baum einfügen. **JAR und Progression-Config ersetzen.**
+4. Alle Datenordner behalten: `journeydata`, `playerdata`, `migration-backups`, `history-credits`, `staff-audit` sowie vorhandene Legacy-Sicherungen.
+5. Server vollständig starten und `/progression` sowie `/rebornadmin status <player>` prüfen.
+
+TAB zeigt jetzt den Level und drei zum Rangnamen passende Buchstaben: **[1NEW] Newcomer**, **[15GAR] Gardener**, **[88RAD] Radiant**, **[116RLG] Reborn Legend**. Jede der 116 Kombinationen ist unterschiedlich; die vollständige Liste steht in `LEVEL-CODES.md`. Der Farbverlauf bleibt Pink → Lime. Der LP-Rang bleibt davor, der Spielername dahinter, mcMMO weiterhin direkt am Namen. Chat und schwebender Journey-Titel bleiben ausgeschrieben.
+
+Die kleine Update-ZIP ersetzt **nur** die Progression-JAR und deren eigene Config. Die bestehenden TAB-Platzhalter erhalten automatisch die neuen Kürzel. Quests-, TAB- und LyttleNametag-Dateien müssen für dieses Update nicht ersetzt werden. Das vollständige Paket ist zusätzlich für die Referenzinstallation verfügbar.
+
+**Kein neuer Reset und keine zweite Gutschrift:** JP, Level, Käufe, frühere Kauf-Freigaben, Tageslimits und Belohnungsbelege bleiben erhalten. Beide Revisionsmarker bleiben unverändert. Staff Connector 1.5.1 und Staff HQ API 9 funktionieren mit demselben Auditformat weiter.
+
+Behoben wurden direkte Fensterwechsel im Klick-Event, verspätete und mehrfache Menüaktionen sowie Fehlerpfade bei Speicherfehlern, Zahlungsbelegen und Erfolgsmeldungen. Details: `CHANGELOG-2.0.0.md`. Die Tests laufen gegen echte temporäre Profildateien mit kontrollierten Plugin-/Client-Schnittstellen; die Darstellung im laufenden Minecraft-Client ist separat zu prüfen.
+
+## Bestehende Staff-HQ-Anbindung (seit Beta.9)
 
 Die Journey schreibt bestätigte Profiländerungen als dauerhafte Auditbelege unter `staff-audit/`. Staff Connector 1.5.0 übernimmt sie in sein eigenes dauerhaftes Ausgangsprotokoll und überträgt sie mit stabilen Ereignis-IDs ins Staff HQ 5.2.0. JP und Quellen, Levelwechsel, historische Gutschriften, Kauf-Freigaben, gekaufte Perks, tatsächliche Zahlungsbeträge, Belohnungsbelege, Reward-Befehle und Town-Boni sind damit getrennt nachvollziehbar. Früherer Besitz wird nicht als neuer Kauf gerechnet.
 
-JAR und Progression-Config aus dem Beta.9-Hotfix einfügen. **Keine Revisionsmarker ändern und keine Datenordner ersetzen.** Level, Preise, Quests-JP, Käufe und historische Gutschriften bleiben wie in Beta.8. Die Website muss zuerst das HQ-5.2.0-Update erhalten; auf dem SMP danach Journey Beta.9 und Staff Connector 1.5.0 verwenden. Details: `STAFF-AUDIT-DE.md`.
+**Keine Revisionsmarker ändern und keine Datenordner ersetzen.** Die stabile Version 2.0.0 bleibt mit dem installierten Staff Connector 1.5.1 und HQ 5.2.1 / API 9 kompatibel. Die Journey-Auditbelege verwenden dasselbe Format; Connector und Website müssen für dieses Update nicht erneut ersetzt werden. Details: `STAFF-AUDIT-DE.md`.
 
 ## Update: Quests und eGlow (Beta.8)
 
@@ -12,11 +28,11 @@ Neue Quests-Abschlüsse geben 10 JP, bis 300 JP pro UTC-Tag. Wiederholbare Quest
 
 Auf der Wither-Perk-Seite ist **Glow colours and effects** für **$20.000 ab Level 88** hinzugekommen, direkt vor dem letzten Fly-Eintrag. Der permanente Kauf gewährt persönliche eGlow-Menüs, Farben, Blinken, Rainbow und eigene Effekte. Verwaltung anderer Spieler, Debug und Reload bleiben separate Staff-Rechte. Nutzung: `/eglow`, ausschalten: `/eglow off`. Der Eintrag kauft keinen monatlichen Wither-Rang und ändert keine LuckPerms-Gruppe.
 
-**Einfügen:** Server stoppen und Progression-Ordner sichern, alte JAR entfernen, JAR und eigene `config.yml` aus dem Beta.8-Hotfix einfügen, vollständig starten. `playerdata`, `journeydata`, `migration-backups` und `history-credits` behalten; beide bisherigen Revisionsmarker bleiben gleich. Keine Quest- oder TAB-Dateien für diesen Hotfix ersetzen.
+Quests-JP und der persönliche eGlow-Perk bleiben in 2.0.0 unverändert enthalten. Für die Installation gelten die Schritte im Abschnitt „Update von Beta 9 auf 2.0.0“.
 
 ## Fortschritt übernehmen (Beta.4 bis Beta.7)
 
-Server stoppen, den bestehenden Progression-Ordner sichern, die bisherige JAR entfernen und aus `TownyReborn-Journey-Hotfix-2.0.0-beta.9.zip` den `plugins/`-Baum einfügen. Er enthält die neue JAR und die neue Progression-Config. **Beide ersetzen**, damit die Fortschrittsübernahme aktiviert ist. `playerdata`, `journeydata`, `migration-backups` und der neue Ordner `history-credits` bleiben im bestehenden Ordner. Vollständig starten. Offline-Spieler werden beim nächsten Laden/Login übernommen. Die ausführliche ZIP enthält zusätzlich die bisherigen statischen TAB-, Nametag- und Quests-Configs.
+Server stoppen, den bestehenden Progression-Ordner sichern, die bisherige JAR entfernen und aus `TownyReborn-Journey-2.0.0-Update.zip` den `plugins/`-Baum einfügen. Er enthält die neue JAR und die neue Progression-Config. **Beide ersetzen**, damit die Fortschrittsübernahme aktiviert ist. `playerdata`, `journeydata`, `migration-backups` und der neue Ordner `history-credits` bleiben im bestehenden Ordner. Vollständig starten. Offline-Spieler werden beim nächsten Laden/Login übernommen. Die ausführliche ZIP enthält zusätzlich die bisherigen statischen TAB-, Nametag- und Quests-Configs.
 
 Beta.7 rechnet den früher verdienten Fortschritt auf die längere Journey um: **alte belegte JP + seit Beta.4 verdiente JP**. Der aktuelle Stand wird nicht durch eine alte Spielerdatei ersetzt. Bereits gezahlte Perks, offene Transaktionen, abgeholte Belohnungen, Tageszähler, Skill-Höchststände und mcMMO-/Jobs-Daten bleiben erhalten.
 
@@ -95,7 +111,7 @@ Die Gutschrift zahlt keine Items, Keys, Geld oder bereits gelieferten Belohnunge
 
 ## Journey und Oberfläche
 
-- 116 Level mit jeweils einem eigenen englischen Rangnamen; im TAB kompakt `J001` bis `J116`.
+- 116 Level mit jeweils einem eigenen englischen Rangnamen; im TAB Levelnummer plus drei Rangbuchstaben, von `[1NEW]` bis `[116RLG]`.
 - Rangfarben verändern sich von Pink zu Lime, mit einem sanften Textgradienten. Der LP-Rang bleibt separat.
 - Vier durchgehende Snake-Seiten: Endet die vorige Seite unten, startet die nächste unten; entsprechend oben.
 - Grün: früherer abgeschlossener Level. Gelb: aktueller Level. Rot: zukünftiger gesperrter Level.
